@@ -185,9 +185,69 @@ If you use these visualizations in your work, please cite:
 
 ## 📖 References
 
-1. Kuramoto, Y. (1975). Self-entrainment of coupled oscillators. *International Symposium on Mathematical Problems in Theoretical Physics.*
-2. Strogatz, S. H. (2000). From Kuramoto to Crawford. *Physica D*, 143(1-4), 1-20.
-3. Abrams, D. M., & Strogatz, S. H. (2004). Chimera states for coupled oscillators. *Physical Review Letters*, 93(17), 174102.
+### Foundational Papers
+1. **Kuramoto, Y.** (1975). Self-entrainment of coupled oscillators. *International Symposium on Mathematical Problems in Theoretical Physics.* Lecture Notes in Physics, 39, 420-422.
+2. **Strogatz, S. H.** (2000). From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators. *Physica D: Nonlinear Phenomena*, 143(1-4), 1-20.
+3. **Acebrón, J. A., et al.** (2005). The Kuramoto model: A simple paradigm for synchronization phenomena. *Reviews of Modern Physics*, 77(1), 137.
+
+### Advanced Topics
+4. **Abrams, D. M., & Strogatz, S. H.** (2004). Chimera states for coupled oscillators. *Physical Review Letters*, 93(17), 174102.
+5. **Pikovsky, A., Rosenblum, M., & Kurths, J.** (2001). *Synchronization: A Universal Concept in Nonlinear Sciences.* Cambridge University Press.
+6. **Rodrigues, F. A., et al.** (2016). The Kuramoto model in complex networks. *Physics Reports*, 610, 1-98.
+
+## 🎓 Learning Resources
+
+### Books
+- **Strogatz, S. H.** (2003). *SYNC: How Order Emerges from Chaos in the Universe, Nature, and Daily Life.* Hyperion. (Popular science)
+- **Strogatz, S. H.** (2014). *Nonlinear Dynamics and Chaos.* Westview Press. (Textbook)
+- **Pikovsky, A., Rosenblum, M., & Kurths, J.** (2001). *Synchronization: A Universal Concept in Nonlinear Sciences.* Cambridge University Press. (Advanced)
+
+### Online Courses & Lectures
+- **Complexity Explorer** - [Introduction to Dynamical Systems and Chaos](https://www.complexityexplorer.org/)
+- **MIT OpenCourseWare** - [Nonlinear Dynamics and Chaos (18.385)](https://ocw.mit.edu/)
+- **Santa Fe Institute** - Complex Systems Summer School materials
+- **Steven Strogatz** - YouTube lectures on synchronization and chaos
+
+### Interactive Demos & Visualizations
+- **Nicky Case** - [Fireflies Synchronization](https://ncase.me/fireflies/) (Beginner-friendly)
+- **Kevin Zelnio** - [Metronome Synchronization](https://www.youtube.com/watch?v=5v5eBf2KwF8) (Physical demo)
+- **Complexity Explorables** - [Sync or Swarm](https://www.complexity-explorables.org/)
+- **Observable** - Various Kuramoto model notebooks
+
+### Research Tools
+- **Python Libraries**:
+  - `NetworkX` - Network topology and analysis
+  - `PyDSTool` - Dynamical systems simulation
+  - `Brian2` - Neural network simulation
+- **Julia Packages**:
+  - `DifferentialEquations.jl` - High-performance ODE solving
+  - `NetworkDynamics.jl` - Coupled oscillator networks
+- **MATLAB Toolboxes**:
+  - `ode45`, `ode15s` - Built-in ODE solvers
+  - `ChebFun` - Spectral methods
+
+### Related Projects
+- **Kuramoto Model Implementations**:
+  - [pykuramot](https://github.com/fabridamicelli/pykuramot) - Python package
+  - [kuramoto](https://github.com/fabmazz/kuramoto) - Julia implementation
+  - [Sync-py](https://github.com/tjfulle/Sync-py) - Network synchronization
+
+### Academic Resources
+- **arXiv.org** - Search "Kuramoto model" for latest preprints
+- **Google Scholar** - Track citations and related work
+- **ResearchGate** - Connect with synchronization researchers
+- **OSF (Open Science Framework)** - Open research data and preprints
+
+### Communities & Forums
+- **r/Physics** - Subreddit for physics discussions
+- **r/ComplexSystems** - Complex systems and emergence
+- **Stack Exchange Physics** - Q&A for physics questions
+- **Complexity Digest** - Weekly newsletter on complex systems
+
+### Datasets & Benchmarks
+- **Collective Dynamics Database** - Real-world synchronization data
+- **Network Repository** - Network topologies for testing
+- **Kuramoto Benchmark Suite** - Standard test cases (if available)
 
 ## 📄 License
 
