@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Oscillator Ocean - Pixel Field</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 12px;
+      text-shadow: 0 0 5px #0f0;
+      z-index: 100;
+      background: rgba(0,0,0,0.8);
+      padding: 10px;
+      border: 1px solid #0f0;
+      border-radius: 5px;
+    }
+    
+    #canvas {
+      cursor: crosshair;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      background: rgba(0,0,0,0.9);
+      padding: 15px;
+      border: 1px solid #0f0;
+      border-radius: 5px;
+      z-index: 100;
+    }
+    
+    button {
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 8px 15px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background: #0f0;
+      color: #000;
+      box-shadow: 0 0 10px #0f0;
+    }
+    
+    select {
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 8px;
+      font-family: inherit;
+    }
+    
+    #title {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3em;
+      text-shadow: 0 0 30px #0f0, 0 0 60px #0f0;
+      opacity: 0;
+      animation: fadeInOut 3s ease-in-out;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="title">⚡ OSCILLATOR OCEAN ⚡</div>
+  
+  <div id="info">
+    <div>Resolution: <span id="resolution">0x0</span></div>
+    <div>Oscillators: <span id="count">0</span></div>
+    <div>FPS: <span id="fps">0</span></div>
+    <div>Mode: <span id="mode">WAVE</span></div>
+    <div>Mouse: Draw interference</div>
+  </div>
+  
+  <canvas id="canvas"></canvas>
+  
+  <div class="controls">
+    <select id="modeSelect">
+      <option value="wave">Wave</option>
+      <option value="quantum">Quantum</option>
+      <option value="interference">Interference</option>
+      <option value="mandala">Mandala</option>
+      <option value="storm">Storm</option>
+      <option value="cellular">Cellular</option>
+    </select>
+    <button id="pauseBtn">Pause</button>
+    <button id="clearBtn">Clear</button>
+    <button id="randomBtn">Randomize</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    
+    // Make it fill the screen but keep reasonable resolution
+    const maxDimension = 800;
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    
+    let width, height;
+    if (aspectRatio > 1) {
+      width = Math.min(maxDimension, window.innerWidth * 0.9);
+      height = width / aspectRatio;
+    } else {
+      height = Math.min(maxDimension, window.innerHeight * 0.8);
+      width = height * aspectRatio;
+    }
+    
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    
+    // Every pixel is an oscillator!
+    const oscillators = new Float32Array(width * height * 3); // phase, frequency, amplitude
+    const imageData = ctx.createImageData(width, height);
+    const pixelData = new Uint32Array(imageData.data.buffer);
+    
+    let mode = 'wave';
+    let paused = false;
+    let time = 0;
+    let mouseX = width / 2;
+    let mouseY = height / 2;
+    let mouseDown = false;
+    
+    // Performance tracking
+    let fps = 0;
+    let lastTime = performance.now();
+    let frameCount = 0;
+    
+    // Initialize oscillators
+    function initOscillators() {
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 3;
+          
+          switch(mode) {
+            case 'wave':
+              // Create wave patterns
+              const waveX = x / width - 0.5;
+              const waveY = y / height - 0.5;
+              oscillators[idx] = Math.atan2(waveY, waveX); // phase
+              oscillators[idx + 1] = 0.05 + Math.sqrt(waveX * waveX + waveY * waveY) * 0.1; // frequency
+              oscillators[idx + 2] = 1.0; // amplitude
+              break;
+            
+            case 'quantum':
+              // Quantum-like probability clouds
+              oscillators[idx] = Math.random() * Math.PI * 2;
+              oscillators[idx + 1] = 0.01 + Math.random() * 0.05;
+              oscillators[idx + 2] = Math.random();
+              break;
+            
+            case 'interference':
+              // Multiple wave sources
+              const dist1 = Math.sqrt((x - width * 0.3) ** 2 + (y - height * 0.5) ** 2);
+              const dist2 = Math.sqrt((x - width * 0.7) ** 2 + (y - height * 0.5) ** 2);
+              oscillators[idx] = (dist1 + dist2) * 0.05;
+              oscillators[idx + 1] = 0.05;
+              oscillators[idx + 2] = 1.0;
+              break;
+            
+            case 'mandala':
+              // Radial symmetry
+              const cx = width / 2;
+              const cy = height / 2;
+              const angle = Math.atan2(y - cy, x - cx);
+              const radius = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+              oscillators[idx] = angle * 6 + radius * 0.05;
+              oscillators[idx + 1] = 0.02 + (radius / Math.max(width, height)) * 0.1;
+              oscillators[idx + 2] = 1.0 - (radius / Math.max(width, height));
+              break;
+            
+            case 'storm':
+              // Chaotic vortex
+              const sx = (x - width / 2) / width;
+              const sy = (y - height / 2) / height;
+              const sr = Math.sqrt(sx * sx + sy * sy);
+              const sa = Math.atan2(sy, sx);
+              oscillators[idx] = sa + sr * 10;
+              oscillators[idx + 1] = 0.01 + Math.random() * 0.2 * (1 - sr);
+              oscillators[idx + 2] = Math.max(0, 1 - sr * 2);
+              break;
+            
+            case 'cellular':
+              // Cellular automata-inspired
+              const cellX = Math.floor(x / 10);
+              const cellY = Math.floor(y / 10);
+              oscillators[idx] = (cellX + cellY) * 0.5 + Math.random();
+              oscillators[idx + 1] = 0.05 + ((cellX + cellY) % 3) * 0.02;
+              oscillators[idx + 2] = ((cellX + cellY) % 2) * 0.5 + 0.5;
+              break;
+          }
+        }
+      }
+      
+      updateInfo();
+    }
+    
+    // Update each oscillator
+    function updateOscillators(dt) {
+      if (paused) return;
+      
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 3;
+          
+          // Get neighbors for coupling (Kuramoto-style)
+          let coupling = 0;
+          let neighbors = 0;
+          
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              if (dx === 0 && dy === 0) continue;
+              
+              const nx = x + dx;
+              const ny = y + dy;
+              
+              if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                const nIdx = (ny * width + nx) * 3;
+                coupling += Math.sin(oscillators[nIdx] - oscillators[idx]);
+                neighbors++;
+              }
+            }
+          }
+          
+          if (neighbors > 0) {
+            coupling = coupling / neighbors * 0.5; // Coupling strength
+          }
+          
+          // Mouse interaction
+          if (mouseDown) {
+            const dist = Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2);
+            if (dist < 50) {
+              const influence = Math.exp(-dist * dist / 500);
+              coupling += Math.sin(time * 0.1 - oscillators[idx]) * influence * 2;
+            }
+          }
+          
+          // Update phase
+          oscillators[idx] += (oscillators[idx + 1] + coupling) * dt;
+          
+          // Modulate amplitude based on mode
+          if (mode === 'quantum') {
+            oscillators[idx + 2] = 0.5 + 0.5 * Math.sin(oscillators[idx] * 3);
+          } else if (mode === 'storm') {
+            oscillators[idx + 2] *= 0.99; // Decay
+            if (Math.random() < 0.001) {
+              oscillators[idx + 2] = 1.0; // Random excitation
+            }
+          }
+        }
+      }
+      
+      time += dt;
+    }
+    
+    // Render the oscillator field
+    function render() {
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 3;
+          const pixelIdx = y * width + x;
+          
+          const phase = oscillators[idx];
+          const amplitude = oscillators[idx + 2];
+          
+          // Calculate color based on phase and amplitude
+          let r, g, b;
+          
+          switch(mode) {
+            case 'wave':
+            case 'interference':
+              // Blue-green waves
+              const wave = (Math.sin(phase) + 1) * 0.5 * amplitude;
+              r = wave * 50;
+              g = wave * 150;
+              b = wave * 255;
+              break;
+            
+            case 'quantum':
+              // Probability density visualization
+              const prob = amplitude * (Math.sin(phase) * 0.5 + 0.5);
+              const hue = (phase / (2 * Math.PI)) % 1;
+              [r, g, b] = hslToRgb(hue, 1, prob * 0.6);
+              break;
+            
+            case 'mandala':
+              // Psychedelic colors
+              const h = (phase / (2 * Math.PI) + time * 0.01) % 1;
+              [r, g, b] = hslToRgb(h, 1, amplitude * 0.5);
+              break;
+            
+            case 'storm':
+              // Electric storm
+              const intensity = amplitude * (0.5 + 0.5 * Math.sin(phase));
+              const flash = Math.random() < 0.001 ? 1 : 0;
+              r = intensity * 100 + flash * 255;
+              g = intensity * 150 + flash * 255;
+              b = intensity * 255 + flash * 255;
+              break;
+            
+            case 'cellular':
+              // Binary-like patterns
+              const cell = Math.sin(phase) > 0 ? amplitude : 0;
+              r = cell * 0;
+              g = cell * 255;
+              b = cell * 100;
+              break;
+            
+            default:
+              r = g = b = 128;
+          }
+          
+          // Pack color into 32-bit integer (ABGR format)
+          pixelData[pixelIdx] = (255 << 24) | (Math.min(255, b) << 16) | (Math.min(255, g) << 8) | Math.min(255, r);
+        }
+      }
+      
+      ctx.putImageData(imageData, 0, 0);
+      
+      // Update FPS
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fps = frameCount;
+        document.getElementById('fps').textContent = fps;
+        frameCount = 0;
+        lastTime = now;
+      }
+    }
+    
+    // Helper function for HSL to RGB conversion
+    function hslToRgb(h, s, l) {
+      let r, g, b;
+      
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+        
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+      
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    }
+    
+    // Update info display
+    function updateInfo() {
+      document.getElementById('resolution').textContent = `${width}x${height}`;
+      document.getElementById('count').textContent = (width * height).toLocaleString();
+      document.getElementById('mode').textContent = mode.toUpperCase();
+    }
+    
+    // Animation loop
+    function animate() {
+      updateOscillators(0.1);
+      render();
+      requestAnimationFrame(animate);
+    }
+    
+    // Event listeners
+    document.getElementById('modeSelect').addEventListener('change', (e) => {
+      mode = e.target.value;
+      initOscillators();
+    });
+    
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      paused = !paused;
+      document.getElementById('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+    });
+    
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      for (let i = 0; i < oscillators.length; i += 3) {
+        oscillators[i] = 0; // Reset phase
+      }
+    });
+    
+    document.getElementById('randomBtn').addEventListener('click', () => {
+      for (let i = 0; i < oscillators.length; i += 3) {
+        oscillators[i] = Math.random() * Math.PI * 2; // Random phase
+        oscillators[i + 1] = 0.01 + Math.random() * 0.1; // Random frequency
+      }
+    });
+    
+    // Mouse interaction
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = (e.clientX - rect.left) * (width / rect.width);
+      mouseY = (e.clientY - rect.top) * (height / rect.height);
+    });
+    
+    canvas.addEventListener('mousedown', () => {
+      mouseDown = true;
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+      mouseDown = false;
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+      mouseDown = false;
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case ' ':
+          e.preventDefault();
+          document.getElementById('pauseBtn').click();
+          break;
+        case 'r':
+          document.getElementById('randomBtn').click();
+          break;
+        case 'c':
+          document.getElementById('clearBtn').click();
+          break;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+          const modes = ['wave', 'quantum', 'interference', 'mandala', 'storm', 'cellular'];
+          const modeIdx = parseInt(e.key) - 1;
+          if (modeIdx < modes.length) {
+            mode = modes[modeIdx];
+            document.getElementById('modeSelect').value = mode;
+            initOscillators();
+          }
+          break;
+      }
+    });
+    
+    // Initialize and start
+    initOscillators();
+    animate();
+  </script>
+</body>
+</html>

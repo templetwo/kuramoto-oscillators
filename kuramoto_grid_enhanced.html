@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuramoto Plasma Grid - Enhanced</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Courier New', monospace;
+      background: linear-gradient(135deg, #000 0%, #0a0a0a 100%);
+      color: #0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    h1 {
+      margin-bottom: 15px;
+      font-size: 1.8em;
+      text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      50% { text-shadow: 0 0 15px #0f0, 0 0 30px #0f0; }
+    }
+    
+    #canvasContainer {
+      position: relative;
+      display: inline-block;
+    }
+    
+    #canvas {
+      border: 2px solid #0f0;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+      image-rendering: optimizeSpeed;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated;
+      cursor: crosshair;
+    }
+    
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    
+    .controls {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      max-width: 1200px;
+      width: 100%;
+    }
+    
+    .control-group {
+      background: rgba(0, 255, 0, 0.05);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+      border-radius: 5px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+    
+    .control-group:hover {
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    }
+    
+    label {
+      font-size: 0.9em;
+      text-shadow: 0 0 3px #0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .value-display {
+      color: #0ff;
+      font-weight: bold;
+      min-width: 60px;
+      text-align: right;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #111;
+      outline: none;
+      -webkit-appearance: none;
+      border-radius: 3px;
+      border: 1px solid #0f0;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #0f0;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px #0f0;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #0f0;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px #0f0;
+      border: none;
+    }
+    
+    select {
+      background: #111;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 6px;
+      font-family: 'Courier New', monospace;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #000 0%, #111 100%);
+      color: #0f0;
+      border: 2px solid #0f0;
+      padding: 10px 18px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      text-shadow: 0 0 5px #0f0;
+      transition: all 0.3s;
+      border-radius: 5px;
+    }
+    
+    button:hover {
+      background: linear-gradient(135deg, #0f0 0%, #0a0 100%);
+      color: #000;
+      box-shadow: 0 0 20px #0f0;
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    #stats {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .stat-card {
+      background: rgba(0, 255, 0, 0.05);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+      border-radius: 5px;
+      padding: 12px;
+      transition: all 0.3s;
+    }
+    
+    .stat-card:hover {
+      background: rgba(0, 255, 0, 0.1);
+      transform: scale(1.05);
+    }
+    
+    .stat-label {
+      font-size: 0.85em;
+      color: #888;
+      margin-bottom: 5px;
+    }
+    
+    .stat-value {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #0ff;
+      text-shadow: 0 0 5px #0ff;
+    }
+    
+    #tooltip {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.9);
+      border: 1px solid #0f0;
+      padding: 8px;
+      border-radius: 5px;
+      font-size: 0.85em;
+      pointer-events: none;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    }
+    
+    .preset-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .preset-btn {
+      padding: 6px 12px;
+      font-size: 0.9em;
+      flex: 1;
+      min-width: 100px;
+    }
+    
+    @media (max-width: 768px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+      
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🌌 Kuramoto Plasma Grid Enhanced 🌌</h1>
+  
+  <div id="canvasContainer">
+    <canvas id="canvas"></canvas>
+    <canvas id="overlay"></canvas>
+  </div>
+  
+  <div id="tooltip"></div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>
+        Coupling (K):
+        <span class="value-display" id="kVal">1.5</span>
+      </label>
+      <input type="range" id="kSlider" min="0" max="10" step="0.1" value="1.5" />
+    </div>
+
+    <div class="control-group">
+      <label>
+        Noise:
+        <span class="value-display" id="noiseVal">0.1</span>
+      </label>
+      <input type="range" id="noiseSlider" min="0" max="2" step="0.05" value="0.1" />
+    </div>
+
+    <div class="control-group">
+      <label>
+        Speed (dt):
+        <span class="value-display" id="speedVal">0.05</span>
+      </label>
+      <input type="range" id="speedSlider" min="0.001" max="0.3" step="0.001" value="0.05" />
+    </div>
+
+    <div class="control-group">
+      <label>
+        Grid Size:
+        <span class="value-display" id="sizeVal">64</span>
+      </label>
+      <input type="range" id="sizeSlider" min="16" max="128" step="8" value="64" />
+    </div>
+
+    <div class="control-group">
+      <label>Topology:</label>
+      <select id="topologySelect">
+        <option value="global">Global (all-to-all)</option>
+        <option value="local4" selected>Local (4-neighbor)</option>
+        <option value="local8">Local (8-neighbor)</option>
+        <option value="distance">Distance-based</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>Color Mode:</label>
+      <select id="colorSelect">
+        <option value="hsb" selected>HSB Plasma</option>
+        <option value="fire">Fire</option>
+        <option value="ocean">Ocean</option>
+        <option value="neon">Neon</option>
+        <option value="monochrome">Monochrome</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>Initial Phase:</label>
+      <select id="initSelect">
+        <option value="random" selected>Random</option>
+        <option value="gradient">Gradient</option>
+        <option value="spiral">Spiral</option>
+        <option value="waves">Waves</option>
+        <option value="clusters">Clusters</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>
+        Frequency Spread:
+        <span class="value-display" id="freqVal">0.5</span>
+      </label>
+      <input type="range" id="freqSlider" min="0" max="2" step="0.1" value="0.5" />
+    </div>
+
+    <div class="control-group">
+      <label>Presets:</label>
+      <div class="preset-buttons">
+        <button class="preset-btn" onclick="applyPreset('sync')">Sync</button>
+        <button class="preset-btn" onclick="applyPreset('chaos')">Chaos</button>
+        <button class="preset-btn" onclick="applyPreset('waves')">Waves</button>
+        <button class="preset-btn" onclick="applyPreset('chimera')">Chimera</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <div class="button-group">
+        <button id="resetBtn">Reset</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="recordBtn">Record</button>
+        <button id="fullscreenBtn">Fullscreen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="stats">
+    <div class="stat-card">
+      <div class="stat-label">Order Parameter</div>
+      <div class="stat-value" id="rVal">0.0000</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Mean Phase</div>
+      <div class="stat-value" id="psiVal">0.00</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Coherence</div>
+      <div class="stat-value" id="cohVal">0.00%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Entropy</div>
+      <div class="stat-value" id="entVal">0.00</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">FPS</div>
+      <div class="stat-value" id="fpsVal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Iterations</div>
+      <div class="stat-value" id="iterVal">0</div>
+    </div>
+  </div>
+
+  <script>
+    // ========================================
+    // Configuration
+    // ========================================
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const overlay = document.getElementById('overlay');
+    const overlayCtx = overlay.getContext('2d');
+    const tooltip = document.getElementById('tooltip');
+
+    let gridSize = 64;
+    let cellSize = 8;
+    let K = 1.5;
+    let noise = 0.1;
+    let dt = 0.05;
+    let topology = 'local4';
+    let colorMode = 'hsb';
+    let freqSpread = 0.5;
+    let paused = false;
+    let recording = false;
+    let iterations = 0;
+
+    // High-resolution support
+    const dpr = window.devicePixelRatio || 1;
+
+    // Oscillator arrays
+    let phases = [];
+    let omegas = [];
+    let velocities = [];
+
+    // Performance optimization
+    let imageData = null;
+    let pixelBuffer = null;
+
+    // Stats
+    let fps = 0;
+    let lastTime = performance.now();
+    let frameCount = 0;
+    let fpsHistory = [];
+
+    // Recording
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
+    // ========================================
+    // Color Schemes
+    // ========================================
+    const colorSchemes = {
+      hsb: (phase, brightness) => {
+        const hue = (phase / (2 * Math.PI)) * 360;
+        const b = 50 + brightness * 50;
+        return hslToRgb(hue / 360, 1, b / 100);
+      },
+      fire: (phase, brightness) => {
+        const t = phase / (2 * Math.PI);
+        const b = 0.5 + brightness * 0.5;
+        return [
+          Math.min(255, 255 * t * 2 * b),
+          Math.min(255, 255 * (t - 0.5) * 2 * b),
+          Math.min(255, 50 * (t - 0.8) * b)
+        ];
+      },
+      ocean: (phase, brightness) => {
+        const t = phase / (2 * Math.PI);
+        const b = 0.5 + brightness * 0.5;
+        return [
+          Math.min(255, 50 * t * b),
+          Math.min(255, 100 * t * b),
+          Math.min(255, 200 + 55 * t * b)
+        ];
+      },
+      neon: (phase, brightness) => {
+        const t = phase / (2 * Math.PI);
+        const b = 0.7 + brightness * 0.3;
+        if (t < 0.33) {
+          return [255 * b, 0, 255 * (1 - t * 3) * b];
+        } else if (t < 0.66) {
+          return [255 * (1 - (t - 0.33) * 3) * b, 255 * ((t - 0.33) * 3) * b, 0];
+        } else {
+          return [0, 255 * (1 - (t - 0.66) * 3) * b, 255 * ((t - 0.66) * 3) * b];
+        }
+      },
+      monochrome: (phase, brightness) => {
+        const b = (0.5 + 0.5 * Math.cos(phase)) * (0.5 + brightness * 0.5);
+        const v = Math.floor(255 * b);
+        return [v, v, v];
+      }
+    };
+
+    function hslToRgb(h, s, l) {
+      let r, g, b;
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    }
+
+    // ========================================
+    // Initialization
+    // ========================================
+    function init() {
+      const canvasSize = gridSize * cellSize;
+      
+      canvas.width = canvasSize;
+      canvas.height = canvasSize;
+      canvas.style.width = `${canvasSize}px`;
+      canvas.style.height = `${canvasSize}px`;
+      
+      overlay.width = canvasSize;
+      overlay.height = canvasSize;
+      overlay.style.width = `${canvasSize}px`;
+      overlay.style.height = `${canvasSize}px`;
+
+      // Initialize image data for direct pixel manipulation
+      imageData = ctx.createImageData(canvasSize, canvasSize);
+      pixelBuffer = new Uint32Array(imageData.data.buffer);
+
+      phases = [];
+      omegas = [];
+      velocities = [];
+
+      const initMode = document.getElementById('initSelect').value;
+      const N = gridSize * gridSize;
+
+      for (let i = 0; i < N; i++) {
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
+        
+        // Initial phase distribution
+        let phase;
+        switch(initMode) {
+          case 'gradient':
+            phase = (row / gridSize) * 2 * Math.PI;
+            break;
+          case 'spiral':
+            const cx = gridSize / 2;
+            const cy = gridSize / 2;
+            const angle = Math.atan2(row - cy, col - cx);
+            const dist = Math.sqrt((row - cx) ** 2 + (col - cy) ** 2);
+            phase = angle + dist * 0.1;
+            break;
+          case 'waves':
+            phase = Math.sin(col * 0.3) * Math.PI + Math.cos(row * 0.3) * Math.PI;
+            break;
+          case 'clusters':
+            const cluster = Math.floor(Math.random() * 5);
+            phase = cluster * (2 * Math.PI / 5) + (Math.random() - 0.5) * 0.5;
+            break;
+          default: // random
+            phase = Math.random() * 2 * Math.PI;
+        }
+        
+        phases.push(phase);
+        omegas.push((Math.random() - 0.5) * freqSpread);
+        velocities.push(0);
+      }
+      
+      iterations = 0;
+    }
+
+    // ========================================
+    // Kuramoto Update with RK4 Integration
+    // ========================================
+    function calculateDerivatives(currentPhases) {
+      const derivatives = [];
+      const N = gridSize * gridSize;
+
+      for (let i = 0; i < N; i++) {
+        let coupling = 0;
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
+
+        if (topology === 'global') {
+          for (let j = 0; j < N; j++) {
+            coupling += Math.sin(currentPhases[j] - currentPhases[i]);
+          }
+          coupling *= K / N;
+        } else if (topology === 'local4') {
+          let neighbors = 0;
+          const directions = [[-1,0], [1,0], [0,-1], [0,1]];
+          
+          for (const [dr, dc] of directions) {
+            const newRow = row + dr;
+            const newCol = col + dc;
+            if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+              const j = newRow * gridSize + newCol;
+              coupling += Math.sin(currentPhases[j] - currentPhases[i]);
+              neighbors++;
+            }
+          }
+          if (neighbors > 0) coupling *= K / neighbors;
+        } else if (topology === 'local8') {
+          let neighbors = 0;
+          for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+              if (dr === 0 && dc === 0) continue;
+              const newRow = row + dr;
+              const newCol = col + dc;
+              if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+                const j = newRow * gridSize + newCol;
+                coupling += Math.sin(currentPhases[j] - currentPhases[i]);
+                neighbors++;
+              }
+            }
+          }
+          if (neighbors > 0) coupling *= K / neighbors;
+        } else if (topology === 'distance') {
+          let weightSum = 0;
+          const sigma = gridSize / 4;
+          
+          for (let j = 0; j < N; j++) {
+            if (i === j) continue;
+            const jRow = Math.floor(j / gridSize);
+            const jCol = j % gridSize;
+            const dist = Math.sqrt((row - jRow) ** 2 + (col - jCol) ** 2);
+            const weight = Math.exp(-dist * dist / (2 * sigma * sigma));
+            coupling += weight * Math.sin(currentPhases[j] - currentPhases[i]);
+            weightSum += weight;
+          }
+          if (weightSum > 0) coupling *= K / weightSum;
+        }
+
+        const noiseTerm = (Math.random() - 0.5) * noise;
+        derivatives.push(omegas[i] + coupling + noiseTerm);
+      }
+
+      return derivatives;
+    }
+
+    function updatePhases() {
+      if (paused) return;
+
+      // Simple Euler integration with momentum
+      const derivatives = calculateDerivatives(phases);
+      const N = phases.length;
+      const alpha = 0.1; // Momentum factor
+
+      for (let i = 0; i < N; i++) {
+        velocities[i] = alpha * velocities[i] + (1 - alpha) * derivatives[i];
+        phases[i] += velocities[i] * dt;
+        
+        // Wrap phase to [0, 2π]
+        phases[i] = phases[i] % (2 * Math.PI);
+        if (phases[i] < 0) phases[i] += 2 * Math.PI;
+      }
+      
+      iterations++;
+    }
+
+    // ========================================
+    // Statistics Calculation
+    // ========================================
+    function calculateOrderParameter() {
+      const N = phases.length;
+      let sumCos = 0;
+      let sumSin = 0;
+
+      for (let i = 0; i < N; i++) {
+        sumCos += Math.cos(phases[i]);
+        sumSin += Math.sin(phases[i]);
+      }
+
+      const R = Math.sqrt(sumCos * sumCos + sumSin * sumSin) / N;
+      const psi = Math.atan2(sumSin, sumCos);
+
+      return { R, psi };
+    }
+
+    function calculateEntropy() {
+      const bins = 20;
+      const histogram = new Array(bins).fill(0);
+      const N = phases.length;
+
+      for (let i = 0; i < N; i++) {
+        const bin = Math.floor(phases[i] / (2 * Math.PI) * bins);
+        histogram[Math.min(bin, bins - 1)]++;
+      }
+
+      let entropy = 0;
+      for (let i = 0; i < bins; i++) {
+        if (histogram[i] > 0) {
+          const p = histogram[i] / N;
+          entropy -= p * Math.log(p);
+        }
+      }
+
+      return entropy / Math.log(bins); // Normalized entropy
+    }
+
+    // ========================================
+    // Rendering with Direct Pixel Manipulation
+    // ========================================
+    function render() {
+      const colorFunc = colorSchemes[colorMode];
+      
+      for (let i = 0; i < gridSize * gridSize; i++) {
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
+        
+        // Calculate brightness based on local synchronization
+        let localSync = 0;
+        let neighbors = 0;
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            if (dr === 0 && dc === 0) continue;
+            const newRow = row + dr;
+            const newCol = col + dc;
+            if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+              const j = newRow * gridSize + newCol;
+              localSync += Math.cos(phases[i] - phases[j]);
+              neighbors++;
+            }
+          }
+        }
+        const brightness = neighbors > 0 ? localSync / neighbors : 0;
+        
+        const [r, g, b] = colorFunc(phases[i], brightness);
+        
+        // Direct pixel manipulation for better performance
+        for (let py = 0; py < cellSize; py++) {
+          for (let px = 0; px < cellSize; px++) {
+            const x = col * cellSize + px;
+            const y = row * cellSize + py;
+            const idx = y * (gridSize * cellSize) + x;
+            pixelBuffer[idx] = (255 << 24) | (b << 16) | (g << 8) | r;
+          }
+        }
+      }
+      
+      ctx.putImageData(imageData, 0, 0);
+    }
+
+    // ========================================
+    // Overlay Rendering
+    // ========================================
+    function renderOverlay(mouseX, mouseY) {
+      overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
+      
+      if (mouseX >= 0 && mouseY >= 0) {
+        const col = Math.floor(mouseX / cellSize);
+        const row = Math.floor(mouseY / cellSize);
+        
+        if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
+          const idx = row * gridSize + col;
+          
+          // Highlight cell
+          overlayCtx.strokeStyle = '#fff';
+          overlayCtx.lineWidth = 2;
+          overlayCtx.strokeRect(col * cellSize, row * cellSize, cellSize, cellSize);
+          
+          // Show tooltip
+          const phase = phases[idx];
+          const omega = omegas[idx];
+          tooltip.innerHTML = `
+            Cell: (${col}, ${row})<br>
+            Phase: ${phase.toFixed(3)} rad<br>
+            Frequency: ${omega.toFixed(3)}<br>
+            Velocity: ${velocities[idx].toFixed(3)}
+          `;
+          tooltip.style.left = `${mouseX + 20}px`;
+          tooltip.style.top = `${mouseY - 60}px`;
+          tooltip.style.display = 'block';
+        }
+      } else {
+        tooltip.style.display = 'none';
+      }
+    }
+
+    // ========================================
+    // Stats Update
+    // ========================================
+    function updateStats() {
+      const { R, psi } = calculateOrderParameter();
+      const entropy = calculateEntropy();
+      const coherence = R * 100;
+      
+      document.getElementById('rVal').textContent = R.toFixed(4);
+      document.getElementById('psiVal').textContent = psi.toFixed(2);
+      document.getElementById('cohVal').textContent = coherence.toFixed(1) + '%';
+      document.getElementById('entVal').textContent = entropy.toFixed(3);
+      document.getElementById('iterVal').textContent = iterations;
+
+      // FPS calculation with smoothing
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fps = Math.round(frameCount * 1000 / (now - lastTime));
+        fpsHistory.push(fps);
+        if (fpsHistory.length > 5) fpsHistory.shift();
+        const avgFps = fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length;
+        document.getElementById('fpsVal').textContent = Math.round(avgFps);
+        frameCount = 0;
+        lastTime = now;
+      }
+    }
+
+    // ========================================
+    // Animation Loop
+    // ========================================
+    function animate() {
+      updatePhases();
+      render();
+      updateStats();
+      requestAnimationFrame(animate);
+    }
+
+    // ========================================
+    // Presets
+    // ========================================
+    function applyPreset(preset) {
+      switch(preset) {
+        case 'sync':
+          K = 5;
+          noise = 0.05;
+          dt = 0.05;
+          freqSpread = 0.1;
+          break;
+        case 'chaos':
+          K = 0.5;
+          noise = 1.5;
+          dt = 0.1;
+          freqSpread = 2;
+          break;
+        case 'waves':
+          K = 2;
+          noise = 0.2;
+          dt = 0.02;
+          freqSpread = 0.5;
+          document.getElementById('initSelect').value = 'waves';
+          break;
+        case 'chimera':
+          K = 1.5;
+          noise = 0;
+          dt = 0.05;
+          freqSpread = 0;
+          topology = 'distance';
+          document.getElementById('topologySelect').value = 'distance';
+          break;
+      }
+      
+      // Update UI
+      document.getElementById('kSlider').value = K;
+      document.getElementById('kVal').textContent = K.toFixed(1);
+      document.getElementById('noiseSlider').value = noise;
+      document.getElementById('noiseVal').textContent = noise.toFixed(2);
+      document.getElementById('speedSlider').value = dt;
+      document.getElementById('speedVal').textContent = dt.toFixed(3);
+      document.getElementById('freqSlider').value = freqSpread;
+      document.getElementById('freqVal').textContent = freqSpread.toFixed(1);
+      
+      init();
+    }
+
+    // ========================================
+    // Recording Functions
+    // ========================================
+    function startRecording() {
+      const stream = canvas.captureStream(30);
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm',
+        videoBitsPerSecond: 2500000
+      });
+      
+      recordedChunks = [];
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `kuramoto_${Date.now()}.webm`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+      
+      mediaRecorder.start();
+      recording = true;
+      document.getElementById('recordBtn').textContent = 'Stop Recording';
+      document.getElementById('recordBtn').style.background = 'linear-gradient(135deg, #f00 0%, #a00 100%)';
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && recording) {
+        mediaRecorder.stop();
+        recording = false;
+        document.getElementById('recordBtn').textContent = 'Record';
+        document.getElementById('recordBtn').style.background = '';
+      }
+    }
+
+    // ========================================
+    // Event Listeners
+    // ========================================
+    document.getElementById('kSlider').addEventListener('input', (e) => {
+      K = parseFloat(e.target.value);
+      document.getElementById('kVal').textContent = K.toFixed(1);
+    });
+
+    document.getElementById('noiseSlider').addEventListener('input', (e) => {
+      noise = parseFloat(e.target.value);
+      document.getElementById('noiseVal').textContent = noise.toFixed(2);
+    });
+
+    document.getElementById('speedSlider').addEventListener('input', (e) => {
+      dt = parseFloat(e.target.value);
+      document.getElementById('speedVal').textContent = dt.toFixed(3);
+    });
+
+    document.getElementById('sizeSlider').addEventListener('input', (e) => {
+      gridSize = parseInt(e.target.value);
+      cellSize = Math.floor(768 / gridSize);
+      document.getElementById('sizeVal').textContent = gridSize;
+      init();
+    });
+
+    document.getElementById('freqSlider').addEventListener('input', (e) => {
+      freqSpread = parseFloat(e.target.value);
+      document.getElementById('freqVal').textContent = freqSpread.toFixed(1);
+      // Regenerate frequencies
+      for (let i = 0; i < omegas.length; i++) {
+        omegas[i] = (Math.random() - 0.5) * freqSpread;
+      }
+    });
+
+    document.getElementById('topologySelect').addEventListener('change', (e) => {
+      topology = e.target.value;
+    });
+
+    document.getElementById('colorSelect').addEventListener('change', (e) => {
+      colorMode = e.target.value;
+    });
+
+    document.getElementById('initSelect').addEventListener('change', (e) => {
+      init();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      init();
+    });
+
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      paused = !paused;
+      document.getElementById('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+    });
+
+    document.getElementById('recordBtn').addEventListener('click', () => {
+      if (recording) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    });
+
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        canvas.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // Mouse interaction
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      renderOverlay(x, y);
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      renderOverlay(-1, -1);
+    });
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const col = Math.floor(x / cellSize);
+      const row = Math.floor(y / cellSize);
+      
+      if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
+        const idx = row * gridSize + col;
+        // Perturb the clicked oscillator
+        phases[idx] = Math.random() * 2 * Math.PI;
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case ' ':
+          e.preventDefault();
+          document.getElementById('pauseBtn').click();
+          break;
+        case 'r':
+          document.getElementById('resetBtn').click();
+          break;
+        case 'f':
+          document.getElementById('fullscreenBtn').click();
+          break;
+        case 's':
+          document.getElementById('recordBtn').click();
+          break;
+      }
+    });
+
+    // ========================================
+    // Initialization
+    // ========================================
+    init();
+    animate();
+  </script>
+</body>
+</html>

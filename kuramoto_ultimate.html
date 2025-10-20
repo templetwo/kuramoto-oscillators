@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuramoto Neural Plasma - Ultimate</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Courier New', monospace;
+      background: radial-gradient(ellipse at center, #0a0a0a 0%, #000 100%);
+      color: #0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+    
+    h1 {
+      margin-bottom: 15px;
+      font-size: 2em;
+      text-shadow: 0 0 20px #0f0, 0 0 40px #0f0;
+      animation: pulse 2s ease-in-out infinite;
+      text-align: center;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; text-shadow: 0 0 30px #0f0, 0 0 60px #0f0, 0 0 90px #0f0; }
+    }
+    
+    #canvasContainer {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      image-rendering: optimizeSpeed;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+    }
+    
+    #mainCanvas {
+      border: 2px solid #0f0;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.5), inset 0 0 30px rgba(0, 255, 0, 0.1);
+      z-index: 1;
+    }
+    
+    #particleCanvas {
+      z-index: 2;
+      pointer-events: none;
+    }
+    
+    #networkCanvas {
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+    
+    #overlayCanvas {
+      z-index: 4;
+      cursor: crosshair;
+    }
+    
+    .control-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      max-width: 1400px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    
+    .control-section {
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.05) 0%, rgba(0, 255, 0, 0.02) 100%);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+    }
+    
+    .control-section:hover {
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 255, 0, 0.05) 100%);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .section-title {
+      font-size: 1.1em;
+      margin-bottom: 12px;
+      text-shadow: 0 0 10px currentColor;
+      border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+      padding-bottom: 5px;
+    }
+    
+    .control-group {
+      margin-bottom: 12px;
+    }
+    
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+    }
+    
+    .value-display {
+      color: #0ff;
+      font-weight: bold;
+      min-width: 70px;
+      text-align: right;
+      text-shadow: 0 0 5px #0ff;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #0f0 0%, #0ff 100%);
+      outline: none;
+      -webkit-appearance: none;
+      border-radius: 3px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    
+    input[type="range"]:hover {
+      opacity: 1;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: radial-gradient(circle, #fff 30%, #0ff 100%);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 15px #0ff;
+      transition: all 0.2s;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 25px #0ff;
+    }
+    
+    select {
+      width: 100%;
+      background: linear-gradient(135deg, #111 0%, #0a0a0a 100%);
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 8px;
+      font-family: 'Courier New', monospace;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    select:hover {
+      background: linear-gradient(135deg, #1a1a1a 0%, #111 100%);
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    }
+    
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 255, 0, 0.05) 100%);
+      color: #0f0;
+      border: 2px solid #0f0;
+      padding: 10px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      text-shadow: 0 0 5px #0f0;
+      transition: all 0.3s;
+      border-radius: 5px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, rgba(0, 255, 0, 0.5) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+    
+    button:hover::before {
+      width: 100%;
+      height: 100%;
+    }
+    
+    button:hover {
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.2) 0%, rgba(0, 255, 0, 0.1) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 255, 0, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button.active {
+      background: linear-gradient(135deg, #0f0 0%, #0a0 100%);
+      color: #000;
+    }
+    
+    .button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      max-width: 1200px;
+      width: 100%;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(0, 255, 255, 0.02) 100%);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #0ff, #0f0, #0ff);
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+    
+    .stat-card:hover::before {
+      opacity: 0.5;
+    }
+    
+    .stat-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+    }
+    
+    .stat-label {
+      font-size: 0.8em;
+      color: #888;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .stat-value {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff;
+    }
+    
+    .layer-indicator {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 10px 0;
+    }
+    
+    .layer-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid #0f0;
+      background: transparent;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    
+    .layer-dot.active {
+      background: #0f0;
+      box-shadow: 0 0 10px #0f0;
+    }
+    
+    #tooltip {
+      position: fixed;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 20, 0, 0.95) 100%);
+      border: 1px solid #0f0;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.85em;
+      pointer-events: none;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+      max-width: 300px;
+    }
+    
+    #tooltip h4 {
+      color: #0ff;
+      margin-bottom: 5px;
+    }
+    
+    .visualization-mode {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    
+    .vis-btn {
+      flex: 1;
+      min-width: 80px;
+      padding: 5px;
+      font-size: 0.8em;
+    }
+    
+    @media (max-width: 768px) {
+      .control-panel {
+        grid-template-columns: 1fr;
+      }
+      
+      .button-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 1.5em;
+      }
+    }
+    
+    /* Glow effect for active elements */
+    @keyframes glow {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.2) drop-shadow(0 0 10px currentColor); }
+    }
+    
+    .glowing {
+      animation: glow 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <h1>⚛️ Kuramoto Neural Plasma ⚛️</h1>
+  
+  <div id="canvasContainer">
+    <canvas id="mainCanvas"></canvas>
+    <canvas id="particleCanvas"></canvas>
+    <canvas id="networkCanvas"></canvas>
+    <canvas id="overlayCanvas"></canvas>
+  </div>
+  
+  <div class="layer-indicator" id="layerIndicator"></div>
+  
+  <div id="tooltip"></div>
+
+  <div class="control-panel">
+    <!-- Dynamics Control -->
+    <div class="control-section">
+      <div class="section-title">🎯 Dynamics</div>
+      
+      <div class="control-group">
+        <label>
+          Coupling (K):
+          <span class="value-display" id="kVal">2.0</span>
+        </label>
+        <input type="range" id="kSlider" min="0" max="20" step="0.1" value="2.0" />
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Cross-Layer (K₂):
+          <span class="value-display" id="k2Val">0.5</span>
+        </label>
+        <input type="range" id="k2Slider" min="0" max="5" step="0.1" value="0.5" />
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Noise (σ):
+          <span class="value-display" id="noiseVal">0.1</span>
+        </label>
+        <input type="range" id="noiseSlider" min="0" max="3" step="0.05" value="0.1" />
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Speed (dt):
+          <span class="value-display" id="speedVal">0.05</span>
+        </label>
+        <input type="range" id="speedSlider" min="0.001" max="0.3" step="0.001" value="0.05" />
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Damping (γ):
+          <span class="value-display" id="dampingVal">0.0</span>
+        </label>
+        <input type="range" id="dampingSlider" min="0" max="1" step="0.01" value="0" />
+      </div>
+    </div>
+
+    <!-- Structure Control -->
+    <div class="control-section">
+      <div class="section-title">🔗 Structure</div>
+      
+      <div class="control-group">
+        <label>
+          Grid Size:
+          <span class="value-display" id="sizeVal">64</span>
+        </label>
+        <input type="range" id="sizeSlider" min="32" max="128" step="8" value="64" />
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Layers:
+          <span class="value-display" id="layersVal">2</span>
+        </label>
+        <input type="range" id="layersSlider" min="1" max="5" step="1" value="2" />
+      </div>
+      
+      <div class="control-group">
+        <label>Topology:</label>
+        <select id="topologySelect">
+          <option value="local4">Local (4-neighbor)</option>
+          <option value="local8" selected>Local (8-neighbor)</option>
+          <option value="distance">Distance-based</option>
+          <option value="smallworld">Small World</option>
+          <option value="fractal">Fractal</option>
+          <option value="global">Global</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label>Initial Pattern:</label>
+        <select id="initSelect">
+          <option value="random" selected>Random</option>
+          <option value="gradient">Gradient</option>
+          <option value="spiral">Spiral</option>
+          <option value="waves">Waves</option>
+          <option value="clusters">Clusters</option>
+          <option value="vortex">Vortex</option>
+          <option value="checkerboard">Checkerboard</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Freq. Spread:
+          <span class="value-display" id="freqVal">0.5</span>
+        </label>
+        <input type="range" id="freqSlider" min="0" max="5" step="0.1" value="0.5" />
+      </div>
+    </div>
+
+    <!-- Visualization Control -->
+    <div class="control-section">
+      <div class="section-title">🎨 Visualization</div>
+      
+      <div class="control-group">
+        <label>Color Scheme:</label>
+        <select id="colorSelect">
+          <option value="quantum" selected>Quantum</option>
+          <option value="plasma">Plasma</option>
+          <option value="neural">Neural</option>
+          <option value="aurora">Aurora</option>
+          <option value="matrix">Matrix</option>
+          <option value="void">Void</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label>Display Mode:</label>
+        <div class="visualization-mode">
+          <button class="vis-btn" id="visPhase">Phase</button>
+          <button class="vis-btn" id="visVelocity">Velocity</button>
+          <button class="vis-btn" id="visCoherence">Coherence</button>
+          <button class="vis-btn" id="visEnergy">Energy</button>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Particles:
+          <span class="value-display" id="particlesVal">100</span>
+        </label>
+        <input type="range" id="particlesSlider" min="0" max="500" step="10" value="100" />
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Network Opacity:
+          <span class="value-display" id="netOpacityVal">0.3</span>
+        </label>
+        <input type="range" id="netOpacitySlider" min="0" max="1" step="0.1" value="0.3" />
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Blur:
+          <span class="value-display" id="blurVal">0</span>
+        </label>
+        <input type="range" id="blurSlider" min="0" max="5" step="0.5" value="0" />
+      </div>
+    </div>
+
+    <!-- Interaction Control -->
+    <div class="control-section">
+      <div class="section-title">⚡ Interaction</div>
+      
+      <div class="control-group">
+        <label>Mouse Mode:</label>
+        <select id="mouseSelect">
+          <option value="perturb">Perturb</option>
+          <option value="sync">Synchronize</option>
+          <option value="freeze">Freeze</option>
+          <option value="heat">Heat</option>
+          <option value="couple">Couple</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Influence Radius:
+          <span class="value-display" id="radiusVal">3</span>
+        </label>
+        <input type="range" id="radiusSlider" min="1" max="10" step="1" value="3" />
+      </div>
+      
+      <div class="control-group">
+        <label>Presets:</label>
+        <div class="button-grid">
+          <button onclick="applyPreset('sync')">🔄 Sync</button>
+          <button onclick="applyPreset('chaos')">🌪️ Chaos</button>
+          <button onclick="applyPreset('chimera')">🎭 Chimera</button>
+          <button onclick="applyPreset('quantum')">⚛️ Quantum</button>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <div class="button-grid">
+          <button id="resetBtn">🔄 Reset</button>
+          <button id="pauseBtn">⏸️ Pause</button>
+          <button id="recordBtn">⏺️ Record</button>
+          <button id="fullscreenBtn">⛶ Fullscreen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- External Control -->
+    <div class="control-section">
+      <div class="section-title">🌊 External Fields</div>
+      
+      <div class="control-group">
+        <label>
+          Drive Amplitude:
+          <span class="value-display" id="driveVal">0.0</span>
+        </label>
+        <input type="range" id="driveSlider" min="0" max="2" step="0.1" value="0" />
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Drive Frequency:
+          <span class="value-display" id="driveFreqVal">1.0</span>
+        </label>
+        <input type="range" id="driveFreqSlider" min="0.1" max="10" step="0.1" value="1.0" />
+      </div>
+      
+      <div class="control-group">
+        <label>Field Type:</label>
+        <select id="fieldSelect">
+          <option value="none">None</option>
+          <option value="uniform">Uniform</option>
+          <option value="gradient">Gradient</option>
+          <option value="rotating">Rotating</option>
+          <option value="pulsing">Pulsing</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label>
+          Gravity:
+          <span class="value-display" id="gravityVal">0.0</span>
+        </label>
+        <input type="range" id="gravitySlider" min="-1" max="1" step="0.1" value="0" />
+      </div>
+    </div>
+
+    <!-- Analysis -->
+    <div class="control-section">
+      <div class="section-title">📊 Analysis</div>
+      
+      <div class="control-group">
+        <label>
+          Sample Rate:
+          <span class="value-display" id="sampleVal">10</span>
+        </label>
+        <input type="range" id="sampleSlider" min="1" max="60" step="1" value="10" />
+      </div>
+      
+      <div class="control-group">
+        <button id="exportBtn">📊 Export Data</button>
+      </div>
+      
+      <div class="control-group">
+        <button id="spectrogramBtn">🌈 Spectrogram</button>
+      </div>
+      
+      <div class="control-group">
+        <button id="phaseMapBtn">🗺️ Phase Map</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-label">Order (R)</div>
+      <div class="stat-value" id="rVal">0.000</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Phase (ψ)</div>
+      <div class="stat-value" id="psiVal">0.00</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Coherence</div>
+      <div class="stat-value" id="cohVal">0%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Entropy</div>
+      <div class="stat-value" id="entVal">0.00</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Energy</div>
+      <div class="stat-value" id="energyVal">0.00</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Clusters</div>
+      <div class="stat-value" id="clustersVal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Wave Speed</div>
+      <div class="stat-value" id="waveVal">0.00</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">FPS</div>
+      <div class="stat-value" id="fpsVal">0</div>
+    </div>
+  </div>
+
+  <script>
+    // ========================================
+    // Core Configuration
+    // ========================================
+    const mainCanvas = document.getElementById('mainCanvas');
+    const mainCtx = mainCanvas.getContext('2d', { alpha: false });
+    const particleCanvas = document.getElementById('particleCanvas');
+    const particleCtx = particleCanvas.getContext('2d');
+    const networkCanvas = document.getElementById('networkCanvas');
+    const networkCtx = networkCanvas.getContext('2d');
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    const overlayCtx = overlayCanvas.getContext('2d');
+    
+    let gridSize = 64;
+    let cellSize = 10;
+    let numLayers = 2;
+    let currentLayer = 0;
+    
+    // Parameters
+    let K = 2.0;           // Intra-layer coupling
+    let K2 = 0.5;          // Inter-layer coupling
+    let noise = 0.1;
+    let dt = 0.05;
+    let damping = 0;
+    let topology = 'local8';
+    let colorScheme = 'quantum';
+    let displayMode = 'phase';
+    let freqSpread = 0.5;
+    let mouseMode = 'perturb';
+    let influenceRadius = 3;
+    let numParticles = 100;
+    let networkOpacity = 0.3;
+    let blurAmount = 0;
+    
+    // External fields
+    let driveAmplitude = 0;
+    let driveFrequency = 1.0;
+    let fieldType = 'none';
+    let gravity = 0;
+    
+    // State
+    let paused = false;
+    let recording = false;
+    let iterations = 0;
+    let time = 0;
+    
+    // Multi-layer oscillator arrays
+    let layers = [];
+    let particles = [];
+    let networkConnections = [];
+    
+    // Performance
+    let imageData = null;
+    let pixelBuffer = null;
+    let fps = 0;
+    let lastTime = performance.now();
+    let frameCount = 0;
+    
+    // Analysis
+    let dataHistory = [];
+    let sampleRate = 10;
+    
+    // ========================================
+    // Initialization
+    // ========================================
+    function init() {
+      const canvasSize = gridSize * cellSize;
+      
+      // Set canvas dimensions
+      [mainCanvas, particleCanvas, networkCanvas, overlayCanvas].forEach(canvas => {
+        canvas.width = canvasSize;
+        canvas.height = canvasSize;
+        canvas.style.width = `${canvasSize}px`;
+        canvas.style.height = `${canvasSize}px`;
+      });
+      
+      // Initialize image buffer
+      imageData = mainCtx.createImageData(canvasSize, canvasSize);
+      pixelBuffer = new Uint32Array(imageData.data.buffer);
+      
+      // Initialize layers
+      layers = [];
+      for (let l = 0; l < numLayers; l++) {
+        const layer = {
+          phases: [],
+          omegas: [],
+          velocities: [],
+          coupling: []
+        };
+        
+        const N = gridSize * gridSize;
+        const initMode = document.getElementById('initSelect').value;
+        
+        for (let i = 0; i < N; i++) {
+          const row = Math.floor(i / gridSize);
+          const col = i % gridSize;
+          
+          // Initial phase
+          let phase = getInitialPhase(initMode, row, col, l);
+          layer.phases.push(phase);
+          
+          // Natural frequency with layer-dependent offset
+          layer.omegas.push((Math.random() - 0.5) * freqSpread + l * 0.1);
+          
+          // Initial velocity
+          layer.velocities.push(0);
+          
+          // Coupling matrix (sparse)
+          layer.coupling.push([]);
+        }
+        
+        layers.push(layer);
+      }
+      
+      // Initialize network topology
+      initializeTopology();
+      
+      // Initialize particles
+      initializeParticles();
+      
+      // Update layer indicator
+      updateLayerIndicator();
+      
+      iterations = 0;
+      time = 0;
+      dataHistory = [];
+    }
+    
+    function getInitialPhase(mode, row, col, layer) {
+      const cx = gridSize / 2;
+      const cy = gridSize / 2;
+      const layerOffset = layer * Math.PI / 4;
+      
+      switch(mode) {
+        case 'gradient':
+          return (row / gridSize) * 2 * Math.PI + layerOffset;
+        
+        case 'spiral':
+          const angle = Math.atan2(row - cy, col - cx);
+          const dist = Math.sqrt((row - cx) ** 2 + (col - cy) ** 2);
+          return angle + dist * 0.1 + layerOffset;
+        
+        case 'waves':
+          return Math.sin(col * 0.3) * Math.PI + Math.cos(row * 0.3) * Math.PI + layerOffset;
+        
+        case 'vortex':
+          const vAngle = Math.atan2(row - cy, col - cx);
+          const vDist = Math.sqrt((row - cx) ** 2 + (col - cy) ** 2);
+          return vAngle * 2 + vDist * 0.05 + layerOffset;
+        
+        case 'clusters':
+          const cluster = Math.floor(Math.random() * 5);
+          return cluster * (2 * Math.PI / 5) + (Math.random() - 0.5) * 0.5 + layerOffset;
+        
+        case 'checkerboard':
+          return ((row + col) % 2) * Math.PI + (Math.random() - 0.5) * 0.5 + layerOffset;
+        
+        default: // random
+          return Math.random() * 2 * Math.PI;
+      }
+    }
+    
+    function initializeTopology() {
+      networkConnections = [];
+      const N = gridSize * gridSize;
+      
+      for (let l = 0; l < numLayers; l++) {
+        for (let i = 0; i < N; i++) {
+          const row = Math.floor(i / gridSize);
+          const col = i % gridSize;
+          layers[l].coupling[i] = [];
+          
+          switch(topology) {
+            case 'local4':
+              addLocalConnections(l, i, row, col, [[-1,0], [1,0], [0,-1], [0,1]]);
+              break;
+            
+            case 'local8':
+              const dirs8 = [];
+              for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                  if (dr !== 0 || dc !== 0) dirs8.push([dr, dc]);
+                }
+              }
+              addLocalConnections(l, i, row, col, dirs8);
+              break;
+            
+            case 'distance':
+              addDistanceConnections(l, i, row, col);
+              break;
+            
+            case 'smallworld':
+              addSmallWorldConnections(l, i, row, col);
+              break;
+            
+            case 'fractal':
+              addFractalConnections(l, i, row, col);
+              break;
+            
+            case 'global':
+              for (let j = 0; j < N; j++) {
+                if (i !== j) {
+                  layers[l].coupling[i].push({ idx: j, weight: 1.0 / N });
+                }
+              }
+              break;
+          }
+        }
+      }
+    }
+    
+    function addLocalConnections(layer, idx, row, col, directions) {
+      for (const [dr, dc] of directions) {
+        const newRow = row + dr;
+        const newCol = col + dc;
+        
+        if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+          const j = newRow * gridSize + newCol;
+          const weight = 1.0 / directions.length;
+          layers[layer].coupling[idx].push({ idx: j, weight });
+          
+          // Store for visualization
+          if (layer === currentLayer && Math.random() < 0.1) {
+            networkConnections.push({
+              from: { row, col },
+              to: { row: newRow, col: newCol },
+              weight
+            });
+          }
+        }
+      }
+    }
+    
+    function addDistanceConnections(layer, idx, row, col) {
+      const sigma = gridSize / 6;
+      const N = gridSize * gridSize;
+      let totalWeight = 0;
+      
+      for (let j = 0; j < N; j++) {
+        if (idx === j) continue;
+        
+        const jRow = Math.floor(j / gridSize);
+        const jCol = j % gridSize;
+        const dist = Math.sqrt((row - jRow) ** 2 + (col - jCol) ** 2);
+        
+        if (dist < sigma * 2) {
+          const weight = Math.exp(-dist * dist / (2 * sigma * sigma));
+          layers[layer].coupling[idx].push({ idx: j, weight });
+          totalWeight += weight;
+        }
+      }
+      
+      // Normalize weights
+      if (totalWeight > 0) {
+        for (let conn of layers[layer].coupling[idx]) {
+          conn.weight /= totalWeight;
+        }
+      }
+    }
+    
+    function addSmallWorldConnections(layer, idx, row, col) {
+      // Start with local connections
+      addLocalConnections(layer, idx, row, col, [[-1,0], [1,0], [0,-1], [0,1]]);
+      
+      // Add random long-range connections
+      if (Math.random() < 0.1) {
+        const N = gridSize * gridSize;
+        const j = Math.floor(Math.random() * N);
+        if (j !== idx) {
+          layers[layer].coupling[idx].push({ idx: j, weight: 0.5 });
+        }
+      }
+    }
+    
+    function addFractalConnections(layer, idx, row, col) {
+      const N = gridSize * gridSize;
+      const level = Math.floor(Math.log2(gridSize));
+      
+      for (let l = 0; l < level; l++) {
+        const step = Math.pow(2, l);
+        const directions = [
+          [step, 0], [-step, 0], [0, step], [0, -step]
+        ];
+        
+        for (const [dr, dc] of directions) {
+          const newRow = row + dr;
+          const newCol = col + dc;
+          
+          if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+            const j = newRow * gridSize + newCol;
+            const weight = 1.0 / Math.pow(2, l + 1);
+            layers[layer].coupling[idx].push({ idx: j, weight });
+          }
+        }
+      }
+    }
+    
+    function initializeParticles() {
+      particles = [];
+      for (let i = 0; i < numParticles; i++) {
+        particles.push({
+          x: Math.random() * gridSize * cellSize,
+          y: Math.random() * gridSize * cellSize,
+          vx: 0,
+          vy: 0,
+          phase: Math.random() * 2 * Math.PI,
+          life: 1.0,
+          layer: Math.floor(Math.random() * numLayers)
+        });
+      }
+    }
+    
+    // ========================================
+    // Dynamics Update
+    // ========================================
+    function updateDynamics() {
+      if (paused) return;
+      
+      const N = gridSize * gridSize;
+      
+      // Calculate derivatives for all layers
+      const derivatives = [];
+      for (let l = 0; l < numLayers; l++) {
+        derivatives.push(calculateLayerDerivatives(l));
+      }
+      
+      // Update phases using Euler method with damping
+      for (let l = 0; l < numLayers; l++) {
+        for (let i = 0; i < N; i++) {
+          // Update velocity with damping
+          layers[l].velocities[i] = (1 - damping) * layers[l].velocities[i] + derivatives[l][i] * dt;
+          
+          // Update phase
+          layers[l].phases[i] += layers[l].velocities[i];
+          
+          // Wrap phase
+          layers[l].phases[i] = layers[l].phases[i] % (2 * Math.PI);
+          if (layers[l].phases[i] < 0) layers[l].phases[i] += 2 * Math.PI;
+        }
+      }
+      
+      // Update particles
+      updateParticles();
+      
+      iterations++;
+      time += dt;
+    }
+    
+    function calculateLayerDerivatives(layerIdx) {
+      const layer = layers[layerIdx];
+      const N = gridSize * gridSize;
+      const derivatives = [];
+      
+      for (let i = 0; i < N; i++) {
+        let intraLayerCoupling = 0;
+        let interLayerCoupling = 0;
+        
+        // Intra-layer coupling
+        for (const conn of layer.coupling[i]) {
+          intraLayerCoupling += conn.weight * Math.sin(layer.phases[conn.idx] - layer.phases[i]);
+        }
+        
+        // Inter-layer coupling
+        if (numLayers > 1) {
+          for (let l = 0; l < numLayers; l++) {
+            if (l !== layerIdx) {
+              interLayerCoupling += Math.sin(layers[l].phases[i] - layer.phases[i]);
+            }
+          }
+          interLayerCoupling *= K2 / (numLayers - 1);
+        }
+        
+        // External field
+        let externalField = 0;
+        if (fieldType !== 'none') {
+          externalField = calculateExternalField(i, layerIdx);
+        }
+        
+        // Noise term
+        const noiseTerm = (Math.random() - 0.5) * noise;
+        
+        // Total derivative
+        const derivative = layer.omegas[i] + 
+                          K * intraLayerCoupling + 
+                          interLayerCoupling + 
+                          externalField + 
+                          noiseTerm;
+        
+        derivatives.push(derivative);
+      }
+      
+      return derivatives;
+    }
+    
+    function calculateExternalField(idx, layerIdx) {
+      const row = Math.floor(idx / gridSize);
+      const col = idx % gridSize;
+      const cx = gridSize / 2;
+      const cy = gridSize / 2;
+      
+      let field = 0;
+      
+      switch(fieldType) {
+        case 'uniform':
+          field = driveAmplitude * Math.sin(driveFrequency * time);
+          break;
+        
+        case 'gradient':
+          const gradientStrength = (row / gridSize - 0.5) * 2;
+          field = driveAmplitude * gradientStrength * Math.sin(driveFrequency * time);
+          break;
+        
+        case 'rotating':
+          const angle = Math.atan2(row - cy, col - cx);
+          field = driveAmplitude * Math.sin(angle - driveFrequency * time);
+          break;
+        
+        case 'pulsing':
+          const dist = Math.sqrt((row - cx) ** 2 + (col - cy) ** 2) / gridSize;
+          field = driveAmplitude * Math.sin(driveFrequency * time) * Math.exp(-dist * 2);
+          break;
+      }
+      
+      // Add gravity effect (phase gradient)
+      field += gravity * (row - cy) / gridSize;
+      
+      return field;
+    }
+    
+    function updateParticles() {
+      for (let p of particles) {
+        // Get grid position
+        const col = Math.floor(p.x / cellSize);
+        const row = Math.floor(p.y / cellSize);
+        
+        if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
+          const idx = row * gridSize + col;
+          const layer = layers[p.layer];
+          
+          // Particle follows phase gradient
+          const phaseGradX = getPhaseGradient(layer, row, col, 'x');
+          const phaseGradY = getPhaseGradient(layer, row, col, 'y');
+          
+          // Update velocity based on phase gradient
+          p.vx += phaseGradX * 0.5;
+          p.vy += phaseGradY * 0.5;
+          
+          // Damping
+          p.vx *= 0.95;
+          p.vy *= 0.95;
+          
+          // Update position
+          p.x += p.vx;
+          p.y += p.vy;
+          
+          // Wrap around
+          if (p.x < 0) p.x += gridSize * cellSize;
+          if (p.x >= gridSize * cellSize) p.x -= gridSize * cellSize;
+          if (p.y < 0) p.y += gridSize * cellSize;
+          if (p.y >= gridSize * cellSize) p.y -= gridSize * cellSize;
+          
+          // Update phase to match local oscillator
+          p.phase = layer.phases[idx];
+          
+          // Regenerate dead particles
+          p.life -= 0.005;
+          if (p.life <= 0) {
+            p.x = Math.random() * gridSize * cellSize;
+            p.y = Math.random() * gridSize * cellSize;
+            p.life = 1.0;
+            p.layer = Math.floor(Math.random() * numLayers);
+          }
+        }
+      }
+    }
+    
+    function getPhaseGradient(layer, row, col, direction) {
+      const idx = row * gridSize + col;
+      let gradient = 0;
+      
+      if (direction === 'x') {
+        if (col > 0 && col < gridSize - 1) {
+          const leftIdx = row * gridSize + (col - 1);
+          const rightIdx = row * gridSize + (col + 1);
+          gradient = Math.sin(layer.phases[rightIdx] - layer.phases[leftIdx]);
+        }
+      } else {
+        if (row > 0 && row < gridSize - 1) {
+          const topIdx = (row - 1) * gridSize + col;
+          const bottomIdx = (row + 1) * gridSize + col;
+          gradient = Math.sin(layer.phases[bottomIdx] - layer.phases[topIdx]);
+        }
+      }
+      
+      return gradient;
+    }
+    
+    // ========================================
+    // Rendering
+    // ========================================
+    function render() {
+      renderMainCanvas();
+      renderParticles();
+      renderNetwork();
+      updateStats();
+    }
+    
+    function renderMainCanvas() {
+      const layer = layers[currentLayer];
+      const colorFunc = getColorFunction();
+      
+      if (blurAmount > 0) {
+        mainCanvas.style.filter = `blur(${blurAmount}px)`;
+      } else {
+        mainCanvas.style.filter = 'none';
+      }
+      
+      for (let i = 0; i < gridSize * gridSize; i++) {
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
+        
+        let value = 0;
+        switch(displayMode) {
+          case 'phase':
+            value = layer.phases[i] / (2 * Math.PI);
+            break;
+          case 'velocity':
+            value = (layer.velocities[i] + 2) / 4;
+            break;
+          case 'coherence':
+            value = getLocalCoherence(currentLayer, i);
+            break;
+          case 'energy':
+            value = Math.abs(layer.velocities[i]) + Math.abs(Math.sin(layer.phases[i]));
+            value = Math.min(1, value / 2);
+            break;
+        }
+        
+        const [r, g, b] = colorFunc(value, layer.phases[i]);
+        
+        // Fill cell
+        for (let py = 0; py < cellSize; py++) {
+          for (let px = 0; px < cellSize; px++) {
+            const x = col * cellSize + px;
+            const y = row * cellSize + py;
+            const idx = y * (gridSize * cellSize) + x;
+            pixelBuffer[idx] = (255 << 24) | (b << 16) | (g << 8) | r;
+          }
+        }
+      }
+      
+      mainCtx.putImageData(imageData, 0, 0);
+    }
+    
+    function renderParticles() {
+      particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+      
+      for (let p of particles) {
+        const hue = (p.phase / (2 * Math.PI)) * 360;
+        const alpha = p.life * 0.8;
+        
+        particleCtx.fillStyle = `hsla(${hue}, 100%, 60%, ${alpha})`;
+        particleCtx.shadowBlur = 10;
+        particleCtx.shadowColor = `hsla(${hue}, 100%, 60%, ${alpha * 0.5})`;
+        
+        particleCtx.beginPath();
+        particleCtx.arc(p.x, p.y, 2 + p.life * 2, 0, 2 * Math.PI);
+        particleCtx.fill();
+        
+        // Trail
+        particleCtx.strokeStyle = `hsla(${hue}, 100%, 60%, ${alpha * 0.3})`;
+        particleCtx.lineWidth = 1;
+        particleCtx.beginPath();
+        particleCtx.moveTo(p.x, p.y);
+        particleCtx.lineTo(p.x - p.vx * 5, p.y - p.vy * 5);
+        particleCtx.stroke();
+      }
+      
+      particleCtx.shadowBlur = 0;
+    }
+    
+    function renderNetwork() {
+      networkCanvas.style.opacity = networkOpacity;
+      if (networkOpacity === 0) return;
+      
+      networkCtx.clearRect(0, 0, networkCanvas.width, networkCanvas.height);
+      networkCtx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+      networkCtx.lineWidth = 0.5;
+      
+      for (let conn of networkConnections) {
+        const x1 = conn.from.col * cellSize + cellSize / 2;
+        const y1 = conn.from.row * cellSize + cellSize / 2;
+        const x2 = conn.to.col * cellSize + cellSize / 2;
+        const y2 = conn.to.row * cellSize + cellSize / 2;
+        
+        const gradient = networkCtx.createLinearGradient(x1, y1, x2, y2);
+        gradient.addColorStop(0, 'rgba(0, 255, 255, 0.2)');
+        gradient.addColorStop(1, 'rgba(0, 255, 0, 0.2)');
+        
+        networkCtx.strokeStyle = gradient;
+        networkCtx.beginPath();
+        networkCtx.moveTo(x1, y1);
+        networkCtx.lineTo(x2, y2);
+        networkCtx.stroke();
+      }
+    }
+    
+    function getColorFunction() {
+      const schemes = {
+        quantum: (value, phase) => {
+          const r = Math.floor(255 * (0.5 + 0.5 * Math.sin(phase)));
+          const g = Math.floor(255 * (0.5 + 0.5 * Math.sin(phase + 2 * Math.PI / 3)));
+          const b = Math.floor(255 * (0.5 + 0.5 * Math.sin(phase + 4 * Math.PI / 3)));
+          return [r * value, g * value, b * value];
+        },
+        plasma: (value, phase) => {
+          const t = value;
+          const r = Math.floor(255 * (0.5 + 0.5 * Math.sin(Math.PI * t)));
+          const g = Math.floor(255 * (0.5 + 0.5 * Math.sin(Math.PI * (t + 0.33))));
+          const b = Math.floor(255 * (0.5 + 0.5 * Math.sin(Math.PI * (t + 0.66))));
+          return [r, g, b];
+        },
+        neural: (value, phase) => {
+          const intensity = value;
+          const pulse = 0.5 + 0.5 * Math.sin(phase);
+          return [
+            Math.floor(100 * intensity),
+            Math.floor(200 * intensity * pulse),
+            Math.floor(255 * intensity)
+          ];
+        },
+        aurora: (value, phase) => {
+          const h = phase / (2 * Math.PI);
+          const s = 1;
+          const l = 0.3 + value * 0.4;
+          return hslToRgb(h, s, l);
+        },
+        matrix: (value, phase) => {
+          const intensity = value * (0.7 + 0.3 * Math.sin(phase));
+          return [0, Math.floor(255 * intensity), Math.floor(50 * intensity)];
+        },
+        void: (value, phase) => {
+          const intensity = value * (0.5 + 0.5 * Math.cos(phase));
+          const r = Math.floor(100 * intensity);
+          const g = Math.floor(50 * intensity);
+          const b = Math.floor(150 * intensity);
+          return [r, g, b];
+        }
+      };
+      
+      return schemes[colorScheme] || schemes.quantum;
+    }
+    
+    function hslToRgb(h, s, l) {
+      let r, g, b;
+      
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+        
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+      
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    }
+    
+    // ========================================
+    // Analysis Functions
+    // ========================================
+    function getLocalCoherence(layerIdx, idx) {
+      const layer = layers[layerIdx];
+      const row = Math.floor(idx / gridSize);
+      const col = idx % gridSize;
+      
+      let sumCos = 0;
+      let sumSin = 0;
+      let count = 0;
+      
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          const newRow = row + dr;
+          const newCol = col + dc;
+          
+          if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+            const j = newRow * gridSize + newCol;
+            sumCos += Math.cos(layer.phases[j]);
+            sumSin += Math.sin(layer.phases[j]);
+            count++;
+          }
+        }
+      }
+      
+      if (count === 0) return 0;
+      return Math.sqrt(sumCos * sumCos + sumSin * sumSin) / count;
+    }
+    
+    function calculateOrderParameter(layerIdx = -1) {
+      let sumCos = 0;
+      let sumSin = 0;
+      let count = 0;
+      
+      const layersToCheck = layerIdx >= 0 ? [layers[layerIdx]] : layers;
+      
+      for (let layer of layersToCheck) {
+        for (let phase of layer.phases) {
+          sumCos += Math.cos(phase);
+          sumSin += Math.sin(phase);
+          count++;
+        }
+      }
+      
+      const R = Math.sqrt(sumCos * sumCos + sumSin * sumSin) / count;
+      const psi = Math.atan2(sumSin, sumCos);
+      
+      return { R, psi };
+    }
+    
+    function calculateEntropy() {
+      const bins = 20;
+      const histogram = new Array(bins).fill(0);
+      let count = 0;
+      
+      for (let layer of layers) {
+        for (let phase of layer.phases) {
+          const bin = Math.floor(phase / (2 * Math.PI) * bins);
+          histogram[Math.min(bin, bins - 1)]++;
+          count++;
+        }
+      }
+      
+      let entropy = 0;
+      for (let h of histogram) {
+        if (h > 0) {
+          const p = h / count;
+          entropy -= p * Math.log(p);
+        }
+      }
+      
+      return entropy / Math.log(bins);
+    }
+    
+    function calculateEnergy() {
+      let energy = 0;
+      let count = 0;
+      
+      for (let layer of layers) {
+        for (let i = 0; i < layer.velocities.length; i++) {
+          energy += Math.abs(layer.velocities[i]) + Math.abs(layer.omegas[i]);
+          count++;
+        }
+      }
+      
+      return energy / count;
+    }
+    
+    function countClusters() {
+      const layer = layers[currentLayer];
+      const threshold = 0.2;
+      const visited = new Set();
+      let clusters = 0;
+      
+      for (let i = 0; i < layer.phases.length; i++) {
+        if (!visited.has(i)) {
+          const cluster = [];
+          const queue = [i];
+          
+          while (queue.length > 0) {
+            const idx = queue.shift();
+            if (visited.has(idx)) continue;
+            
+            visited.add(idx);
+            cluster.push(idx);
+            
+            const row = Math.floor(idx / gridSize);
+            const col = idx % gridSize;
+            
+            for (let dr = -1; dr <= 1; dr++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue;
+                
+                const newRow = row + dr;
+                const newCol = col + dc;
+                
+                if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+                  const j = newRow * gridSize + newCol;
+                  
+                  if (!visited.has(j)) {
+                    const phaseDiff = Math.abs(layer.phases[idx] - layer.phases[j]);
+                    if (phaseDiff < threshold || phaseDiff > 2 * Math.PI - threshold) {
+                      queue.push(j);
+                    }
+                  }
+                }
+              }
+            }
+          }
+          
+          if (cluster.length > 5) clusters++;
+        }
+      }
+      
+      return clusters;
+    }
+    
+    function estimateWaveSpeed() {
+      if (dataHistory.length < 2) return 0;
+      
+      const current = dataHistory[dataHistory.length - 1];
+      const previous = dataHistory[dataHistory.length - 2];
+      
+      let totalShift = 0;
+      let count = 0;
+      
+      for (let i = 0; i < current.phases.length; i++) {
+        const shift = current.phases[i] - previous.phases[i];
+        if (Math.abs(shift) < Math.PI) {
+          totalShift += shift;
+          count++;
+        }
+      }
+      
+      return count > 0 ? totalShift / count / dt : 0;
+    }
+    
+    // ========================================
+    // UI Updates
+    // ========================================
+    function updateStats() {
+      const { R, psi } = calculateOrderParameter();
+      const entropy = calculateEntropy();
+      const energy = calculateEnergy();
+      const clusters = countClusters();
+      const waveSpeed = estimateWaveSpeed();
+      
+      document.getElementById('rVal').textContent = R.toFixed(3);
+      document.getElementById('psiVal').textContent = psi.toFixed(2);
+      document.getElementById('cohVal').textContent = Math.round(R * 100) + '%';
+      document.getElementById('entVal').textContent = entropy.toFixed(2);
+      document.getElementById('energyVal').textContent = energy.toFixed(2);
+      document.getElementById('clustersVal').textContent = clusters;
+      document.getElementById('waveVal').textContent = waveSpeed.toFixed(2);
+      
+      // FPS
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fps = Math.round(frameCount * 1000 / (now - lastTime));
+        document.getElementById('fpsVal').textContent = fps;
+        frameCount = 0;
+        lastTime = now;
+      }
+      
+      // Data history for analysis
+      if (iterations % sampleRate === 0) {
+        dataHistory.push({
+          time: time,
+          R: R,
+          psi: psi,
+          entropy: entropy,
+          phases: [...layers[currentLayer].phases]
+        });
+        
+        if (dataHistory.length > 100) {
+          dataHistory.shift();
+        }
+      }
+    }
+    
+    function updateLayerIndicator() {
+      const indicator = document.getElementById('layerIndicator');
+      indicator.innerHTML = '';
+      
+      for (let i = 0; i < numLayers; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'layer-dot';
+        if (i === currentLayer) dot.classList.add('active');
+        dot.onclick = () => {
+          currentLayer = i;
+          updateLayerIndicator();
+        };
+        indicator.appendChild(dot);
+      }
+    }
+    
+    // ========================================
+    // Presets
+    // ========================================
+    function applyPreset(preset) {
+      switch(preset) {
+        case 'sync':
+          K = 5;
+          K2 = 1;
+          noise = 0.05;
+          dt = 0.05;
+          damping = 0.1;
+          freqSpread = 0.1;
+          break;
+        
+        case 'chaos':
+          K = 0.5;
+          K2 = 0.1;
+          noise = 2;
+          dt = 0.1;
+          damping = 0;
+          freqSpread = 3;
+          break;
+        
+        case 'chimera':
+          K = 2;
+          K2 = 0;
+          noise = 0;
+          dt = 0.05;
+          damping = 0;
+          freqSpread = 0;
+          topology = 'distance';
+          document.getElementById('topologySelect').value = 'distance';
+          break;
+        
+        case 'quantum':
+          K = 3;
+          K2 = 0.8;
+          noise = 0.3;
+          dt = 0.02;
+          damping = 0.05;
+          freqSpread = 1;
+          numParticles = 200;
+          colorScheme = 'quantum';
+          document.getElementById('colorSelect').value = 'quantum';
+          break;
+      }
+      
+      // Update UI
+      document.getElementById('kSlider').value = K;
+      document.getElementById('kVal').textContent = K.toFixed(1);
+      document.getElementById('k2Slider').value = K2;
+      document.getElementById('k2Val').textContent = K2.toFixed(1);
+      document.getElementById('noiseSlider').value = noise;
+      document.getElementById('noiseVal').textContent = noise.toFixed(2);
+      document.getElementById('speedSlider').value = dt;
+      document.getElementById('speedVal').textContent = dt.toFixed(3);
+      document.getElementById('dampingSlider').value = damping;
+      document.getElementById('dampingVal').textContent = damping.toFixed(2);
+      document.getElementById('freqSlider').value = freqSpread;
+      document.getElementById('freqVal').textContent = freqSpread.toFixed(1);
+      document.getElementById('particlesSlider').value = numParticles;
+      document.getElementById('particlesVal').textContent = numParticles;
+      
+      init();
+    }
+    
+    // ========================================
+    // Animation Loop
+    // ========================================
+    function animate() {
+      updateDynamics();
+      render();
+      requestAnimationFrame(animate);
+    }
+    
+    // ========================================
+    // Event Listeners
+    // ========================================
+    
+    // Dynamics controls
+    document.getElementById('kSlider').addEventListener('input', e => {
+      K = parseFloat(e.target.value);
+      document.getElementById('kVal').textContent = K.toFixed(1);
+    });
+    
+    document.getElementById('k2Slider').addEventListener('input', e => {
+      K2 = parseFloat(e.target.value);
+      document.getElementById('k2Val').textContent = K2.toFixed(1);
+    });
+    
+    document.getElementById('noiseSlider').addEventListener('input', e => {
+      noise = parseFloat(e.target.value);
+      document.getElementById('noiseVal').textContent = noise.toFixed(2);
+    });
+    
+    document.getElementById('speedSlider').addEventListener('input', e => {
+      dt = parseFloat(e.target.value);
+      document.getElementById('speedVal').textContent = dt.toFixed(3);
+    });
+    
+    document.getElementById('dampingSlider').addEventListener('input', e => {
+      damping = parseFloat(e.target.value);
+      document.getElementById('dampingVal').textContent = damping.toFixed(2);
+    });
+    
+    // Structure controls
+    document.getElementById('sizeSlider').addEventListener('input', e => {
+      gridSize = parseInt(e.target.value);
+      cellSize = Math.floor(800 / gridSize);
+      document.getElementById('sizeVal').textContent = gridSize;
+      init();
+    });
+    
+    document.getElementById('layersSlider').addEventListener('input', e => {
+      numLayers = parseInt(e.target.value);
+      document.getElementById('layersVal').textContent = numLayers;
+      currentLayer = 0;
+      init();
+    });
+    
+    document.getElementById('freqSlider').addEventListener('input', e => {
+      freqSpread = parseFloat(e.target.value);
+      document.getElementById('freqVal').textContent = freqSpread.toFixed(1);
+      // Update frequencies
+      for (let layer of layers) {
+        for (let i = 0; i < layer.omegas.length; i++) {
+          layer.omegas[i] = (Math.random() - 0.5) * freqSpread;
+        }
+      }
+    });
+    
+    document.getElementById('topologySelect').addEventListener('change', e => {
+      topology = e.target.value;
+      initializeTopology();
+    });
+    
+    document.getElementById('initSelect').addEventListener('change', init);
+    
+    // Visualization controls
+    document.getElementById('colorSelect').addEventListener('change', e => {
+      colorScheme = e.target.value;
+    });
+    
+    document.getElementById('particlesSlider').addEventListener('input', e => {
+      numParticles = parseInt(e.target.value);
+      document.getElementById('particlesVal').textContent = numParticles;
+      initializeParticles();
+    });
+    
+    document.getElementById('netOpacitySlider').addEventListener('input', e => {
+      networkOpacity = parseFloat(e.target.value);
+      document.getElementById('netOpacityVal').textContent = networkOpacity.toFixed(1);
+    });
+    
+    document.getElementById('blurSlider').addEventListener('input', e => {
+      blurAmount = parseFloat(e.target.value);
+      document.getElementById('blurVal').textContent = blurAmount;
+    });
+    
+    // Display mode buttons
+    document.getElementById('visPhase').addEventListener('click', () => {
+      displayMode = 'phase';
+      document.querySelectorAll('.vis-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('visPhase').classList.add('active');
+    });
+    
+    document.getElementById('visVelocity').addEventListener('click', () => {
+      displayMode = 'velocity';
+      document.querySelectorAll('.vis-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('visVelocity').classList.add('active');
+    });
+    
+    document.getElementById('visCoherence').addEventListener('click', () => {
+      displayMode = 'coherence';
+      document.querySelectorAll('.vis-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('visCoherence').classList.add('active');
+    });
+    
+    document.getElementById('visEnergy').addEventListener('click', () => {
+      displayMode = 'energy';
+      document.querySelectorAll('.vis-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('visEnergy').classList.add('active');
+    });
+    
+    // External field controls
+    document.getElementById('driveSlider').addEventListener('input', e => {
+      driveAmplitude = parseFloat(e.target.value);
+      document.getElementById('driveVal').textContent = driveAmplitude.toFixed(1);
+    });
+    
+    document.getElementById('driveFreqSlider').addEventListener('input', e => {
+      driveFrequency = parseFloat(e.target.value);
+      document.getElementById('driveFreqVal').textContent = driveFrequency.toFixed(1);
+    });
+    
+    document.getElementById('fieldSelect').addEventListener('change', e => {
+      fieldType = e.target.value;
+    });
+    
+    document.getElementById('gravitySlider').addEventListener('input', e => {
+      gravity = parseFloat(e.target.value);
+      document.getElementById('gravityVal').textContent = gravity.toFixed(1);
+    });
+    
+    // Interaction controls
+    document.getElementById('mouseSelect').addEventListener('change', e => {
+      mouseMode = e.target.value;
+    });
+    
+    document.getElementById('radiusSlider').addEventListener('input', e => {
+      influenceRadius = parseInt(e.target.value);
+      document.getElementById('radiusVal').textContent = influenceRadius;
+    });
+    
+    // Analysis controls
+    document.getElementById('sampleSlider').addEventListener('input', e => {
+      sampleRate = parseInt(e.target.value);
+      document.getElementById('sampleVal').textContent = sampleRate;
+    });
+    
+    // Action buttons
+    document.getElementById('resetBtn').addEventListener('click', init);
+    
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      paused = !paused;
+      document.getElementById('pauseBtn').textContent = paused ? '▶️ Play' : '⏸️ Pause';
+    });
+    
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const data = {
+        parameters: {
+          K, K2, noise, dt, damping, gridSize, numLayers,
+          topology, freqSpread
+        },
+        history: dataHistory
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `kuramoto_data_${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+    
+    // Mouse interaction
+    overlayCanvas.addEventListener('mousemove', e => {
+      const rect = overlayCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const col = Math.floor(x / cellSize);
+      const row = Math.floor(y / cellSize);
+      
+      if (e.buttons === 1 && col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
+        applyMouseEffect(row, col);
+      }
+      
+      // Show tooltip
+      if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
+        const idx = row * gridSize + col;
+        const layer = layers[currentLayer];
+        
+        const tooltip = document.getElementById('tooltip');
+        tooltip.innerHTML = `
+          <h4>Cell (${col}, ${row})</h4>
+          Layer: ${currentLayer + 1}/${numLayers}<br>
+          Phase: ${layer.phases[idx].toFixed(3)} rad<br>
+          Frequency: ${layer.omegas[idx].toFixed(3)}<br>
+          Velocity: ${layer.velocities[idx].toFixed(3)}<br>
+          Coherence: ${getLocalCoherence(currentLayer, idx).toFixed(3)}
+        `;
+        tooltip.style.left = `${e.clientX + 15}px`;
+        tooltip.style.top = `${e.clientY - 80}px`;
+        tooltip.style.display = 'block';
+      }
+    });
+    
+    overlayCanvas.addEventListener('mouseleave', () => {
+      document.getElementById('tooltip').style.display = 'none';
+    });
+    
+    overlayCanvas.addEventListener('click', e => {
+      const rect = overlayCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const col = Math.floor(x / cellSize);
+      const row = Math.floor(y / cellSize);
+      
+      if (col >= 0 && col < gridSize && row >= 0 && row < gridSize) {
+        applyMouseEffect(row, col);
+      }
+    });
+    
+    function applyMouseEffect(row, col) {
+      for (let l = 0; l < numLayers; l++) {
+        const layer = layers[l];
+        
+        for (let dr = -influenceRadius; dr <= influenceRadius; dr++) {
+          for (let dc = -influenceRadius; dc <= influenceRadius; dc++) {
+            const newRow = row + dr;
+            const newCol = col + dc;
+            const dist = Math.sqrt(dr * dr + dc * dc);
+            
+            if (dist <= influenceRadius && 
+                newRow >= 0 && newRow < gridSize && 
+                newCol >= 0 && newCol < gridSize) {
+              
+              const idx = newRow * gridSize + newCol;
+              const influence = 1 - dist / influenceRadius;
+              
+              switch(mouseMode) {
+                case 'perturb':
+                  layer.phases[idx] = Math.random() * 2 * Math.PI;
+                  break;
+                case 'sync':
+                  layer.phases[idx] = layers[currentLayer].phases[row * gridSize + col];
+                  break;
+                case 'freeze':
+                  layer.velocities[idx] = 0;
+                  break;
+                case 'heat':
+                  layer.velocities[idx] += (Math.random() - 0.5) * influence;
+                  break;
+                case 'couple':
+                  // Temporarily increase local coupling
+                  // (Would need more complex implementation)
+                  break;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+      switch(e.key) {
+        case ' ':
+          e.preventDefault();
+          document.getElementById('pauseBtn').click();
+          break;
+        case 'r':
+          document.getElementById('resetBtn').click();
+          break;
+        case 'f':
+          if (!document.fullscreenElement) {
+            document.getElementById('canvasContainer').requestFullscreen();
+          } else {
+            document.exitFullscreen();
+          }
+          break;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+          const layerNum = parseInt(e.key) - 1;
+          if (layerNum < numLayers) {
+            currentLayer = layerNum;
+            updateLayerIndicator();
+          }
+          break;
+      }
+    });
+    
+    // ========================================
+    // Initialize and Start
+    // ========================================
+    init();
+    animate();
+  </script>
+</body>
+</html>

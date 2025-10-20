@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fibonacci Oscillator Field - Golden Ratio Dynamics</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
+      color: #ffd700;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    
+    #container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    canvas {
+      position: absolute;
+      image-rendering: optimizeSpeed;
+    }
+    
+    #mainCanvas {
+      z-index: 1;
+    }
+    
+    #spiralCanvas {
+      z-index: 2;
+      pointer-events: none;
+    }
+    
+    #particleCanvas {
+      z-index: 3;
+      pointer-events: none;
+    }
+    
+    #interactionCanvas {
+      z-index: 4;
+      cursor: crosshair;
+    }
+    
+    #info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.9);
+      border: 2px solid #ffd700;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 12px;
+      z-index: 100;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    
+    #info h2 {
+      color: #ffd700;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #ffd700;
+      font-size: 16px;
+    }
+    
+    #info div {
+      margin: 5px 0;
+    }
+    
+    #info span {
+      color: #ffed4e;
+      font-weight: bold;
+      text-shadow: 0 0 5px #ffed4e;
+    }
+    
+    .golden {
+      color: #ffd700 !important;
+      text-shadow: 0 0 10px #ffd700;
+    }
+    
+    #controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 15px;
+      border: 2px solid #ffd700;
+      border-radius: 10px;
+      z-index: 100;
+    }
+    
+    button {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.2) 100%);
+      color: #ffd700;
+      border: 1px solid #ffd700;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-family: inherit;
+      border-radius: 5px;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    
+    button:hover {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0.4) 100%);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+      transform: scale(1.05);
+    }
+    
+    #title {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 4em;
+      font-weight: bold;
+      text-shadow: 0 0 40px #ffd700, 0 0 80px #ffd700;
+      opacity: 0;
+      animation: goldenPulse 3s ease-in-out;
+      pointer-events: none;
+      z-index: 1000;
+      text-align: center;
+      white-space: nowrap;
+    }
+    
+    @keyframes goldenPulse {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
+    }
+    
+    #fibonacciSequence {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.9);
+      border: 2px solid #ffd700;
+      padding: 15px;
+      border-radius: 10px;
+      z-index: 100;
+      max-width: 200px;
+    }
+    
+    #fibonacciSequence h3 {
+      color: #ffd700;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .fib-number {
+      display: inline-block;
+      margin: 2px;
+      padding: 2px 5px;
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid #ffd700;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+    
+    .fib-number.active {
+      background: rgba(255, 215, 0, 0.3);
+      box-shadow: 0 0 10px #ffd700;
+      animation: pulse 1s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      50% { transform: scale(1.1); }
+    }
+    
+    #legend {
+      position: absolute;
+      bottom: 100px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.9);
+      border: 1px solid #ffd700;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      z-index: 100;
+    }
+    
+    #legend div {
+      margin: 3px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="title">φ FIBONACCI FIELD φ</div>
+  
+  <div id="container">
+    <canvas id="mainCanvas"></canvas>
+    <canvas id="spiralCanvas"></canvas>
+    <canvas id="particleCanvas"></canvas>
+    <canvas id="interactionCanvas"></canvas>
+  </div>
+  
+  <div id="info">
+    <h2>⚜️ Golden Ratio Oscillators ⚜️</h2>
+    <div>PHI (φ): <span class="golden">1.618033...</span></div>
+    <div>Grid: <span id="gridSize">89×55</span> (Fibonacci!)</div>
+    <div>Active Oscillators: <span id="activeCount">0</span></div>
+    <div>Order Parameter: <span id="orderParam">0.000</span></div>
+    <div>Golden Angle: <span id="goldenAngle">137.5°</span></div>
+    <div>Fibonacci Level: <span id="fibLevel">13</span></div>
+    <div>Coherence: <span id="coherence">0%</span></div>
+    <div>FPS: <span id="fps">0</span></div>
+  </div>
+  
+  <div id="fibonacciSequence">
+    <h3>Fibonacci Sequence</h3>
+    <div id="fibNumbers"></div>
+  </div>
+  
+  <div id="controls">
+    <button onclick="setMode('spiral')">Golden Spiral</button>
+    <button onclick="setMode('phyllotaxis')">Phyllotaxis</button>
+    <button onclick="setMode('fibonacci')">Fib Lattice</button>
+    <button onclick="setMode('quantum')">Quantum φ</button>
+    <button onclick="setMode('galaxy')">Galaxy</button>
+    <button id="pauseBtn">Pause</button>
+    <button onclick="reset()">Reset</button>
+  </div>
+  
+  <div id="legend">
+    <div style="color: #ff0000">● Low Coherence</div>
+    <div style="color: #ffff00">● Medium Sync</div>
+    <div style="color: #00ff00">● High Sync</div>
+    <div style="color: #00ffff">● Perfect φ</div>
+  </div>
+
+  <script>
+    // =====================================
+    // Sacred Constants
+    // =====================================
+    const PHI = (1 + Math.sqrt(5)) / 2; // Golden Ratio ≈ 1.618033988749895
+    const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // ≈ 137.5077640° in radians
+    
+    // Fibonacci sequence
+    const fibonacci = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584];
+    let currentFibIndex = 10; // Starting with 89
+    
+    // =====================================
+    // Canvas Setup
+    // =====================================
+    const mainCanvas = document.getElementById('mainCanvas');
+    const mainCtx = mainCanvas.getContext('2d', { alpha: false });
+    
+    const spiralCanvas = document.getElementById('spiralCanvas');
+    const spiralCtx = spiralCanvas.getContext('2d');
+    
+    const particleCanvas = document.getElementById('particleCanvas');
+    const particleCtx = particleCanvas.getContext('2d');
+    
+    const interactionCanvas = document.getElementById('interactionCanvas');
+    const interactionCtx = interactionCanvas.getContext('2d');
+    
+    // Use Fibonacci numbers for dimensions!
+    let gridWidth = fibonacci[10]; // 89
+    let gridHeight = fibonacci[9];  // 55
+    const cellSize = 8;
+    
+    // Set canvas dimensions
+    const canvasWidth = Math.min(window.innerWidth * 0.9, gridWidth * cellSize);
+    const canvasHeight = Math.min(window.innerHeight * 0.8, gridHeight * cellSize);
+    
+    [mainCanvas, spiralCanvas, particleCanvas, interactionCanvas].forEach(canvas => {
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+    });
+    
+    // =====================================
+    // Oscillator Field
+    // =====================================
+    let oscillators = [];
+    let velocities = [];
+    let coupling = [];
+    let naturalFrequencies = [];
+    
+    let mode = 'spiral';
+    let paused = false;
+    let time = 0;
+    let mouseX = canvasWidth / 2;
+    let mouseY = canvasHeight / 2;
+    
+    // Performance
+    let fps = 0;
+    let frameCount = 0;
+    let lastTime = performance.now();
+    
+    // =====================================
+    // Initialize Fibonacci-based oscillator field
+    // =====================================
+    function initField() {
+      const N = gridWidth * gridHeight;
+      oscillators = new Float32Array(N);
+      velocities = new Float32Array(N);
+      coupling = [];
+      naturalFrequencies = new Float32Array(N);
+      
+      // Initialize with Fibonacci/Golden patterns
+      for (let y = 0; y < gridHeight; y++) {
+        for (let x = 0; x < gridWidth; x++) {
+          const idx = y * gridWidth + x;
+          
+          switch(mode) {
+            case 'spiral':
+              // Golden spiral initialization
+              const cx = gridWidth / 2;
+              const cy = gridHeight / 2;
+              const dx = x - cx;
+              const dy = y - cy;
+              const r = Math.sqrt(dx * dx + dy * dy);
+              const theta = Math.atan2(dy, dx);
+              
+              // Logarithmic spiral with golden ratio
+              oscillators[idx] = theta + Math.log(r + 1) * PHI;
+              naturalFrequencies[idx] = 0.1 / PHI + (r / gridWidth) * 0.1;
+              break;
+            
+            case 'phyllotaxis':
+              // Phyllotaxis pattern (sunflower seed arrangement)
+              const n = idx;
+              const angle = n * GOLDEN_ANGLE;
+              const radius = Math.sqrt(n);
+              
+              oscillators[idx] = angle;
+              naturalFrequencies[idx] = 0.05 + (radius / 100) * 0.1;
+              break;
+            
+            case 'fibonacci':
+              // Fibonacci lattice
+              const fibX = fibonacci[x % 10];
+              const fibY = fibonacci[y % 10];
+              oscillators[idx] = Math.atan2(fibY, fibX);
+              naturalFrequencies[idx] = 0.1 * (fibX / fibY);
+              break;
+            
+            case 'quantum':
+              // Quantum golden states
+              const qx = x / gridWidth;
+              const qy = y / gridHeight;
+              oscillators[idx] = (qx * PHI + qy / PHI) * 2 * Math.PI;
+              naturalFrequencies[idx] = 0.1 * Math.sin(qx * PHI * Math.PI) * Math.cos(qy / PHI * Math.PI);
+              break;
+            
+            case 'galaxy':
+              // Spiral galaxy with golden ratio arms
+              const gcx = gridWidth / 2;
+              const gcy = gridHeight / 2;
+              const gdx = x - gcx;
+              const gdy = y - gcy;
+              const gr = Math.sqrt(gdx * gdx + gdy * gdy);
+              const gtheta = Math.atan2(gdy, gdx);
+              
+              // Multiple spiral arms at golden angles
+              const numArms = 5; // Fibonacci number!
+              const armAngle = gtheta + gr * 0.1;
+              oscillators[idx] = armAngle * numArms;
+              naturalFrequencies[idx] = 0.1 + Math.exp(-gr * gr / 1000) * 0.5;
+              break;
+            
+            default:
+              oscillators[idx] = Math.random() * 2 * Math.PI;
+              naturalFrequencies[idx] = 0.1;
+          }
+          
+          velocities[idx] = 0;
+        }
+      }
+      
+      // Initialize Fibonacci-based coupling
+      initCoupling();
+      
+      // Display Fibonacci sequence
+      updateFibonacciDisplay();
+    }
+    
+    function initCoupling() {
+      coupling = [];
+      const N = gridWidth * gridHeight;
+      
+      for (let i = 0; i < N; i++) {
+        const x = i % gridWidth;
+        const y = Math.floor(i / gridWidth);
+        const neighbors = [];
+        
+        // Fibonacci spiral coupling pattern
+        const fibSteps = [1, 1, 2, 3, 5, 8]; // First few Fibonacci numbers for neighbor distances
+        
+        fibSteps.forEach((step, index) => {
+          // Create coupling at Fibonacci distances
+          const directions = [
+            [step, 0], [-step, 0], [0, step], [0, -step],
+            [step, step], [-step, -step], [step, -step], [-step, step]
+          ];
+          
+          directions.forEach(([dx, dy]) => {
+            const nx = x + dx;
+            const ny = y + dy;
+            
+            if (nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight) {
+              const nIdx = ny * gridWidth + nx;
+              // Weight decreases with golden ratio
+              const weight = 1 / Math.pow(PHI, index + 1);
+              neighbors.push({ idx: nIdx, weight });
+            }
+          });
+        });
+        
+        // Normalize weights
+        if (neighbors.length > 0) {
+          const totalWeight = neighbors.reduce((sum, n) => sum + n.weight, 0);
+          neighbors.forEach(n => n.weight /= totalWeight);
+        }
+        
+        coupling[i] = neighbors;
+      }
+    }
+    
+    // =====================================
+    // Dynamics Update with Golden Ratio
+    // =====================================
+    function updateDynamics(dt) {
+      if (paused) return;
+      
+      const N = gridWidth * gridHeight;
+      const K = 2.0 / PHI; // Coupling strength based on golden ratio
+      const noise = 0.1 / PHI; // Noise scaled by golden ratio
+      
+      for (let i = 0; i < N; i++) {
+        let couplingTerm = 0;
+        
+        // Kuramoto coupling with Fibonacci weights
+        for (const neighbor of coupling[i]) {
+          couplingTerm += neighbor.weight * Math.sin(oscillators[neighbor.idx] - oscillators[i]);
+        }
+        
+        // Add golden ratio modulation
+        const x = i % gridWidth;
+        const y = Math.floor(i / gridWidth);
+        const cx = gridWidth / 2;
+        const cy = gridHeight / 2;
+        const r = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+        
+        // External field with golden spiral
+        const externalField = 0.1 * Math.sin(time / PHI + r * GOLDEN_ANGLE);
+        
+        // Noise term
+        const noiseTerm = (Math.random() - 0.5) * noise;
+        
+        // Update velocity using golden ratio damping
+        const damping = 1 / (PHI * PHI); // φ² ≈ 2.618
+        velocities[i] = (1 - damping) * velocities[i] + 
+                       (naturalFrequencies[i] + K * couplingTerm + externalField + noiseTerm) * dt;
+        
+        // Update phase
+        oscillators[i] += velocities[i];
+        
+        // Wrap phase
+        oscillators[i] = oscillators[i] % (2 * Math.PI);
+        if (oscillators[i] < 0) oscillators[i] += 2 * Math.PI;
+      }
+      
+      time += dt;
+    }
+    
+    // =====================================
+    // Rendering with Golden Aesthetics
+    // =====================================
+    function render() {
+      // Clear canvases
+      mainCtx.fillStyle = '#000';
+      mainCtx.fillRect(0, 0, canvasWidth, canvasHeight);
+      spiralCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+      
+      const N = gridWidth * gridHeight;
+      const scaleX = canvasWidth / gridWidth;
+      const scaleY = canvasHeight / gridHeight;
+      
+      // Render oscillator field
+      for (let y = 0; y < gridHeight; y++) {
+        for (let x = 0; x < gridWidth; x++) {
+          const idx = y * gridWidth + x;
+          const phase = oscillators[idx];
+          
+          // Color based on phase and golden ratio
+          const hue = (phase / (2 * Math.PI)) * 360;
+          const coherence = getLocalCoherence(x, y);
+          
+          // Golden color scheme
+          let r, g, b;
+          if (coherence > 0.8) {
+            // High coherence - golden
+            r = 255;
+            g = 215;
+            b = 0;
+          } else if (coherence > 0.5) {
+            // Medium - yellow
+            r = 255 * coherence;
+            g = 255 * coherence;
+            b = 0;
+          } else {
+            // Low - reddish
+            r = 255 * (0.5 + coherence * 0.5);
+            g = 100 * coherence;
+            b = 0;
+          }
+          
+          // Add phase modulation
+          const phaseMod = (Math.sin(phase) + 1) / 2;
+          r *= (0.5 + 0.5 * phaseMod);
+          g *= (0.5 + 0.5 * phaseMod);
+          b *= (0.5 + 0.5 * phaseMod);
+          
+          mainCtx.fillStyle = `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`;
+          mainCtx.fillRect(x * scaleX, y * scaleY, scaleX + 1, scaleY + 1);
+        }
+      }
+      
+      // Draw golden spiral overlay
+      drawGoldenSpiral();
+      
+      // Draw Fibonacci particles
+      drawParticles();
+      
+      // Update stats
+      updateStats();
+    }
+    
+    function drawGoldenSpiral() {
+      spiralCtx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+      spiralCtx.lineWidth = 2;
+      spiralCtx.beginPath();
+      
+      const cx = canvasWidth / 2;
+      const cy = canvasHeight / 2;
+      
+      // Logarithmic spiral: r = a * e^(b*theta)
+      // For golden spiral: b = ln(φ) / (π/2)
+      const a = 1;
+      const b = Math.log(PHI) / (Math.PI / 2);
+      
+      for (let t = 0; t < 6 * Math.PI; t += 0.01) {
+        const r = a * Math.exp(b * t);
+        const x = cx + r * Math.cos(t + time * 0.1);
+        const y = cy + r * Math.sin(t + time * 0.1);
+        
+        if (t === 0) {
+          spiralCtx.moveTo(x, y);
+        } else {
+          spiralCtx.lineTo(x, y);
+        }
+        
+        if (r > Math.max(canvasWidth, canvasHeight)) break;
+      }
+      
+      spiralCtx.stroke();
+      
+      // Draw Fibonacci rectangles
+      drawFibonacciRectangles();
+    }
+    
+    function drawFibonacciRectangles() {
+      spiralCtx.strokeStyle = 'rgba(255, 215, 0, 0.2)';
+      spiralCtx.lineWidth = 1;
+      
+      let x = canvasWidth / 2;
+      let y = canvasHeight / 2;
+      let direction = 0; // 0: right, 1: down, 2: left, 3: up
+      
+      for (let i = 0; i < Math.min(8, fibonacci.length); i++) {
+        const size = fibonacci[i] * 3; // Scale factor
+        
+        spiralCtx.strokeRect(x - size/2, y - size/2, size, size);
+        
+        // Move to next position following golden spiral
+        switch(direction % 4) {
+          case 0: x += size / PHI; break;
+          case 1: y += size / PHI; break;
+          case 2: x -= size / PHI; break;
+          case 3: y -= size / PHI; break;
+        }
+        direction++;
+      }
+    }
+    
+    // =====================================
+    // Particle System Following Fibonacci
+    // =====================================
+    const particles = [];
+    const numParticles = fibonacci[7]; // 21 particles
+    
+    function initParticles() {
+      for (let i = 0; i < numParticles; i++) {
+        const angle = i * GOLDEN_ANGLE;
+        const radius = Math.sqrt(i) * 10;
+        
+        particles.push({
+          x: canvasWidth / 2 + radius * Math.cos(angle),
+          y: canvasHeight / 2 + radius * Math.sin(angle),
+          vx: 0,
+          vy: 0,
+          life: 1,
+          fibIndex: i % fibonacci.length
+        });
+      }
+    }
+    
+    function drawParticles() {
+      particleCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+      
+      particles.forEach(p => {
+        // Get oscillator at particle position
+        const gx = Math.floor(p.x / canvasWidth * gridWidth);
+        const gy = Math.floor(p.y / canvasHeight * gridHeight);
+        
+        if (gx >= 0 && gx < gridWidth && gy >= 0 && gy < gridHeight) {
+          const idx = gy * gridWidth + gx;
+          const phase = oscillators[idx];
+          
+          // Update velocity based on phase gradient
+          const gradX = getPhaseGradient(gx, gy, 'x');
+          const gradY = getPhaseGradient(gx, gy, 'y');
+          
+          p.vx += gradX * 0.5;
+          p.vy += gradY * 0.5;
+          
+          // Golden ratio damping
+          p.vx *= (1 - 1/PHI * 0.1);
+          p.vy *= (1 - 1/PHI * 0.1);
+          
+          // Update position
+          p.x += p.vx;
+          p.y += p.vy;
+          
+          // Wrap around
+          if (p.x < 0) p.x = canvasWidth;
+          if (p.x > canvasWidth) p.x = 0;
+          if (p.y < 0) p.y = canvasHeight;
+          if (p.y > canvasHeight) p.y = 0;
+          
+          // Draw particle
+          const size = fibonacci[p.fibIndex % 8] / 2;
+          const hue = (phase / (2 * Math.PI)) * 360;
+          
+          particleCtx.fillStyle = `hsla(${hue}, 100%, 50%, ${p.life})`;
+          particleCtx.shadowBlur = 10;
+          particleCtx.shadowColor = `hsla(${hue}, 100%, 50%, 0.5)`;
+          
+          particleCtx.beginPath();
+          particleCtx.arc(p.x, p.y, size, 0, 2 * Math.PI);
+          particleCtx.fill();
+          
+          // Golden ratio trail
+          particleCtx.strokeStyle = `hsla(${hue}, 100%, 50%, ${p.life * 0.3})`;
+          particleCtx.lineWidth = 1;
+          particleCtx.beginPath();
+          particleCtx.moveTo(p.x, p.y);
+          particleCtx.lineTo(p.x - p.vx * PHI * 5, p.y - p.vy * PHI * 5);
+          particleCtx.stroke();
+        }
+        
+        // Regenerate dead particles
+        p.life -= 0.005;
+        if (p.life <= 0) {
+          const angle = Math.random() * 2 * Math.PI;
+          const radius = Math.sqrt(Math.random()) * Math.min(canvasWidth, canvasHeight) / 2;
+          p.x = canvasWidth / 2 + radius * Math.cos(angle);
+          p.y = canvasHeight / 2 + radius * Math.sin(angle);
+          p.vx = 0;
+          p.vy = 0;
+          p.life = 1;
+        }
+      });
+      
+      particleCtx.shadowBlur = 0;
+    }
+    
+    // =====================================
+    // Helper Functions
+    // =====================================
+    function getLocalCoherence(x, y) {
+      let sumCos = 0;
+      let sumSin = 0;
+      let count = 0;
+      
+      // Check Fibonacci-distance neighbors
+      const fibDist = [1, 1, 2, 3, 5];
+      
+      fibDist.forEach(d => {
+        for (let dy = -d; dy <= d; dy += d * 2) {
+          for (let dx = -d; dx <= d; dx += d * 2) {
+            const nx = x + dx;
+            const ny = y + dy;
+            
+            if (nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight) {
+              const idx = ny * gridWidth + nx;
+              sumCos += Math.cos(oscillators[idx]);
+              sumSin += Math.sin(oscillators[idx]);
+              count++;
+            }
+          }
+        }
+      });
+      
+      if (count === 0) return 0;
+      return Math.sqrt(sumCos * sumCos + sumSin * sumSin) / count;
+    }
+    
+    function getPhaseGradient(x, y, direction) {
+      const idx = y * gridWidth + x;
+      let gradient = 0;
+      
+      if (direction === 'x' && x > 0 && x < gridWidth - 1) {
+        const leftIdx = y * gridWidth + (x - 1);
+        const rightIdx = y * gridWidth + (x + 1);
+        gradient = Math.sin(oscillators[rightIdx] - oscillators[leftIdx]);
+      } else if (direction === 'y' && y > 0 && y < gridHeight - 1) {
+        const topIdx = (y - 1) * gridWidth + x;
+        const bottomIdx = (y + 1) * gridWidth + x;
+        gradient = Math.sin(oscillators[bottomIdx] - oscillators[topIdx]);
+      }
+      
+      return gradient;
+    }
+    
+    function calculateOrderParameter() {
+      const N = gridWidth * gridHeight;
+      let sumCos = 0;
+      let sumSin = 0;
+      
+      for (let i = 0; i < N; i++) {
+        sumCos += Math.cos(oscillators[i]);
+        sumSin += Math.sin(oscillators[i]);
+      }
+      
+      const R = Math.sqrt(sumCos * sumCos + sumSin * sumSin) / N;
+      const psi = Math.atan2(sumSin, sumCos);
+      
+      return { R, psi };
+    }
+    
+    // =====================================
+    // UI Updates
+    // =====================================
+    function updateStats() {
+      const { R, psi } = calculateOrderParameter();
+      
+      document.getElementById('gridSize').textContent = `${gridWidth}×${gridHeight}`;
+      document.getElementById('activeCount').textContent = (gridWidth * gridHeight).toLocaleString();
+      document.getElementById('orderParam').textContent = R.toFixed(3);
+      document.getElementById('coherence').textContent = Math.round(R * 100) + '%';
+      document.getElementById('fibLevel').textContent = fibonacci[currentFibIndex];
+      
+      // FPS
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fps = frameCount;
+        document.getElementById('fps').textContent = fps;
+        frameCount = 0;
+        lastTime = now;
+      }
+    }
+    
+    function updateFibonacciDisplay() {
+      const container = document.getElementById('fibNumbers');
+      container.innerHTML = '';
+      
+      fibonacci.slice(0, 15).forEach((num, index) => {
+        const span = document.createElement('span');
+        span.className = 'fib-number';
+        span.textContent = num;
+        
+        if (index === currentFibIndex) {
+          span.classList.add('active');
+        }
+        
+        container.appendChild(span);
+      });
+    }
+    
+    // =====================================
+    // Controls
+    // =====================================
+    function setMode(newMode) {
+      mode = newMode;
+      initField();
+    }
+    
+    function reset() {
+      initField();
+      time = 0;
+    }
+    
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      paused = !paused;
+      document.getElementById('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+    });
+    
+    // Mouse interaction
+    interactionCanvas.addEventListener('mousemove', (e) => {
+      const rect = interactionCanvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    });
+    
+    interactionCanvas.addEventListener('click', (e) => {
+      const rect = interactionCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Create golden ratio perturbation
+      const gx = Math.floor(x / canvasWidth * gridWidth);
+      const gy = Math.floor(y / canvasHeight * gridHeight);
+      
+      // Perturb in Fibonacci spiral pattern
+      for (let i = 0; i < fibonacci[6]; i++) { // 13 points
+        const angle = i * GOLDEN_ANGLE;
+        const radius = Math.sqrt(i) * 2;
+        
+        const px = gx + Math.round(radius * Math.cos(angle));
+        const py = gy + Math.round(radius * Math.sin(angle));
+        
+        if (px >= 0 && px < gridWidth && py >= 0 && py < gridHeight) {
+          const idx = py * gridWidth + px;
+          oscillators[idx] = Math.random() * 2 * Math.PI;
+          velocities[idx] = (Math.random() - 0.5) * PHI;
+        }
+      }
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case ' ':
+          e.preventDefault();
+          paused = !paused;
+          document.getElementById('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+          break;
+        case 'r':
+          reset();
+          break;
+        case 'f':
+          // Cycle through Fibonacci grid sizes
+          currentFibIndex = (currentFibIndex + 1) % 12;
+          gridWidth = fibonacci[currentFibIndex];
+          gridHeight = fibonacci[Math.max(0, currentFibIndex - 1)];
+          initField();
+          break;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+          const modes = ['spiral', 'phyllotaxis', 'fibonacci', 'quantum', 'galaxy'];
+          const modeIdx = parseInt(e.key) - 1;
+          if (modeIdx < modes.length) {
+            setMode(modes[modeIdx]);
+          }
+          break;
+      }
+    });
+    
+    // =====================================
+    // Animation Loop
+    // =====================================
+    function animate() {
+      updateDynamics(0.05);
+      render();
+      requestAnimationFrame(animate);
+    }
+    
+    // =====================================
+    // Initialize
+    // =====================================
+    initField();
+    initParticles();
+    animate();
+  </script>
+</body>
+</html>

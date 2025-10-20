@@ -1,0 +1,72 @@
+# CITATION.cff
+# This CITATION.cff file was generated to make the software citable.
+# Visit https://citation-file-format.github.io/ for more information
+
+cff-version: 1.2.0
+title: Interactive Kuramoto Oscillator Visualizations
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Your
+    family-names: Name
+    email: your.email@institution.edu
+    affiliation: Your Institution
+    orcid: 'https://orcid.org/0000-0000-0000-0000'
+identifiers:
+  - type: doi
+    value: 10.17605/OSF.IO/XXXXX
+    description: OSF Project DOI
+repository-code: 'https://osf.io/xxxxx'
+url: 'https://osf.io/xxxxx'
+abstract: >-
+  Interactive web-based visualizations of the Kuramoto model
+  for coupled oscillator synchronization. This project
+  demonstrates emergent phenomena including phase transitions,
+  chimera states, traveling waves, and the spontaneous
+  emergence of golden ratio patterns in synchronization
+  dynamics. The visualizations support real-time simulation
+  of up to 262,144 coupled oscillators in various topologies
+  including 2D grids, 3D volumes, and Fibonacci-structured
+  networks.
+keywords:
+  - kuramoto model
+  - synchronization
+  - phase oscillators
+  - complex systems
+  - nonlinear dynamics
+  - emergence
+  - golden ratio
+  - fibonacci
+  - chimera states
+  - phase transitions
+  - interactive visualization
+  - javascript
+  - webgl
+license: MIT
+commit: initial
+version: 1.0.0
+date-released: '2024-01-01'
+references:
+  - authors:
+    - family-names: Kuramoto
+      given-names: Yoshiki
+    title: "Self-entrainment of a population of coupled non-linear oscillators"
+    type: article
+    year: 1975
+    journal: "Lecture Notes in Physics"
+    volume: 39
+    start: 420
+    end: 422
+  - authors:
+    - family-names: Strogatz
+      given-names: Steven H.
+    title: "From Kuramoto to Crawford: exploring the onset of synchronization"
+    type: article
+    year: 2000
+    journal: "Physica D"
+    volume: 143
+    issue: 1-4
+    start: 1
+    end: 20

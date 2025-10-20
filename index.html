@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuramoto Oscillator Visualizations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            text-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+
+        .card p {
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .stats {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .links {
+            margin-top: 3rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 2px solid white;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .links a:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🌊 Kuramoto Oscillator Visualizations</h1>
+    <p class="subtitle">Explore the mathematics of synchronization through interactive simulations</p>
+
+    <div class="grid">
+        <a href="kuramoto_grid_enhanced.html" class="card">
+            <h2>📊 2D Grid Synchronization</h2>
+            <p>Watch 16,384 oscillators transition from chaos to perfect synchronization. Features traveling waves, spiral vortices, and phase transitions.</p>
+            <p class="stats">⚡ 128×128 grid • 5 topologies • Particle tracers</p>
+        </a>
+
+        <a href="kuramoto_3d.html" class="card">
+            <h2>🎯 3D Volume Field</h2>
+            <p>Experience synchronization in three dimensions with 262,144 oscillators. See phase crystals form and waves propagate through space.</p>
+            <p class="stats">⚡ 64×64×64 volume • WebGL rendering • Slice planes</p>
+        </a>
+
+        <a href="oscillator_ocean.html" class="card">
+            <h2>🌊 Pixel Ocean</h2>
+            <p>Every single pixel is an oscillator! Create interference patterns and watch waves propagate through a sea of mathematics.</p>
+            <p class="stats">⚡ Up to 640,000 oscillators • 6 modes • Direct interaction</p>
+        </a>
+
+        <a href="kuramoto_ultimate.html" class="card">
+            <h2>⚛️ Multi-Layer Neural Plasma</h2>
+            <p>Multiple coupled layers interact like neural networks. Apply external fields and watch information flow between dimensions.</p>
+            <p class="stats">⚡ 5 layers • Cross-coupling • External fields</p>
+        </a>
+    </div>
+
+    <div class="links">
+        <a href="https://github.com/YOUR_USERNAME/kuramoto-oscillators">GitHub Repository</a>
+        <a href="docs/guide.md">User Guide</a>
+        <a href="docs/mathematics.md">Mathematics</a>
+    </div>
+
+    <p style="margin-top: 3rem; opacity: 0.7; text-align: center;">
+        Created with ❤️ by A.J. Vasquez • Delaware Valley University
+    </p>
+</body>
+</html>

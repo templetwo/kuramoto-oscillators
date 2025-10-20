@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuramoto 3D - Volumetric Neural Field</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Courier New', monospace;
+      background: radial-gradient(ellipse at center, #000814 0%, #000000 100%);
+      color: #00ff88;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    #canvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      cursor: grab;
+    }
+    
+    #canvas:active {
+      cursor: grabbing;
+    }
+    
+    #info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #00ff88;
+      padding: 15px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+      z-index: 100;
+    }
+    
+    #info h2 {
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #00ff88;
+      font-size: 1.2em;
+    }
+    
+    #info div {
+      margin: 5px 0;
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+    
+    #info span {
+      color: #00ffff;
+      font-weight: bold;
+      text-shadow: 0 0 5px #00ffff;
+    }
+    
+    #controls {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #00ff88;
+      padding: 15px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      width: 300px;
+      max-height: 90vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    
+    .control-group {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+    }
+    
+    .control-group:last-child {
+      border-bottom: none;
+    }
+    
+    .control-group h3 {
+      margin-bottom: 10px;
+      color: #00ffff;
+      font-size: 1em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 0 5px #00ffff;
+    }
+    
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.85em;
+    }
+    
+    .value {
+      color: #00ffff;
+      font-weight: bold;
+      min-width: 60px;
+      text-align: right;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #00ff88 0%, #00ffff 100%);
+      outline: none;
+      -webkit-appearance: none;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: radial-gradient(circle, #ffffff 30%, #00ffff 100%);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      background: radial-gradient(circle, #ffffff 30%, #00ffff 100%);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff;
+      border: none;
+    }
+    
+    select {
+      width: 100%;
+      background: rgba(0, 20, 20, 0.8);
+      color: #00ff88;
+      border: 1px solid #00ff88;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%);
+      color: #00ff88;
+      border: 1px solid #00ff88;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    button:hover {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 255, 255, 0.2) 100%);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2em;
+      text-shadow: 0 0 20px #00ff88;
+      animation: pulse 1s ease-in-out infinite;
+      z-index: 1000;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    
+    #instructions {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      font-size: 0.9em;
+      opacity: 0.8;
+      z-index: 100;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00ff88 0%, #00ffff 100%);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #00ffaa 0%, #00ffff 100%);
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">Initializing 3D Neural Field...</div>
+  
+  <div id="info" class="hidden">
+    <h2>⚡ 3D Kuramoto Field ⚡</h2>
+    <div>Dimensions: <span id="dimensions">0×0×0</span></div>
+    <div>Oscillators: <span id="oscillatorCount">0</span></div>
+    <div>Order (R): <span id="orderParam">0.000</span></div>
+    <div>Mean Phase: <span id="meanPhase">0.00</span></div>
+    <div>Coherence: <span id="coherence">0%</span></div>
+    <div>FPS: <span id="fps">0</span></div>
+    <div>Mode: <span id="mode">VOLUME</span></div>
+  </div>
+  
+  <div id="controls" class="hidden">
+    <div class="control-group">
+      <h3>Dynamics</h3>
+      <label>
+        Coupling (K)
+        <span class="value" id="kVal">2.0</span>
+      </label>
+      <input type="range" id="kSlider" min="0" max="10" step="0.1" value="2.0">
+      
+      <label>
+        Noise (σ)
+        <span class="value" id="noiseVal">0.1</span>
+      </label>
+      <input type="range" id="noiseSlider" min="0" max="2" step="0.05" value="0.1">
+      
+      <label>
+        Speed (dt)
+        <span class="value" id="speedVal">0.05</span>
+      </label>
+      <input type="range" id="speedSlider" min="0.001" max="0.2" step="0.001" value="0.05">
+      
+      <label>
+        Damping
+        <span class="value" id="dampingVal">0.0</span>
+      </label>
+      <input type="range" id="dampingSlider" min="0" max="0.5" step="0.01" value="0">
+    </div>
+    
+    <div class="control-group">
+      <h3>Visualization</h3>
+      <label>Mode</label>
+      <select id="vizMode">
+        <option value="volume">Volume Cloud</option>
+        <option value="particles">Particles</option>
+        <option value="slices">Slices</option>
+        <option value="iso">Isosurface</option>
+        <option value="field">Vector Field</option>
+        <option value="hybrid">Hybrid</option>
+      </select>
+      
+      <label>
+        Opacity
+        <span class="value" id="opacityVal">0.3</span>
+      </label>
+      <input type="range" id="opacitySlider" min="0" max="1" step="0.05" value="0.3">
+      
+      <label>
+        Threshold
+        <span class="value" id="thresholdVal">0.5</span>
+      </label>
+      <input type="range" id="thresholdSlider" min="0" max="1" step="0.05" value="0.5">
+      
+      <label>Color Scheme</label>
+      <select id="colorScheme">
+        <option value="plasma">Plasma</option>
+        <option value="phase">Phase</option>
+        <option value="coherence">Coherence</option>
+        <option value="energy">Energy</option>
+        <option value="quantum">Quantum</option>
+        <option value="neural">Neural</option>
+      </select>
+    </div>
+    
+    <div class="control-group">
+      <h3>Structure</h3>
+      <label>
+        Grid Size
+        <span class="value" id="gridSizeVal">32</span>
+      </label>
+      <input type="range" id="gridSizeSlider" min="16" max="64" step="4" value="32">
+      
+      <label>
+        Layers
+        <span class="value" id="layersVal">3</span>
+      </label>
+      <input type="range" id="layersSlider" min="1" max="5" step="1" value="3">
+      
+      <label>Topology</label>
+      <select id="topology">
+        <option value="local">Local (6-neighbor)</option>
+        <option value="local26">Local (26-neighbor)</option>
+        <option value="distance">Distance-based</option>
+        <option value="random">Random</option>
+        <option value="smallworld">Small World</option>
+      </select>
+      
+      <label>Initial State</label>
+      <select id="initState">
+        <option value="random">Random</option>
+        <option value="gradient">Gradient</option>
+        <option value="sphere">Sphere</option>
+        <option value="torus">Torus</option>
+        <option value="helix">Helix</option>
+        <option value="knot">Knot</option>
+      </select>
+    </div>
+    
+    <div class="control-group">
+      <h3>Interaction</h3>
+      <label>
+        Probe Radius
+        <span class="value" id="probeRadiusVal">5</span>
+      </label>
+      <input type="range" id="probeRadiusSlider" min="1" max="20" step="1" value="5">
+      
+      <label>Mouse Mode</label>
+      <select id="mouseMode">
+        <option value="rotate">Rotate View</option>
+        <option value="perturb">Perturb Field</option>
+        <option value="sync">Synchronize</option>
+        <option value="inject">Inject Wave</option>
+        <option value="slice">Slice Through</option>
+      </select>
+      
+      <label>
+        Auto Rotate
+        <span class="value" id="autoRotateVal">0.5</span>
+      </label>
+      <input type="range" id="autoRotateSlider" min="0" max="2" step="0.1" value="0.5">
+    </div>
+    
+    <div class="control-group">
+      <h3>Actions</h3>
+      <div class="button-group">
+        <button id="resetBtn">Reset</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="randomBtn">Randomize</button>
+        <button id="pulseBtn">Pulse</button>
+      </div>
+      <button id="fullscreenBtn">Fullscreen</button>
+      <button id="exportBtn">Export State</button>
+    </div>
+    
+    <div class="control-group">
+      <h3>Presets</h3>
+      <button onclick="applyPreset('sync')">Synchronization</button>
+      <button onclick="applyPreset('waves')">Traveling Waves</button>
+      <button onclick="applyPreset('chimera')">Chimera State</button>
+      <button onclick="applyPreset('quantum')">Quantum Coherence</button>
+      <button onclick="applyPreset('turbulence')">Phase Turbulence</button>
+      <button onclick="applyPreset('crystal')">Crystal Lattice</button>
+    </div>
+  </div>
+  
+  <div id="instructions" class="hidden">
+    Mouse: Rotate | Scroll: Zoom | Space: Pause | R: Reset | F: Fullscreen | 1-6: Presets
+  </div>
+  
+  <canvas id="canvas"></canvas>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // ========================================
+    // Core Configuration
+    // ========================================
+    let scene, camera, renderer;
+    let volumeCloud, particleSystem, slicePlanes, isoSurface, vectorField;
+    let raycaster, mouse;
+    
+    // Oscillator field parameters
+    let gridSize = 32;
+    let numLayers = 3;
+    let totalOscillators = 0;
+    
+    // Dynamics parameters
+    let K = 2.0;
+    let noise = 0.1;
+    let dt = 0.05;
+    let damping = 0;
+    let topology = 'local';
+    
+    // Visualization parameters
+    let vizMode = 'volume';
+    let opacity = 0.3;
+    let threshold = 0.5;
+    let colorScheme = 'plasma';
+    let autoRotate = 0.5;
+    let probeRadius = 5;
+    let mouseMode = 'rotate';
+    
+    // State
+    let paused = false;
+    let time = 0;
+    let oscillators = [];
+    let velocities = [];
+    let coupling = [];
+    
+    // Performance
+    let fps = 0;
+    let lastTime = performance.now();
+    let frameCount = 0;
+    
+    // ========================================
+    // Three.js Initialization
+    // ========================================
+    function initThreeJS() {
+      // Scene setup
+      scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x000814, 0.01);
+      
+      // Camera setup
+      const aspect = window.innerWidth / window.innerHeight;
+      camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
+      camera.position.set(100, 100, 100);
+      camera.lookAt(0, 0, 0);
+      
+      // Renderer setup
+      const canvas = document.getElementById('canvas');
+      renderer = new THREE.WebGLRenderer({ 
+        canvas: canvas,
+        antialias: true,
+        alpha: true
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.toneMapping = THREE.ReinhardToneMapping;
+      renderer.toneMappingExposure = 1.5;
+      
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0x0088ff, 0.2);
+      scene.add(ambientLight);
+      
+      const pointLight1 = new THREE.PointLight(0x00ffff, 1, 200);
+      pointLight1.position.set(50, 50, 50);
+      scene.add(pointLight1);
+      
+      const pointLight2 = new THREE.PointLight(0xff00ff, 0.5, 200);
+      pointLight2.position.set(-50, -50, -50);
+      scene.add(pointLight2);
+      
+      // Add grid helper
+      const gridHelper = new THREE.GridHelper(100, 20, 0x00ff88, 0x003333);
+      scene.add(gridHelper);
+      
+      // Add axes helper
+      const axesHelper = new THREE.AxesHelper(50);
+      scene.add(axesHelper);
+      
+      // Raycaster for mouse interaction
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
+      
+      // Controls
+      setupControls();
+    }
+    
+    // ========================================
+    // Oscillator Field Initialization
+    // ========================================
+    function initOscillatorField() {
+      totalOscillators = gridSize * gridSize * gridSize;
+      oscillators = new Float32Array(totalOscillators * numLayers);
+      velocities = new Float32Array(totalOscillators * numLayers);
+      coupling = [];
+      
+      // Initialize phases and velocities
+      const initMode = document.getElementById('initState').value;
+      
+      for (let layer = 0; layer < numLayers; layer++) {
+        for (let z = 0; z < gridSize; z++) {
+          for (let y = 0; y < gridSize; y++) {
+            for (let x = 0; x < gridSize; x++) {
+              const idx = layer * totalOscillators + (z * gridSize * gridSize + y * gridSize + x);
+              oscillators[idx] = getInitialPhase(x, y, z, layer, initMode);
+              velocities[idx] = 0;
+            }
+          }
+        }
+      }
+      
+      // Initialize coupling topology
+      initializeCoupling();
+      
+      // Update info
+      updateInfo();
+    }
+    
+    function getInitialPhase(x, y, z, layer, mode) {
+      const cx = gridSize / 2;
+      const cy = gridSize / 2;
+      const cz = gridSize / 2;
+      
+      switch(mode) {
+        case 'gradient':
+          return ((x + y + z) / (gridSize * 3)) * 2 * Math.PI + layer * Math.PI / 4;
+        
+        case 'sphere':
+          const r = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2 + (z - cz) ** 2);
+          return r * 0.3 + layer * Math.PI / 3;
+        
+        case 'torus':
+          const R = gridSize / 3; // Major radius
+          const r2 = gridSize / 6; // Minor radius
+          const theta = Math.atan2(z - cz, x - cx);
+          const d = Math.sqrt((x - cx) ** 2 + (z - cz) ** 2);
+          const phi = Math.atan2(y - cy, d - R);
+          return theta + phi + layer * 0.5;
+        
+        case 'helix':
+          const angle = Math.atan2(z - cz, x - cx);
+          return angle + (y / gridSize) * 4 * Math.PI + layer * Math.PI / 6;
+        
+        case 'knot':
+          const t = Math.atan2(z - cz, x - cx);
+          const s = (y - cy) / gridSize;
+          return (Math.sin(3 * t) + Math.cos(2 * t)) * Math.PI + s * 2 * Math.PI + layer * 0.3;
+        
+        default: // random
+          return Math.random() * 2 * Math.PI;
+      }
+    }
+    
+    function initializeCoupling() {
+      coupling = [];
+      
+      for (let layer = 0; layer < numLayers; layer++) {
+        coupling[layer] = [];
+        
+        for (let i = 0; i < totalOscillators; i++) {
+          const x = i % gridSize;
+          const y = Math.floor(i / gridSize) % gridSize;
+          const z = Math.floor(i / (gridSize * gridSize));
+          
+          const neighbors = getNeighbors(x, y, z, layer);
+          coupling[layer][i] = neighbors;
+        }
+      }
+    }
+    
+    function getNeighbors(x, y, z, layer) {
+      const neighbors = [];
+      
+      switch(topology) {
+        case 'local': // 6-connectivity (faces)
+          const dirs6 = [
+            [-1, 0, 0], [1, 0, 0],
+            [0, -1, 0], [0, 1, 0],
+            [0, 0, -1], [0, 0, 1]
+          ];
+          
+          for (const [dx, dy, dz] of dirs6) {
+            const nx = x + dx;
+            const ny = y + dy;
+            const nz = z + dz;
+            
+            if (nx >= 0 && nx < gridSize && 
+                ny >= 0 && ny < gridSize && 
+                nz >= 0 && nz < gridSize) {
+              const nIdx = nz * gridSize * gridSize + ny * gridSize + nx;
+              neighbors.push({ idx: nIdx, layer: layer, weight: 1.0 / 6 });
+            }
+          }
+          break;
+        
+        case 'local26': // 26-connectivity (all neighbors)
+          for (let dz = -1; dz <= 1; dz++) {
+            for (let dy = -1; dy <= 1; dy++) {
+              for (let dx = -1; dx <= 1; dx++) {
+                if (dx === 0 && dy === 0 && dz === 0) continue;
+                
+                const nx = x + dx;
+                const ny = y + dy;
+                const nz = z + dz;
+                
+                if (nx >= 0 && nx < gridSize && 
+                    ny >= 0 && ny < gridSize && 
+                    nz >= 0 && nz < gridSize) {
+                  const nIdx = nz * gridSize * gridSize + ny * gridSize + nx;
+                  const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                  neighbors.push({ idx: nIdx, layer: layer, weight: 1.0 / (26 * dist) });
+                }
+              }
+            }
+          }
+          break;
+        
+        case 'distance': // Distance-based coupling
+          const sigma = gridSize / 6;
+          const i = z * gridSize * gridSize + y * gridSize + x;
+          
+          for (let nz = 0; nz < gridSize; nz++) {
+            for (let ny = 0; ny < gridSize; ny++) {
+              for (let nx = 0; nx < gridSize; nx++) {
+                if (nx === x && ny === y && nz === z) continue;
+                
+                const dist = Math.sqrt((nx - x) ** 2 + (ny - y) ** 2 + (nz - z) ** 2);
+                if (dist < sigma * 2) {
+                  const nIdx = nz * gridSize * gridSize + ny * gridSize + nx;
+                  const weight = Math.exp(-dist * dist / (2 * sigma * sigma));
+                  neighbors.push({ idx: nIdx, layer: layer, weight });
+                }
+              }
+            }
+          }
+          break;
+        
+        case 'random': // Random connections
+          const numConnections = 6;
+          for (let c = 0; c < numConnections; c++) {
+            const nIdx = Math.floor(Math.random() * totalOscillators);
+            neighbors.push({ idx: nIdx, layer: layer, weight: 1.0 / numConnections });
+          }
+          break;
+        
+        case 'smallworld': // Small world network
+          // Start with local connections
+          const localDirs = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]];
+          
+          for (const [dx, dy, dz] of localDirs) {
+            const nx = x + dx;
+            const ny = y + dy;
+            const nz = z + dz;
+            
+            if (nx >= 0 && nx < gridSize && 
+                ny >= 0 && ny < gridSize && 
+                nz >= 0 && nz < gridSize) {
+              const nIdx = nz * gridSize * gridSize + ny * gridSize + nx;
+              neighbors.push({ idx: nIdx, layer: layer, weight: 0.8 / 6 });
+            }
+          }
+          
+          // Add random long-range connections
+          if (Math.random() < 0.1) {
+            const nIdx = Math.floor(Math.random() * totalOscillators);
+            neighbors.push({ idx: nIdx, layer: layer, weight: 0.2 });
+          }
+          break;
+      }
+      
+      // Add inter-layer coupling
+      if (numLayers > 1) {
+        const i = z * gridSize * gridSize + y * gridSize + x;
+        
+        // Connect to same position in adjacent layers
+        if (layer > 0) {
+          neighbors.push({ idx: i, layer: layer - 1, weight: 0.3 });
+        }
+        if (layer < numLayers - 1) {
+          neighbors.push({ idx: i, layer: layer + 1, weight: 0.3 });
+        }
+      }
+      
+      return neighbors;
+    }
+    
+    // ========================================
+    // Dynamics Update
+    // ========================================
+    function updateDynamics() {
+      if (paused) return;
+      
+      const newOscillators = new Float32Array(oscillators.length);
+      
+      for (let layer = 0; layer < numLayers; layer++) {
+        for (let i = 0; i < totalOscillators; i++) {
+          const idx = layer * totalOscillators + i;
+          
+          // Calculate coupling term
+          let couplingTerm = 0;
+          const neighbors = coupling[layer][i];
+          
+          for (const neighbor of neighbors) {
+            const nIdx = neighbor.layer * totalOscillators + neighbor.idx;
+            couplingTerm += neighbor.weight * Math.sin(oscillators[nIdx] - oscillators[idx]);
+          }
+          
+          // Natural frequency (with spatial variation)
+          const x = i % gridSize;
+          const y = Math.floor(i / gridSize) % gridSize;
+          const z = Math.floor(i / (gridSize * gridSize));
+          const omega = (Math.sin(x * 0.1) + Math.cos(y * 0.1) + Math.sin(z * 0.1)) * 0.1;
+          
+          // Noise term
+          const noiseTerm = (Math.random() - 0.5) * noise;
+          
+          // Update velocity with damping
+          velocities[idx] = (1 - damping) * velocities[idx] + 
+                            (omega + K * couplingTerm + noiseTerm) * dt;
+          
+          // Update phase
+          newOscillators[idx] = oscillators[idx] + velocities[idx];
+          
+          // Wrap phase to [0, 2π]
+          newOscillators[idx] = newOscillators[idx] % (2 * Math.PI);
+          if (newOscillators[idx] < 0) newOscillators[idx] += 2 * Math.PI;
+        }
+      }
+      
+      oscillators = newOscillators;
+      time += dt;
+    }
+    
+    // ========================================
+    // Visualization Creation
+    // ========================================
+    function createVolumeCloud() {
+      // Remove existing
+      if (volumeCloud) scene.remove(volumeCloud);
+      
+      // Create point cloud for volume visualization
+      const geometry = new THREE.BufferGeometry();
+      const positions = [];
+      const colors = [];
+      const sizes = [];
+      
+      const scale = 100 / gridSize;
+      
+      for (let layer = 0; layer < numLayers; layer++) {
+        for (let z = 0; z < gridSize; z++) {
+          for (let y = 0; y < gridSize; y++) {
+            for (let x = 0; x < gridSize; x++) {
+              const idx = layer * totalOscillators + (z * gridSize * gridSize + y * gridSize + x);
+              
+              // Position
+              positions.push(
+                (x - gridSize / 2) * scale,
+                (y - gridSize / 2) * scale + layer * 30,
+                (z - gridSize / 2) * scale
+              );
+              
+              // Color based on phase
+              const phase = oscillators[idx] || 0;
+              const color = getColor(phase, idx);
+              colors.push(color.r, color.g, color.b);
+              
+              // Size based on local coherence
+              const coherence = getLocalCoherence(layer, x, y, z);
+              sizes.push(coherence * 5 + 1);
+            }
+          }
+        }
+      }
+      
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+      
+      // Custom shader material for volume rendering
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          opacity: { value: opacity }
+        },
+        vertexShader: `
+          attribute float size;
+          attribute vec3 color;
+          varying vec3 vColor;
+          varying float vSize;
+          
+          void main() {
+            vColor = color;
+            vSize = size;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = size * (300.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `,
+        fragmentShader: `
+          uniform float opacity;
+          varying vec3 vColor;
+          varying float vSize;
+          
+          void main() {
+            vec2 center = gl_PointCoord - vec2(0.5);
+            float dist = length(center);
+            
+            if (dist > 0.5) discard;
+            
+            float alpha = opacity * (1.0 - smoothstep(0.0, 0.5, dist));
+            alpha *= vSize / 5.0;
+            
+            gl_FragColor = vec4(vColor, alpha);
+          }
+        `,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+      
+      volumeCloud = new THREE.Points(geometry, material);
+      scene.add(volumeCloud);
+    }
+    
+    function createParticleSystem() {
+      // Remove existing
+      if (particleSystem) scene.remove(particleSystem);
+      
+      const particleCount = 1000;
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const colors = new Float32Array(particleCount * 3);
+      const velocities = new Float32Array(particleCount * 3);
+      
+      // Initialize particles randomly
+      for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 100;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
+        
+        velocities[i * 3] = 0;
+        velocities[i * 3 + 1] = 0;
+        velocities[i * 3 + 2] = 0;
+        
+        colors[i * 3] = 0;
+        colors[i * 3 + 1] = 1;
+        colors[i * 3 + 2] = 1;
+      }
+      
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      geometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+      
+      const material = new THREE.PointsMaterial({
+        size: 2,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+      });
+      
+      particleSystem = new THREE.Points(geometry, material);
+      particleSystem.userData = { velocities };
+      scene.add(particleSystem);
+    }
+    
+    function createSlicePlanes() {
+      // Remove existing
+      if (slicePlanes) {
+        slicePlanes.forEach(plane => scene.remove(plane));
+      }
+      slicePlanes = [];
+      
+      const scale = 100 / gridSize;
+      
+      // Create 3 orthogonal slice planes
+      const slicePositions = [
+        { axis: 'x', pos: gridSize / 2 },
+        { axis: 'y', pos: gridSize / 2 },
+        { axis: 'z', pos: gridSize / 2 }
+      ];
+      
+      slicePositions.forEach(slice => {
+        const planeSize = 100;
+        const geometry = new THREE.PlaneGeometry(planeSize, planeSize, gridSize - 1, gridSize - 1);
+        
+        // Update vertices based on oscillator field
+        const positions = geometry.attributes.position.array;
+        const colors = [];
+        
+        for (let i = 0; i < positions.length / 3; i++) {
+          const phase = oscillators[i % totalOscillators] || 0;
+          const color = getColor(phase, i);
+          colors.push(color.r, color.g, color.b);
+        }
+        
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        
+        const material = new THREE.MeshBasicMaterial({
+          vertexColors: true,
+          transparent: true,
+          opacity: opacity,
+          side: THREE.DoubleSide
+        });
+        
+        const plane = new THREE.Mesh(geometry, material);
+        
+        // Position and rotate based on axis
+        if (slice.axis === 'x') {
+          plane.rotation.y = Math.PI / 2;
+          plane.position.x = (slice.pos - gridSize / 2) * scale;
+        } else if (slice.axis === 'y') {
+          plane.rotation.x = Math.PI / 2;
+          plane.position.y = (slice.pos - gridSize / 2) * scale;
+        } else {
+          plane.position.z = (slice.pos - gridSize / 2) * scale;
+        }
+        
+        slicePlanes.push(plane);
+        scene.add(plane);
+      });
+    }
+    
+    // ========================================
+    // Visualization Update
+    // ========================================
+    function updateVisualization() {
+      switch(vizMode) {
+        case 'volume':
+          createVolumeCloud();
+          if (particleSystem) scene.remove(particleSystem);
+          if (slicePlanes) slicePlanes.forEach(p => scene.remove(p));
+          break;
+        
+        case 'particles':
+          createParticleSystem();
+          updateParticles();
+          if (volumeCloud) scene.remove(volumeCloud);
+          if (slicePlanes) slicePlanes.forEach(p => scene.remove(p));
+          break;
+        
+        case 'slices':
+          createSlicePlanes();
+          if (volumeCloud) scene.remove(volumeCloud);
+          if (particleSystem) scene.remove(particleSystem);
+          break;
+        
+        case 'hybrid':
+          createVolumeCloud();
+          createParticleSystem();
+          updateParticles();
+          break;
+        
+        default:
+          createVolumeCloud();
+      }
+    }
+    
+    function updateParticles() {
+      if (!particleSystem) return;
+      
+      const positions = particleSystem.geometry.attributes.position.array;
+      const colors = particleSystem.geometry.attributes.color.array;
+      const velocities = particleSystem.userData.velocities;
+      
+      const scale = 100 / gridSize;
+      
+      for (let i = 0; i < positions.length / 3; i++) {
+        // Get current position
+        let x = positions[i * 3];
+        let y = positions[i * 3 + 1];
+        let z = positions[i * 3 + 2];
+        
+        // Map to grid coordinates
+        const gx = Math.floor((x / scale) + gridSize / 2);
+        const gy = Math.floor((y / scale) + gridSize / 2);
+        const gz = Math.floor((z / scale) + gridSize / 2);
+        
+        if (gx >= 0 && gx < gridSize && 
+            gy >= 0 && gy < gridSize && 
+            gz >= 0 && gz < gridSize) {
+          
+          // Get oscillator index
+          const idx = gz * gridSize * gridSize + gy * gridSize + gx;
+          
+          // Follow phase gradient
+          const phase = oscillators[idx] || 0;
+          const gradX = getPhaseGradient(0, gx, gy, gz, 'x');
+          const gradY = getPhaseGradient(0, gx, gy, gz, 'y');
+          const gradZ = getPhaseGradient(0, gx, gy, gz, 'z');
+          
+          // Update velocity
+          velocities[i * 3] += gradX * 0.5;
+          velocities[i * 3 + 1] += gradY * 0.5;
+          velocities[i * 3 + 2] += gradZ * 0.5;
+          
+          // Apply damping
+          velocities[i * 3] *= 0.95;
+          velocities[i * 3 + 1] *= 0.95;
+          velocities[i * 3 + 2] *= 0.95;
+          
+          // Update position
+          positions[i * 3] += velocities[i * 3];
+          positions[i * 3 + 1] += velocities[i * 3 + 1];
+          positions[i * 3 + 2] += velocities[i * 3 + 2];
+          
+          // Wrap around
+          if (Math.abs(positions[i * 3]) > 50) positions[i * 3] = -positions[i * 3];
+          if (Math.abs(positions[i * 3 + 1]) > 50) positions[i * 3 + 1] = -positions[i * 3 + 1];
+          if (Math.abs(positions[i * 3 + 2]) > 50) positions[i * 3 + 2] = -positions[i * 3 + 2];
+          
+          // Update color based on phase
+          const color = getColor(phase, idx);
+          colors[i * 3] = color.r;
+          colors[i * 3 + 1] = color.g;
+          colors[i * 3 + 2] = color.b;
+        } else {
+          // Respawn particle
+          positions[i * 3] = (Math.random() - 0.5) * 100;
+          positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
+        }
+      }
+      
+      particleSystem.geometry.attributes.position.needsUpdate = true;
+      particleSystem.geometry.attributes.color.needsUpdate = true;
+    }
+    
+    // ========================================
+    // Helper Functions
+    // ========================================
+    function getColor(phase, idx) {
+      const schemes = {
+        plasma: () => {
+          const t = phase / (2 * Math.PI);
+          return new THREE.Color(
+            0.5 + 0.5 * Math.sin(Math.PI * t),
+            0.5 + 0.5 * Math.sin(Math.PI * (t + 0.33)),
+            0.5 + 0.5 * Math.sin(Math.PI * (t + 0.66))
+          );
+        },
+        phase: () => {
+          return new THREE.Color().setHSL(phase / (2 * Math.PI), 1, 0.5);
+        },
+        coherence: () => {
+          const layer = Math.floor(idx / totalOscillators);
+          const i = idx % totalOscillators;
+          const x = i % gridSize;
+          const y = Math.floor(i / gridSize) % gridSize;
+          const z = Math.floor(i / (gridSize * gridSize));
+          const coh = getLocalCoherence(layer, x, y, z);
+          return new THREE.Color(coh * 0.5, coh, coh * 0.5);
+        },
+        energy: () => {
+          const vel = velocities[idx] || 0;
+          const energy = Math.abs(vel) * 10;
+          return new THREE.Color(energy, energy * 0.5, energy * 0.8);
+        },
+        quantum: () => {
+          const t = phase / (2 * Math.PI);
+          const prob = 0.5 + 0.5 * Math.sin(phase * 3);
+          return new THREE.Color(prob * t, prob * 0.8, prob);
+        },
+        neural: () => {
+          const activity = 0.5 + 0.5 * Math.sin(phase);
+          return new THREE.Color(activity * 0.2, activity * 0.8, activity);
+        }
+      };
+      
+      const colorFunc = schemes[colorScheme] || schemes.plasma;
+      return colorFunc();
+    }
+    
+    function getLocalCoherence(layer, x, y, z) {
+      let sumCos = 0;
+      let sumSin = 0;
+      let count = 0;
+      
+      for (let dz = -1; dz <= 1; dz++) {
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            const nx = x + dx;
+            const ny = y + dy;
+            const nz = z + dz;
+            
+            if (nx >= 0 && nx < gridSize && 
+                ny >= 0 && ny < gridSize && 
+                nz >= 0 && nz < gridSize) {
+              
+              const idx = layer * totalOscillators + 
+                         (nz * gridSize * gridSize + ny * gridSize + nx);
+              sumCos += Math.cos(oscillators[idx]);
+              sumSin += Math.sin(oscillators[idx]);
+              count++;
+            }
+          }
+        }
+      }
+      
+      if (count === 0) return 0;
+      return Math.sqrt(sumCos * sumCos + sumSin * sumSin) / count;
+    }
+    
+    function getPhaseGradient(layer, x, y, z, direction) {
+      const idx = layer * totalOscillators + (z * gridSize * gridSize + y * gridSize + x);
+      let gradient = 0;
+      
+      if (direction === 'x' && x > 0 && x < gridSize - 1) {
+        const leftIdx = layer * totalOscillators + (z * gridSize * gridSize + y * gridSize + (x - 1));
+        const rightIdx = layer * totalOscillators + (z * gridSize * gridSize + y * gridSize + (x + 1));
+        gradient = Math.sin(oscillators[rightIdx] - oscillators[leftIdx]);
+      } else if (direction === 'y' && y > 0 && y < gridSize - 1) {
+        const bottomIdx = layer * totalOscillators + (z * gridSize * gridSize + (y - 1) * gridSize + x);
+        const topIdx = layer * totalOscillators + (z * gridSize * gridSize + (y + 1) * gridSize + x);
+        gradient = Math.sin(oscillators[topIdx] - oscillators[bottomIdx]);
+      } else if (direction === 'z' && z > 0 && z < gridSize - 1) {
+        const backIdx = layer * totalOscillators + ((z - 1) * gridSize * gridSize + y * gridSize + x);
+        const frontIdx = layer * totalOscillators + ((z + 1) * gridSize * gridSize + y * gridSize + x);
+        gradient = Math.sin(oscillators[frontIdx] - oscillators[backIdx]);
+      }
+      
+      return gradient;
+    }
+    
+    function calculateOrderParameter() {
+      let sumCos = 0;
+      let sumSin = 0;
+      
+      for (let i = 0; i < oscillators.length; i++) {
+        sumCos += Math.cos(oscillators[i]);
+        sumSin += Math.sin(oscillators[i]);
+      }
+      
+      const N = oscillators.length;
+      const R = Math.sqrt(sumCos * sumCos + sumSin * sumSin) / N;
+      const psi = Math.atan2(sumSin, sumCos);
+      
+      return { R, psi };
+    }
+    
+    // ========================================
+    // Controls Setup
+    // ========================================
+    function setupControls() {
+      // Mouse controls
+      let mouseDown = false;
+      let mouseX = 0;
+      let mouseY = 0;
+      
+      canvas.addEventListener('mousedown', (e) => {
+        mouseDown = true;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+      
+      canvas.addEventListener('mouseup', () => {
+        mouseDown = false;
+      });
+      
+      canvas.addEventListener('mousemove', (e) => {
+        if (!mouseDown) return;
+        
+        const deltaX = e.clientX - mouseX;
+        const deltaY = e.clientY - mouseY;
+        
+        if (mouseMode === 'rotate') {
+          // Rotate camera around origin
+          const spherical = new THREE.Spherical();
+          spherical.setFromVector3(camera.position);
+          spherical.theta -= deltaX * 0.01;
+          spherical.phi += deltaY * 0.01;
+          spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+          camera.position.setFromSpherical(spherical);
+          camera.lookAt(0, 0, 0);
+        }
+        
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+      
+      canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const scale = e.deltaY > 0 ? 1.1 : 0.9;
+        camera.position.multiplyScalar(scale);
+      });
+      
+      // Keyboard controls
+      document.addEventListener('keydown', (e) => {
+        switch(e.key) {
+          case ' ':
+            e.preventDefault();
+            paused = !paused;
+            document.getElementById('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+            break;
+          case 'r':
+            initOscillatorField();
+            break;
+          case 'f':
+            if (!document.fullscreenElement) {
+              document.documentElement.requestFullscreen();
+            } else {
+              document.exitFullscreen();
+            }
+            break;
+          case '1':
+          case '2':
+          case '3':
+          case '4':
+          case '5':
+          case '6':
+            const presets = ['sync', 'waves', 'chimera', 'quantum', 'turbulence', 'crystal'];
+            const presetIdx = parseInt(e.key) - 1;
+            if (presetIdx < presets.length) {
+              applyPreset(presets[presetIdx]);
+            }
+            break;
+        }
+      });
+      
+      // UI Controls
+      document.getElementById('kSlider').addEventListener('input', (e) => {
+        K = parseFloat(e.target.value);
+        document.getElementById('kVal').textContent = K.toFixed(1);
+      });
+      
+      document.getElementById('noiseSlider').addEventListener('input', (e) => {
+        noise = parseFloat(e.target.value);
+        document.getElementById('noiseVal').textContent = noise.toFixed(2);
+      });
+      
+      document.getElementById('speedSlider').addEventListener('input', (e) => {
+        dt = parseFloat(e.target.value);
+        document.getElementById('speedVal').textContent = dt.toFixed(3);
+      });
+      
+      document.getElementById('dampingSlider').addEventListener('input', (e) => {
+        damping = parseFloat(e.target.value);
+        document.getElementById('dampingVal').textContent = damping.toFixed(2);
+      });
+      
+      document.getElementById('opacitySlider').addEventListener('input', (e) => {
+        opacity = parseFloat(e.target.value);
+        document.getElementById('opacityVal').textContent = opacity.toFixed(2);
+      });
+      
+      document.getElementById('thresholdSlider').addEventListener('input', (e) => {
+        threshold = parseFloat(e.target.value);
+        document.getElementById('thresholdVal').textContent = threshold.toFixed(2);
+      });
+      
+      document.getElementById('gridSizeSlider').addEventListener('input', (e) => {
+        gridSize = parseInt(e.target.value);
+        document.getElementById('gridSizeVal').textContent = gridSize;
+        initOscillatorField();
+      });
+      
+      document.getElementById('layersSlider').addEventListener('input', (e) => {
+        numLayers = parseInt(e.target.value);
+        document.getElementById('layersVal').textContent = numLayers;
+        initOscillatorField();
+      });
+      
+      document.getElementById('probeRadiusSlider').addEventListener('input', (e) => {
+        probeRadius = parseInt(e.target.value);
+        document.getElementById('probeRadiusVal').textContent = probeRadius;
+      });
+      
+      document.getElementById('autoRotateSlider').addEventListener('input', (e) => {
+        autoRotate = parseFloat(e.target.value);
+        document.getElementById('autoRotateVal').textContent = autoRotate.toFixed(1);
+      });
+      
+      document.getElementById('vizMode').addEventListener('change', (e) => {
+        vizMode = e.target.value;
+        document.getElementById('mode').textContent = vizMode.toUpperCase();
+      });
+      
+      document.getElementById('colorScheme').addEventListener('change', (e) => {
+        colorScheme = e.target.value;
+      });
+      
+      document.getElementById('topology').addEventListener('change', (e) => {
+        topology = e.target.value;
+        initializeCoupling();
+      });
+      
+      document.getElementById('initState').addEventListener('change', initOscillatorField);
+      
+      document.getElementById('mouseMode').addEventListener('change', (e) => {
+        mouseMode = e.target.value;
+      });
+      
+      // Buttons
+      document.getElementById('resetBtn').addEventListener('click', initOscillatorField);
+      
+      document.getElementById('pauseBtn').addEventListener('click', () => {
+        paused = !paused;
+        document.getElementById('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+      });
+      
+      document.getElementById('randomBtn').addEventListener('click', () => {
+        for (let i = 0; i < oscillators.length; i++) {
+          oscillators[i] = Math.random() * 2 * Math.PI;
+        }
+      });
+      
+      document.getElementById('pulseBtn').addEventListener('click', () => {
+        const centerIdx = Math.floor(oscillators.length / 2);
+        const pulseStrength = 10;
+        
+        for (let i = 0; i < oscillators.length; i++) {
+          const layer = Math.floor(i / totalOscillators);
+          const idx = i % totalOscillators;
+          const x = idx % gridSize;
+          const y = Math.floor(idx / gridSize) % gridSize;
+          const z = Math.floor(idx / (gridSize * gridSize));
+          
+          const dist = Math.sqrt(
+            (x - gridSize / 2) ** 2 + 
+            (y - gridSize / 2) ** 2 + 
+            (z - gridSize / 2) ** 2
+          );
+          
+          const influence = Math.exp(-dist * dist / 100);
+          velocities[i] += influence * pulseStrength;
+        }
+      });
+      
+      document.getElementById('fullscreenBtn').addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+      });
+      
+      document.getElementById('exportBtn').addEventListener('click', () => {
+        const data = {
+          parameters: {
+            gridSize,
+            numLayers,
+            K,
+            noise,
+            dt,
+            damping,
+            topology
+          },
+          oscillators: Array.from(oscillators),
+          time: time
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `kuramoto3d_${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+      
+      // Window resize
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    }
+    
+    // ========================================
+    // Presets
+    // ========================================
+    function applyPreset(preset) {
+      switch(preset) {
+        case 'sync':
+          K = 5;
+          noise = 0.05;
+          dt = 0.05;
+          damping = 0.1;
+          document.getElementById('initState').value = 'random';
+          break;
+        
+        case 'waves':
+          K = 2;
+          noise = 0.1;
+          dt = 0.03;
+          damping = 0;
+          document.getElementById('initState').value = 'gradient';
+          break;
+        
+        case 'chimera':
+          K = 1.5;
+          noise = 0;
+          dt = 0.05;
+          damping = 0;
+          topology = 'distance';
+          document.getElementById('topology').value = 'distance';
+          document.getElementById('initState').value = 'sphere';
+          break;
+        
+        case 'quantum':
+          K = 3;
+          noise = 0.3;
+          dt = 0.02;
+          damping = 0.05;
+          colorScheme = 'quantum';
+          document.getElementById('colorScheme').value = 'quantum';
+          break;
+        
+        case 'turbulence':
+          K = 1;
+          noise = 1;
+          dt = 0.1;
+          damping = 0;
+          break;
+        
+        case 'crystal':
+          K = 4;
+          noise = 0.01;
+          dt = 0.01;
+          damping = 0.2;
+          topology = 'local26';
+          document.getElementById('topology').value = 'local26';
+          document.getElementById('initState').value = 'torus';
+          break;
+      }
+      
+      // Update UI
+      document.getElementById('kSlider').value = K;
+      document.getElementById('kVal').textContent = K.toFixed(1);
+      document.getElementById('noiseSlider').value = noise;
+      document.getElementById('noiseVal').textContent = noise.toFixed(2);
+      document.getElementById('speedSlider').value = dt;
+      document.getElementById('speedVal').textContent = dt.toFixed(3);
+      document.getElementById('dampingSlider').value = damping;
+      document.getElementById('dampingVal').textContent = damping.toFixed(2);
+      
+      initOscillatorField();
+    }
+    
+    // ========================================
+    // Info Update
+    // ========================================
+    function updateInfo() {
+      document.getElementById('dimensions').textContent = `${gridSize}×${gridSize}×${gridSize}`;
+      document.getElementById('oscillatorCount').textContent = (totalOscillators * numLayers).toLocaleString();
+      
+      const { R, psi } = calculateOrderParameter();
+      document.getElementById('orderParam').textContent = R.toFixed(3);
+      document.getElementById('meanPhase').textContent = psi.toFixed(2);
+      document.getElementById('coherence').textContent = Math.round(R * 100) + '%';
+      
+      // FPS
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fps = frameCount;
+        document.getElementById('fps').textContent = fps;
+        frameCount = 0;
+        lastTime = now;
+      }
+    }
+    
+    // ========================================
+    // Animation Loop
+    // ========================================
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      updateDynamics();
+      updateVisualization();
+      updateInfo();
+      
+      // Auto-rotate
+      if (autoRotate > 0 && mouseMode === 'rotate') {
+        const spherical = new THREE.Spherical();
+        spherical.setFromVector3(camera.position);
+        spherical.theta += autoRotate * 0.01;
+        camera.position.setFromSpherical(spherical);
+        camera.lookAt(0, 0, 0);
+      }
+      
+      renderer.render(scene, camera);
+    }
+    
+    // ========================================
+    // Initialization
+    // ========================================
+    function init() {
+      initThreeJS();
+      initOscillatorField();
+      
+      // Hide loading, show UI
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('info').classList.remove('hidden');
+      document.getElementById('controls').classList.remove('hidden');
+      document.getElementById('instructions').classList.remove('hidden');
+      
+      // Start animation
+      animate();
+    }
+    
+    // Start when loaded
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>
