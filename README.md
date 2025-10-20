@@ -174,10 +174,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 If you use these visualizations in your work, please cite:
 
 ```bibtex
-@software{vasquez2024kuramoto,
+@software{vasquez2025kuramoto,
   author = {Vasquez, A.J.},
   title = {Interactive Kuramoto Oscillator Visualizations},
-  year = {2024},
+  year = {2025},
   publisher = {Open Science Framework},
   doi = {10.17605/OSF.IO/ERWTM},
   url = {https://osf.io/erwtm/}
@@ -186,7 +186,7 @@ If you use these visualizations in your work, please cite:
 
 **APA Format:**
 ```
-Vasquez, A.J. (2024). Interactive Kuramoto Oscillator Visualizations.
+Vasquez, A.J. (2025). Interactive Kuramoto Oscillator Visualizations.
 Open Science Framework. https://doi.org/10.17605/OSF.IO/ERWTM
 ```
 
