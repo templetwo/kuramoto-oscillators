@@ -15,9 +15,10 @@ authors:
     affiliation: Delaware Valley University
 identifiers:
   - type: doi
-    value: 10.17605/OSF.IO/XXXXX
-    description: OSF Project DOI (update after creation)
+    value: 10.17605/OSF.IO/ERWTM
+    description: OSF Project DOI
 repository-code: 'https://github.com/templetwo/kuramoto-oscillators'
+repository-artifact: 'https://osf.io/erwtm/'
 url: 'https://templetwo.github.io/kuramoto-oscillators/'
 abstract: >-
   Interactive web-based visualizations of the Kuramoto model

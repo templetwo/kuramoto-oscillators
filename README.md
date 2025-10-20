@@ -1,7 +1,7 @@
 # 🌊 Kuramoto Oscillator Visualizations
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://img.shields.io/badge/DOI-pending-blue)](https://osf.io/)
+[![DOI](https://img.shields.io/badge/DOI-10.17605%2FOSF.IO%2FERWTM-blue)](https://doi.org/10.17605/OSF.IO/ERWTM)
 [![Live Demo](https://img.shields.io/badge/demo-live-green)](https://templetwo.github.io/kuramoto-oscillators/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)](https://www.javascript.com/)
 [![HTML5](https://img.shields.io/badge/HTML5-Canvas-orange)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas)
@@ -174,13 +174,20 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 If you use these visualizations in your work, please cite:
 
 ```bibtex
-@software{kuramoto_viz_2024,
+@software{vasquez2024kuramoto,
   author = {Vasquez, A.J.},
   title = {Interactive Kuramoto Oscillator Visualizations},
   year = {2024},
-  publisher = {GitHub},
-  url = {https://github.com/templetwo/kuramoto-oscillators}
+  publisher = {Open Science Framework},
+  doi = {10.17605/OSF.IO/ERWTM},
+  url = {https://osf.io/erwtm/}
 }
+```
+
+**APA Format:**
+```
+Vasquez, A.J. (2024). Interactive Kuramoto Oscillator Visualizations.
+Open Science Framework. https://doi.org/10.17605/OSF.IO/ERWTM
 ```
 
 ## 📖 References
