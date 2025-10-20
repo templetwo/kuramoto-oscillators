@@ -186,14 +186,17 @@ If you use these visualizations in your work, please cite:
 ## 📖 References
 
 ### Foundational Papers
-1. **Kuramoto, Y.** (1975). Self-entrainment of coupled oscillators. *International Symposium on Mathematical Problems in Theoretical Physics.* Lecture Notes in Physics, 39, 420-422.
-2. **Strogatz, S. H.** (2000). From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators. *Physica D: Nonlinear Phenomena*, 143(1-4), 1-20.
-3. **Acebrón, J. A., et al.** (2005). The Kuramoto model: A simple paradigm for synchronization phenomena. *Reviews of Modern Physics*, 77(1), 137.
+1. **Kuramoto, Y.** (1975). Self-entrainment of a population of coupled non-linear oscillators. *International Symposium on Mathematical Problems in Theoretical Physics.* Lecture Notes in Physics, 39, 420-422. [DOI: 10.1007/BFb0013365](https://doi.org/10.1007/BFb0013365)
+2. **Kuramoto, Y.** (1984). *Chemical Oscillations, Waves, and Turbulence.* Springer. [DOI: 10.1007/978-3-642-69689-3](https://doi.org/10.1007/978-3-642-69689-3)
+3. **Strogatz, S. H.** (2000). From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators. *Physica D: Nonlinear Phenomena*, 143(1-4), 1-20. [DOI: 10.1016/S0167-2789(00)00094-4](https://doi.org/10.1016/S0167-2789(00)00094-4)
+4. **Acebrón, J. A., et al.** (2005). The Kuramoto model: A simple paradigm for synchronization phenomena. *Reviews of Modern Physics*, 77(1), 137-185. [DOI: 10.1103/RevModPhys.77.137](https://doi.org/10.1103/RevModPhys.77.137)
 
 ### Advanced Topics
-4. **Abrams, D. M., & Strogatz, S. H.** (2004). Chimera states for coupled oscillators. *Physical Review Letters*, 93(17), 174102.
-5. **Pikovsky, A., Rosenblum, M., & Kurths, J.** (2001). *Synchronization: A Universal Concept in Nonlinear Sciences.* Cambridge University Press.
-6. **Rodrigues, F. A., et al.** (2016). The Kuramoto model in complex networks. *Physics Reports*, 610, 1-98.
+5. **Abrams, D. M., & Strogatz, S. H.** (2004). Chimera states for coupled oscillators. *Physical Review Letters*, 93(17), 174102. [DOI: 10.1103/PhysRevLett.93.174102](https://doi.org/10.1103/PhysRevLett.93.174102)
+6. **Pikovsky, A., Rosenblum, M., & Kurths, J.** (2001). *Synchronization: A Universal Concept in Nonlinear Sciences.* Cambridge University Press. [DOI: 10.1017/CBO9780511755743](https://doi.org/10.1017/CBO9780511755743)
+7. **Rodrigues, F. A., et al.** (2016). The Kuramoto model in complex networks. *Physics Reports*, 610, 1-98. [DOI: 10.1016/j.physrep.2015.10.008](https://doi.org/10.1016/j.physrep.2015.10.008)
+
+**Complete BibTeX bibliography**: See [REFERENCES.bib](REFERENCES.bib) for all citations in BibTeX format.
 
 ## 🎓 Learning Resources
 

@@ -9,17 +9,16 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Your
-    family-names: Name
-    email: your.email@institution.edu
-    affiliation: Your Institution
-    orcid: 'https://orcid.org/0000-0000-0000-0000'
+  - given-names: A.J.
+    family-names: Vasquez
+    email: vasquezaj3921@delval.edu
+    affiliation: Delaware Valley University
 identifiers:
   - type: doi
     value: 10.17605/OSF.IO/XXXXX
-    description: OSF Project DOI
-repository-code: 'https://osf.io/xxxxx'
-url: 'https://osf.io/xxxxx'
+    description: OSF Project DOI (update after creation)
+repository-code: 'https://github.com/templetwo/kuramoto-oscillators'
+url: 'https://templetwo.github.io/kuramoto-oscillators/'
 abstract: >-
   Interactive web-based visualizations of the Kuramoto model
   for coupled oscillator synchronization. This project
@@ -47,26 +46,73 @@ keywords:
 license: MIT
 commit: initial
 version: 1.0.0
-date-released: '2024-01-01'
+date-released: '2024-10-20'
 references:
   - authors:
     - family-names: Kuramoto
       given-names: Yoshiki
     title: "Self-entrainment of a population of coupled non-linear oscillators"
-    type: article
+    type: conference-paper
     year: 1975
-    journal: "Lecture Notes in Physics"
+    collection-title: "International Symposium on Mathematical Problems in Theoretical Physics"
+    collection-type: proceedings
+    publisher:
+      name: Springer
     volume: 39
     start: 420
     end: 422
+    doi: 10.1007/BFb0013365
+  - authors:
+    - family-names: Kuramoto
+      given-names: Yoshiki
+    title: "Chemical Oscillations, Waves, and Turbulence"
+    type: book
+    year: 1984
+    publisher:
+      name: Springer
+    doi: 10.1007/978-3-642-69689-3
   - authors:
     - family-names: Strogatz
       given-names: Steven H.
-    title: "From Kuramoto to Crawford: exploring the onset of synchronization"
+    title: "From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators"
     type: article
     year: 2000
-    journal: "Physica D"
+    journal: "Physica D: Nonlinear Phenomena"
     volume: 143
     issue: 1-4
     start: 1
     end: 20
+    doi: 10.1016/S0167-2789(00)00094-4
+  - authors:
+    - family-names: Acebrón
+      given-names: J. A.
+    - family-names: Bonilla
+      given-names: L. L.
+    - family-names: Pérez Vicente
+      given-names: C. J.
+    - family-names: Ritort
+      given-names: F.
+    - family-names: Spigler
+      given-names: R.
+    title: "The Kuramoto model: A simple paradigm for synchronization phenomena"
+    type: article
+    year: 2005
+    journal: "Reviews of Modern Physics"
+    volume: 77
+    issue: 1
+    start: 137
+    end: 185
+    doi: 10.1103/RevModPhys.77.137
+  - authors:
+    - family-names: Abrams
+      given-names: Daniel M.
+    - family-names: Strogatz
+      given-names: Steven H.
+    title: "Chimera states for coupled oscillators"
+    type: article
+    year: 2004
+    journal: "Physical Review Letters"
+    volume: 93
+    issue: 17
+    start: 174102
+    doi: 10.1103/PhysRevLett.93.174102
