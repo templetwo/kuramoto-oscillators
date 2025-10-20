@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://img.shields.io/badge/DOI-pending-blue)](https://osf.io/)
-[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://yourusername.github.io/kuramoto-oscillators/)
+[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://templetwo.github.io/kuramoto-oscillators/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)](https://www.javascript.com/)
 [![HTML5](https://img.shields.io/badge/HTML5-Canvas-orange)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas)
 
@@ -14,14 +14,14 @@ Watch thousands of oscillators dance from chaos into synchronization, revealing 
 
 ## ✨ Live Demos
 
-🚀 **[Try it live on GitHub Pages](https://yourusername.github.io/kuramoto-oscillators/)**
+🚀 **[Try it live on GitHub Pages](https://templetwo.github.io/kuramoto-oscillators/)**
 
 Or explore individual visualizations:
-- [2D Grid Synchronization](https://yourusername.github.io/kuramoto-oscillators/kuramoto_grid_enhanced.html) - 16,384 coupled oscillators
-- [3D Volume Field](https://yourusername.github.io/kuramoto-oscillators/kuramoto_3d.html) - 262,144 oscillators in 3D
-- [Pixel Ocean](https://yourusername.github.io/kuramoto-oscillators/oscillator_ocean.html) - Every pixel oscillates
-- [Golden Ratio Patterns](https://yourusername.github.io/kuramoto-oscillators/fibonacci_oscillators.html) - Fibonacci in nature
-- [Multi-layer System](https://yourusername.github.io/kuramoto-oscillators/kuramoto_ultimate.html) - Neural-like networks
+- [2D Grid Synchronization](https://templetwo.github.io/kuramoto-oscillators/kuramoto_grid_enhanced.html) - 16,384 coupled oscillators
+- [3D Volume Field](https://templetwo.github.io/kuramoto-oscillators/kuramoto_3d.html) - 262,144 oscillators in 3D
+- [Pixel Ocean](https://templetwo.github.io/kuramoto-oscillators/oscillator_ocean.html) - Every pixel oscillates
+- [Golden Ratio Patterns](https://templetwo.github.io/kuramoto-oscillators/fibonacci_oscillators.html) - Fibonacci in nature
+- [Multi-layer System](https://templetwo.github.io/kuramoto-oscillators/kuramoto_ultimate.html) - Neural-like networks
 
 ## 🎯 Features
 
@@ -40,7 +40,7 @@ Just click any demo link above!
 ### Local Installation
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/kuramoto-oscillators.git
+git clone https://github.com/templetwo/kuramoto-oscillators.git
 
 # Navigate to directory
 cd kuramoto-oscillators
@@ -179,7 +179,7 @@ If you use these visualizations in your work, please cite:
   title = {Interactive Kuramoto Oscillator Visualizations},
   year = {2024},
   publisher = {GitHub},
-  url = {https://github.com/yourusername/kuramoto-oscillators}
+  url = {https://github.com/templetwo/kuramoto-oscillators}
 }
 ```
 
@@ -198,7 +198,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 **A.J. Vasquez**
 - Delaware Valley University
 - Email: vasquezaj3921@delval.edu
-- GitHub: [@yourusername](https://github.com/yourusername)
+- GitHub: [@templetwo](https://github.com/templetwo)
 
 ## 🙏 Acknowledgments
 
@@ -209,13 +209,13 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🌟 Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/kuramoto-oscillators&type=Date)](https://star-history.com/#yourusername/kuramoto-oscillators&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=templetwo/kuramoto-oscillators&type=Date)](https://star-history.com/#templetwo/kuramoto-oscillators&Date)
 
 ---
 
 <div align="center">
   
-**[Demo](https://yourusername.github.io/kuramoto-oscillators/) • [Documentation](docs/) • [Report Bug](issues/) • [Request Feature](issues/)**
+**[Demo](https://templetwo.github.io/kuramoto-oscillators/) • [Documentation](docs/) • [Report Bug](issues/) • [Request Feature](issues/)**
 
 Made with ❤️ and mathematics
 
