@@ -411,6 +411,13 @@ let tunnelingEnabled = true;
 let tunnelProb = 0.03;  // Base probability
 let tunnelDuration = 30; // Frames to stay faded
 
+// Weak Measurement Collapse (Type 3 SPECULATION)
+// User click "observes" region, forcing local order spike
+let measurementEnabled = true;
+let measurementRadius = 60;  // World units
+let measurementStrength = 0.8; // How much to sync phases
+let lastMeasurement = null;  // {position, time}
+
 // Audio
 let audioContext = null;
 let audioInitialized = false;
@@ -699,6 +706,83 @@ function computeLocalOrder(idx) {
   return Math.sqrt(sumCos * sumCos + sumSin * sumSin) / n;
 }
 
+// ================================================
+// WEAK MEASUREMENT COLLAPSE (Type 3 SPECULATION)
+// ================================================
+function applyWeakMeasurement(screenX, screenY) {
+  // Speculative: User "observes" a region, collapsing superposition
+  // This forces local phase coherence (measurement → definite state)
+  // WARNING: Metaphorical QM only - not actual wave function collapse
+  
+  // Convert screen coords to 3D ray
+  const rect = container.getBoundingClientRect();
+  const mouse = new THREE.Vector2(
+    ((screenX - rect.left) / rect.width) * 2 - 1,
+    -((screenY - rect.top) / rect.height) * 2 + 1
+  );
+  
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+  
+  // Find intersection point with Merkabah center plane
+  const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+  const intersectPoint = new THREE.Vector3();
+  raycaster.ray.intersectPlane(plane, intersectPoint);
+  
+  if (!intersectPoint) return;
+  
+  // Transform to Merkabah local space
+  const localPoint = intersectPoint.clone();
+  merkabahGroup.worldToLocal(localPoint);
+  
+  // Record measurement event
+  lastMeasurement = {
+    position: localPoint.clone(),
+    time: Date.now()
+  };
+  
+  // Find oscillators within measurement radius
+  let measured = 0;
+  let targetPhase = null;
+  
+  for (const osc of oscillators) {
+    const dist = osc.position.distanceTo(localPoint);
+    if (dist < measurementRadius) {
+      if (targetPhase === null) {
+        // First oscillator sets the "collapsed" phase
+        targetPhase = osc.phase;
+      }
+      
+      // Collapse toward target phase (weighted by distance)
+      const weight = (1 - dist / measurementRadius) * measurementStrength;
+      const phaseDiff = targetPhase - osc.phase;
+      // Wrap phase difference to [-π, π]
+      const wrappedDiff = Math.atan2(Math.sin(phaseDiff), Math.cos(phaseDiff));
+      osc.phase += wrappedDiff * weight;
+      osc.phase = osc.phase % (Math.PI * 2);
+      if (osc.phase < 0) osc.phase += Math.PI * 2;
+      
+      // Force visibility (measurement reveals)
+      osc.visibility = 1.0;
+      osc.tunnelTimer = 0;
+      
+      measured++;
+    }
+  }
+  
+  if (measured > 0) {
+    console.log(`⟡ Weak measurement: ${measured} oscillators collapsed to phase ${targetPhase?.toFixed(2)}`);
+    
+    // Send to nexus if connected
+    sendToNexus({
+      type: 'measurement_collapse',
+      position: { x: localPoint.x, y: localPoint.y, z: localPoint.z },
+      oscillators_affected: measured,
+      target_phase: targetPhase
+    });
+  }
+}
+
 function updateTunneling() {
   // Speculative: Low local order increases chance to 'tunnel' (fade out)
   // This creates flickering at criticality - visual quantum metaphor
@@ -801,8 +885,15 @@ function initThree() {
     dragMoved = false;
     prevMouse = { x: e.clientX, y: e.clientY }; 
   });
-  container.addEventListener('mouseup', () => {
-    if (!dragMoved) perturbField();
+  container.addEventListener('mouseup', (e) => {
+    if (!dragMoved) {
+      // Weak measurement on click (Type 3 SPECULATION)
+      if (measurementEnabled) {
+        applyWeakMeasurement(e.clientX, e.clientY);
+      } else {
+        perturbField();
+      }
+    }
     isDragging = false;
   });
   container.addEventListener('mousemove', e => {
@@ -824,8 +915,16 @@ function initThree() {
       prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     }
   }, { passive: true });
-  container.addEventListener('touchend', () => {
-    if (!dragMoved) perturbField();
+  container.addEventListener('touchend', e => {
+    if (!dragMoved) {
+      // Weak measurement on tap
+      if (measurementEnabled && e.changedTouches.length > 0) {
+        const touch = e.changedTouches[0];
+        applyWeakMeasurement(touch.clientX, touch.clientY);
+      } else {
+        perturbField();
+      }
+    }
     isDragging = false;
   });
   container.addEventListener('touchmove', e => {
