@@ -267,6 +267,94 @@ class Merkabah_Overlay:
 
 
 # ============================================================
+# TUNNELING FADE EFFECT (Speculative Quantum Analogy)
+# ============================================================
+
+class TunnelingFade:
+    """
+    Speculative: Simulates quantum tunneling via probabilistic visibility fading.
+    Oscillators near criticality (low local order) may 'tunnel' out of visibility.
+    
+    WARNING: This is Type 3 SPECULATION - metaphorical quantum mechanics only.
+    Does NOT represent actual quantum tunneling physics.
+    """
+    
+    def __init__(self, grid_size: int = 10, tunnel_prob: float = 0.05):
+        self.grid_size = grid_size
+        self.tunnel_prob = tunnel_prob  # Base probability for tunneling event
+        self.visibility = np.ones((grid_size, grid_size))  # 1: visible, 0: faded
+        self.tunnel_timer = np.zeros((grid_size, grid_size))  # Frames until reappear
+        self.tunnel_events = 0  # Count of tunnel events
+        
+    def compute_local_order(self, phases: np.ndarray) -> np.ndarray:
+        """
+        Compute local synchronization measure for each oscillator.
+        Returns array where 0 = disordered, 1 = synchronized.
+        """
+        local_r = np.zeros_like(phases)
+        
+        for i in range(self.grid_size):
+            for j in range(self.grid_size):
+                neighbors = []
+                if i > 0:
+                    neighbors.append(phases[i-1, j])
+                if i < self.grid_size - 1:
+                    neighbors.append(phases[i+1, j])
+                if j > 0:
+                    neighbors.append(phases[i, j-1])
+                if j < self.grid_size - 1:
+                    neighbors.append(phases[i, j+1])
+                    
+                if neighbors:
+                    # Local order parameter relative to this oscillator
+                    phase_diffs = np.array(neighbors) - phases[i, j]
+                    local_r[i, j] = np.abs(np.mean(np.exp(1j * phase_diffs)))
+                    
+        return local_r
+    
+    def update_tunneling(self, local_order: np.ndarray, 
+                         tunnel_duration: int = 20) -> np.ndarray:
+        """
+        Speculative: Low local order increases chance to 'tunnel' (fade out).
+        
+        High criticality (near phase transition) yields flickering disappearances,
+        creating a visual metaphor for quantum uncertainty.
+        
+        Returns visibility array (0-1 for alpha modulation).
+        """
+        disorder = 1 - local_order
+        # Quadratic scaling for criticality feel
+        tunnel_chance = self.tunnel_prob * disorder ** 2
+        rand = np.random.random(local_order.shape)
+        
+        # Trigger tunnel (fade out) for visible oscillators not already tunneling
+        can_tunnel = (self.visibility > 0.5) & (self.tunnel_timer == 0)
+        triggering = (rand < tunnel_chance) & can_tunnel
+        
+        self.tunnel_timer[triggering] = tunnel_duration
+        self.visibility[triggering] = 0.2  # Fade, not full vanish
+        self.tunnel_events += np.sum(triggering)
+        
+        # Countdown to reappearance
+        active_tunnel = self.tunnel_timer > 0
+        self.tunnel_timer[active_tunnel] -= 1
+        
+        # Reappear when timer hits zero
+        reappear = (self.tunnel_timer == 0) & (self.visibility < 0.5)
+        self.visibility[reappear] = 1.0
+        
+        return self.visibility.copy()
+    
+    def get_tunnel_stats(self) -> dict:
+        """Return tunneling statistics."""
+        return {
+            'total_events': self.tunnel_events,
+            'currently_faded': int(np.sum(self.visibility < 0.5)),
+            'mean_visibility': float(np.mean(self.visibility))
+        }
+
+
+# ============================================================
 # 3D MERKABAH GEOMETRY (for visualization export)
 # ============================================================
 
@@ -337,21 +425,24 @@ class Merkabah_Geometry:
 
 def run_simulation(steps: int = 100, grid_size: int = 10, 
                    coupling: float = 2.0, dt: float = 0.05,
-                   verbose: bool = True) -> dict:
+                   verbose: bool = True, 
+                   enable_tunneling: bool = True) -> dict:
     """
-    Run Kuramoto simulation with Merkabah overlay observation.
+    Run Kuramoto simulation with Merkabah overlay and Tunneling Fade.
     
     Returns dict with physics results and speculative observations.
     """
     # Initialize physics layer
     grid = Kuramoto_Grid(size=grid_size, coupling_strength=coupling, noise_level=0.1)
     
-    # Initialize speculative overlay (read-only)
+    # Initialize speculative overlays (read-only)
     overlay = Merkabah_Overlay(grid_size=grid_size)
+    tunneling = TunnelingFade(grid_size=grid_size, tunnel_prob=0.05) if enable_tunneling else None
     
     results = {
         'physics': [],
-        'speculative': []
+        'speculative': [],
+        'tunneling': []
     }
     
     for step in range(steps):
@@ -380,19 +471,33 @@ def run_simulation(steps: int = 100, grid_size: int = 10,
             'active_glyphs': [k for k, v in overlay.active_glyph_state.items() if v]
         })
         
+        # Tunneling Fade (speculative quantum analogy)
+        if tunneling:
+            local_order = tunneling.compute_local_order(phases)
+            visibility = tunneling.update_tunneling(local_order)
+            results['tunneling'].append({
+                'step': step,
+                'mean_visibility': float(np.mean(visibility)),
+                'faded_count': int(np.sum(visibility < 0.5))
+            })
+        
         if verbose and step % 20 == 0:
-            print(f"Step {step:3d} | R={R:.3f} | Glyphs: {overlay.get_glyph_string()}")
+            tunnel_info = f" | Faded: {results['tunneling'][-1]['faded_count']}" if tunneling else ""
+            print(f"Step {step:3d} | R={R:.3f} | Glyphs: {overlay.get_glyph_string()}{tunnel_info}")
     
     # Final summary
     final_R = grid.get_order_parameter()
     final_glyphs = overlay.get_glyph_string()
     
     if verbose:
-        print(f"\n{'='*50}")
+        print(f"\n{'='*60}")
         print(f"Final Synchronization R: {final_R:.4f}")
         print(f"Final Glyph State: {final_glyphs}")
         print(f"Total Glyph Activations: {np.sum(overlay.glyphs)}")
-        print(f"{'='*50}")
+        if tunneling:
+            stats = tunneling.get_tunnel_stats()
+            print(f"Tunneling Events: {stats['total_events']} | Mean Visibility: {stats['mean_visibility']:.3f}")
+        print(f"{'='*60}")
     
     return results
 

@@ -406,6 +406,11 @@ let viewMode = '3d'; // '3d' or '2d'
 let nexusSocket = null;
 let nexusConnected = false;
 
+// Tunneling Fade Effect (Speculative Quantum Analogy)
+let tunnelingEnabled = true;
+let tunnelProb = 0.03;  // Base probability
+let tunnelDuration = 30; // Frames to stay faded
+
 // Audio
 let audioContext = null;
 let audioInitialized = false;
@@ -544,7 +549,11 @@ function initOscillators() {
     omega: (Math.random() - 0.5) * 0.5,
     velocity: 0,
     neighbors: [],
-    interLayerNeighbors: [] // Cross-layer connections
+    interLayerNeighbors: [],
+    // Tunneling Fade state (Type 3 SPECULATION)
+    visibility: 1.0,      // 1 = visible, 0.2 = faded
+    tunnelTimer: 0,       // Frames until reappear
+    localOrder: 0.5       // Local synchronization measure
   }));
   
   // Build neighbor connections (distance-based coupling)
@@ -660,6 +669,66 @@ function updateDynamics() {
   // Evolve entanglements (every 10 seconds)
   if (Math.random() < 0.001) {
     evolveEntanglements();
+  }
+  
+  // Tunneling Fade Effect (Speculative Quantum Analogy)
+  if (tunnelingEnabled) {
+    updateTunneling();
+  }
+}
+
+// ================================================
+// TUNNELING FADE (Type 3 SPECULATION)
+// ================================================
+function computeLocalOrder(idx) {
+  // Compute local synchronization for this oscillator
+  const osc = oscillators[idx];
+  if (osc.neighbors.length === 0) return 0.5;
+  
+  let sumCos = 0;
+  let sumSin = 0;
+  
+  for (const neighbor of osc.neighbors) {
+    const other = oscillators[neighbor.idx];
+    const diff = other.phase - osc.phase;
+    sumCos += Math.cos(diff);
+    sumSin += Math.sin(diff);
+  }
+  
+  const n = osc.neighbors.length;
+  return Math.sqrt(sumCos * sumCos + sumSin * sumSin) / n;
+}
+
+function updateTunneling() {
+  // Speculative: Low local order increases chance to 'tunnel' (fade out)
+  // This creates flickering at criticality - visual quantum metaphor
+  
+  for (let i = 0; i < oscillators.length; i++) {
+    const osc = oscillators[i];
+    
+    // Update local order
+    osc.localOrder = computeLocalOrder(i);
+    
+    // Handle active tunneling (countdown)
+    if (osc.tunnelTimer > 0) {
+      osc.tunnelTimer--;
+      if (osc.tunnelTimer === 0) {
+        osc.visibility = 1.0; // Reappear
+      }
+      continue;
+    }
+    
+    // Check for new tunnel event (only if visible)
+    if (osc.visibility > 0.5) {
+      const disorder = 1 - osc.localOrder;
+      // Quadratic scaling for criticality feel
+      const tunnelChance = tunnelProb * disorder * disorder;
+      
+      if (Math.random() < tunnelChance) {
+        osc.visibility = 0.2;  // Fade, not full vanish
+        osc.tunnelTimer = tunnelDuration;
+      }
+    }
   }
 }
 
@@ -802,7 +871,8 @@ function createVisuals() {
     vertexColors: true,
     transparent: true,
     opacity: 0.9,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
+    depthWrite: false  // Better transparency for tunneling effect
   });
   
   oscillatorPoints = new THREE.Points(geometry, material);
@@ -894,13 +964,15 @@ function updateVisuals() {
       color.lerp(glyphColorBlend, blendFactor);
     }
     
-    colors[i * 3] = color.r;
-    colors[i * 3 + 1] = color.g;
-    colors[i * 3 + 2] = color.b;
+    // Apply tunneling visibility (speculative quantum effect)
+    const vis = osc.visibility || 1.0;
+    colors[i * 3] = color.r * vis;
+    colors[i * 3 + 1] = color.g * vis;
+    colors[i * 3 + 2] = color.b * vis;
     
-    // Size based on velocity + layer
+    // Size based on velocity + layer + tunneling
     const layerFactor = 1 + layerDepth * 0.3;
-    sizes[i] = (3 + Math.abs(osc.velocity) * 5) * layerFactor;
+    sizes[i] = (3 + Math.abs(osc.velocity) * 5) * layerFactor * vis;
   }
   
   oscillatorPoints.geometry.attributes.color.needsUpdate = true;
