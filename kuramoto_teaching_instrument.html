@@ -1,0 +1,2746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>✨ Kuramoto Teaching Instrument - Crystalline Field</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Roboto Mono', 'Courier New', monospace;
+      background: #0a0118;
+      color: #F4F4F5;
+      overflow: hidden;
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ========================================
+       LEFT PANEL - CONTROLS + FORMULAS
+       ======================================== */
+    #control-panel {
+      width: 380px;
+      height: 100vh;
+      background: rgba(5, 0, 15, 0.95);
+      border-right: 1px solid rgba(0, 255, 170, 0.3);
+      padding: 16px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    #control-panel::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    #control-panel::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    #control-panel::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00ffaa 0%, #00ffff 100%);
+      border-radius: 3px;
+    }
+
+    .panel-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 255, 170, 0.2);
+    }
+
+    .code-comment {
+      font-size: 10px;
+      font-weight: 600;
+      color: #71717A;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #00ffdd;
+      text-shadow: 0 0 12px rgba(0, 255, 221, 0.5);
+      letter-spacing: -0.3px;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, rgba(0, 255, 170, 0.3) 0%, transparent 100%);
+      margin: 14px 0;
+    }
+
+    /* Control Cards */
+    .control-card {
+      background: rgba(30, 32, 38, 0.8);
+      border: 1px solid rgba(0, 255, 170, 0.2);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .control-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #71717A;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .control-value {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .control-value.green { color: #22C55E; text-shadow: 0 0 6px rgba(34, 197, 94, 0.5); }
+    .control-value.amber { color: #F59E0B; text-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
+    .control-value.cyan { color: #00ffff; text-shadow: 0 0 6px rgba(0, 255, 255, 0.5); }
+
+    /* Sliders */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .slider-track {
+      flex: 1;
+      height: 6px;
+      background: #16171B;
+      border-radius: 3px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slider-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      border-radius: 3px;
+      pointer-events: none;
+      transition: width 0.1s;
+    }
+
+    .slider-fill.green { background: linear-gradient(90deg, #22C55E, #00ffaa); }
+    .slider-fill.amber { background: linear-gradient(90deg, #F59E0B, #fbbf24); }
+    .slider-fill.cyan { background: linear-gradient(90deg, #00ffff, #00ffaa); }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: transparent;
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle, #ffffff 30%, #00ffff 100%);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px #00ffff;
+    }
+
+    .number-input {
+      width: 58px;
+      height: 26px;
+      background: #16171B;
+      border: 1px solid rgba(0, 255, 170, 0.3);
+      border-radius: 4px;
+      color: #F4F4F5;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      outline: none;
+    }
+
+    .number-input:focus {
+      border-color: #00ffaa;
+      box-shadow: 0 0 6px rgba(0, 255, 170, 0.3);
+    }
+
+    /* Live Values */
+    .live-values {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .live-value {
+      font-size: 9px;
+      font-weight: 500;
+      color: #52525B;
+    }
+
+    .live-value.green { color: #22C55E; font-weight: 600; }
+    .live-value.amber { color: #F59E0B; }
+
+    /* Formula Cards */
+    .formula-card {
+      background: rgba(22, 23, 27, 0.9);
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      border-radius: 4px;
+      padding: 10px;
+      margin-top: 8px;
+    }
+
+    .formula-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .formula-icon {
+      font-size: 12px;
+      color: #00ffaa;
+    }
+
+    .formula-label {
+      font-size: 9px;
+      font-weight: 500;
+      color: #52525B;
+      text-transform: uppercase;
+    }
+
+    .formula-eq {
+      font-size: 11px;
+      font-weight: 600;
+      color: #00ffdd;
+      margin-bottom: 6px;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .formula-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: #71717A;
+      line-height: 1.5;
+    }
+
+    /* Info Button */
+    .info-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 255, 170, 0.4);
+      background: rgba(0, 255, 170, 0.1);
+      color: #00ffaa;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .info-btn:hover {
+      background: rgba(0, 255, 170, 0.3);
+      box-shadow: 0 0 12px rgba(0, 255, 170, 0.4);
+      transform: scale(1.1);
+    }
+
+    .master-info {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+    }
+
+    .panel-header {
+      position: relative;
+    }
+
+    .control-header .info-btn {
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
+    }
+
+    /* Education Modal */
+    #education-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(5, 0, 20, 0.92);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(8px);
+    }
+
+    #education-modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, rgba(20, 22, 30, 0.98) 0%, rgba(10, 12, 20, 0.98) 100%);
+      border: 1px solid rgba(0, 255, 170, 0.3);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 0 60px rgba(0, 255, 170, 0.2), inset 0 0 30px rgba(0, 255, 170, 0.05);
+    }
+
+    .modal-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .modal-content::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00ffaa 0%, #00ffff 100%);
+      border-radius: 3px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(0, 255, 170, 0.2);
+    }
+
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #00ffdd;
+      text-shadow: 0 0 20px rgba(0, 255, 221, 0.5);
+    }
+
+    .modal-subtitle {
+      font-size: 12px;
+      color: #71717A;
+      margin-top: 4px;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 100, 100, 0.4);
+      background: rgba(255, 100, 100, 0.1);
+      color: #ff6b6b;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 100, 100, 0.3);
+      box-shadow: 0 0 12px rgba(255, 100, 100, 0.4);
+    }
+
+    .modal-section {
+      margin-bottom: 24px;
+    }
+
+    .modal-section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #00ffaa;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-section-title::before {
+      content: '◆';
+      font-size: 8px;
+    }
+
+    .modal-equation {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 255, 170, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .modal-eq-main {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 18px;
+      font-weight: 600;
+      color: #00ffdd;
+      margin-bottom: 8px;
+      text-shadow: 0 0 10px rgba(0, 255, 221, 0.3);
+    }
+
+    .modal-eq-desc {
+      font-size: 11px;
+      color: #A1A1AA;
+    }
+
+    .modal-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #D4D4D8;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .modal-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0;
+    }
+
+    .modal-list li {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #A1A1AA;
+      padding: 8px 0 8px 20px;
+      position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .modal-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: #00ffaa;
+    }
+
+    .modal-try-it {
+      background: linear-gradient(135deg, rgba(0, 255, 170, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%);
+      border: 1px solid rgba(0, 255, 170, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .modal-try-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #00ffdd;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-try-title::before {
+      content: '⚡';
+    }
+
+    .try-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .try-btn {
+      padding: 8px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 255, 170, 0.3);
+      border-radius: 6px;
+      color: #F4F4F5;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .try-btn:hover {
+      background: rgba(0, 255, 170, 0.2);
+      border-color: #00ffaa;
+      box-shadow: 0 0 12px rgba(0, 255, 170, 0.3);
+    }
+
+    .try-btn .label {
+      color: #71717A;
+      font-size: 9px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* Toggle Switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .toggle {
+      width: 36px;
+      height: 18px;
+      background: #3F3F46;
+      border-radius: 9px;
+      padding: 2px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle.active {
+      background: #22C55E;
+    }
+
+    .toggle-knob {
+      width: 14px;
+      height: 14px;
+      background: #F4F4F5;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle.active .toggle-knob {
+      transform: translateX(18px);
+    }
+
+    /* ========================================
+       CENTER - 3D CANVAS
+       ======================================== */
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+
+    #canvas:active {
+      cursor: grabbing;
+    }
+
+    /* ========================================
+       RIGHT PANEL - METRICS + CHARTS
+       ======================================== */
+    #metrics-panel {
+      width: 320px;
+      height: 100vh;
+      background: rgba(5, 0, 15, 0.95);
+      border-left: 1px solid rgba(0, 255, 170, 0.3);
+      padding: 16px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    #metrics-panel::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    #metrics-panel::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    #metrics-panel::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00ffaa 0%, #00ffff 100%);
+      border-radius: 3px;
+    }
+
+    /* Metric Cards */
+    .metric-card {
+      background: rgba(30, 32, 38, 0.8);
+      border: 1px solid rgba(0, 255, 170, 0.2);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .metric-card.highlight {
+      border-color: #22C55E;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.15);
+    }
+
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .metric-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: #71717A;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-badge {
+      background: #22C55E;
+      color: #16171B;
+      font-size: 8px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 2px;
+    }
+
+    .metric-badge.amber { background: #F59E0B; }
+    .metric-badge.gray { background: #52525B; color: #F4F4F5; }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .metric-value.green { color: #22C55E; text-shadow: 0 0 10px rgba(34, 197, 94, 0.4); }
+    .metric-value.white { color: #F4F4F5; }
+    .metric-value.small { font-size: 18px; }
+
+    .progress-bar {
+      height: 6px;
+      background: #16171B;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22C55E, #00ffaa);
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    .metric-formula {
+      font-size: 9px;
+      font-weight: 500;
+      color: #52525B;
+      margin-bottom: 4px;
+    }
+
+    .metric-note {
+      font-size: 8px;
+      font-weight: 500;
+      color: #3F3F46;
+    }
+
+    .metric-note.green { color: #22C55E; }
+
+    /* Mini Metrics Row */
+    .metrics-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .mini-metric {
+      flex: 1;
+      background: rgba(30, 32, 38, 0.8);
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      border-radius: 4px;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .mini-metric .label {
+      font-size: 8px;
+      color: #52525B;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .mini-metric .value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #00ffdd;
+    }
+
+    /* Chart Cards */
+    .chart-card {
+      background: rgba(30, 32, 38, 0.8);
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .chart-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: #71717A;
+      text-transform: uppercase;
+    }
+
+    .chart-status {
+      font-size: 8px;
+      font-weight: 500;
+      color: #52525B;
+    }
+
+    .chart-status.green { color: #22C55E; }
+    .chart-status.amber { color: #F59E0B; }
+
+    .chart-area {
+      background: rgba(22, 23, 27, 0.8);
+      border-radius: 4px;
+      height: 80px;
+      position: relative;
+    }
+
+    .chart-area canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Keyboard Hints */
+    .keyboard-hints {
+      background: rgba(22, 23, 27, 0.8);
+      border: 1px solid rgba(0, 255, 170, 0.1);
+      border-radius: 4px;
+      padding: 10px;
+      margin-top: 12px;
+    }
+
+    .keyboard-hints .hint {
+      font-size: 9px;
+      color: #52525B;
+      margin-bottom: 4px;
+    }
+
+    .keyboard-hints .key {
+      color: #00ffff;
+      font-weight: 600;
+    }
+
+    /* Loading */
+    #loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5em;
+      color: #00ffaa;
+      text-shadow: 0 0 20px #00ffaa;
+      animation: pulse 1.5s ease-in-out infinite;
+      z-index: 1000;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="loading">†⟡ Initializing Field...</div>
+
+  <!-- LEFT: Control Panel -->
+  <div id="control-panel" class="hidden">
+    <div class="panel-header">
+      <div class="panel-title">Coupled Oscillator Dynamics</div>
+      <button class="info-btn master-info" onclick="openEducationModal('overview')">?</button>
+    </div>
+
+    <!-- Coupling Strength K -->
+    <div class="control-card">
+      <div class="control-header">
+        <span class="control-label">Coupling Strength</span>
+        <button class="info-btn" onclick="openEducationModal('coupling')">?</button>
+        <span class="control-value green">K = <span id="k-display">3.50</span></span>
+      </div>
+      <div class="slider-row">
+        <div class="slider-track">
+          <div class="slider-fill green" id="k-fill" style="width: 35%"></div>
+          <input type="range" id="kSlider" min="0" max="10" step="0.1" value="3.5">
+        </div>
+        <input type="number" class="number-input" id="k-input" value="3.50" step="0.1" min="0" max="10">
+      </div>
+      <div class="live-values">
+        <span class="live-value">K_c = <span id="kc-display">2.83</span></span>
+        <span class="live-value">K/K_c = <span id="k-ratio-display">1.24</span></span>
+        <span class="live-value green" id="k-status">ABOVE CRITICAL</span>
+      </div>
+      <div class="formula-card">
+        <div class="formula-header">
+          <span class="formula-icon">Σ</span>
+          <span class="formula-label">Formula</span>
+        </div>
+        <div class="formula-eq">dθᵢ/dt = ωᵢ + (K/N) Σⱼ sin(θⱼ - θᵢ)</div>
+        <div class="formula-desc">K controls coupling strength. Below K_c: incoherence. Above K_c: spontaneous synchronization.</div>
+      </div>
+    </div>
+
+    <!-- Noise Intensity σ -->
+    <div class="control-card">
+      <div class="control-header">
+        <span class="control-label">Noise Intensity</span>
+        <button class="info-btn" onclick="openEducationModal('noise')">?</button>
+        <span class="control-value amber">σ = <span id="noise-display">0.05</span></span>
+      </div>
+      <div class="slider-row">
+        <div class="slider-track">
+          <div class="slider-fill amber" id="noise-fill" style="width: 10%"></div>
+          <input type="range" id="noiseSlider" min="0" max="0.5" step="0.01" value="0.05">
+        </div>
+        <input type="number" class="number-input" id="noise-input" value="0.05" step="0.01" min="0" max="0.5">
+      </div>
+      <div class="formula-card">
+        <div class="formula-header">
+          <span class="formula-icon">ξ</span>
+          <span class="formula-label">Wiener Process</span>
+        </div>
+        <div class="formula-eq">+ σξᵢ(t)</div>
+        <div class="formula-desc">σ = noise intensity. ξᵢ(t) = white noise. High σ disrupts synchronization.</div>
+      </div>
+    </div>
+
+    <!-- Speed / Time Step -->
+    <div class="control-card">
+      <div class="control-header">
+        <span class="control-label">Simulation Speed</span>
+        <button class="info-btn" onclick="openEducationModal('speed')">?</button>
+        <span class="control-value cyan">dt = <span id="speed-display">0.08</span></span>
+      </div>
+      <div class="slider-row">
+        <div class="slider-track">
+          <div class="slider-fill cyan" id="speed-fill" style="width: 47%"></div>
+          <input type="range" id="speedSlider" min="0.01" max="0.15" step="0.01" value="0.08">
+        </div>
+        <input type="number" class="number-input" id="speed-input" value="0.08" step="0.01" min="0.01" max="0.15">
+      </div>
+      <div class="formula-card">
+        <div class="formula-header">
+          <span class="formula-icon">∫</span>
+          <span class="formula-label">Euler Integration</span>
+        </div>
+        <div class="formula-eq">θ(t+dt) = θ(t) + [dθ/dt] × dt</div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Visual Controls -->
+    <div class="control-card">
+      <div class="control-header">
+        <span class="control-label">Sync Threshold</span>
+        <span class="control-value cyan"><span id="syncThresh-display">0.80</span></span>
+      </div>
+      <div class="slider-row">
+        <div class="slider-track">
+          <div class="slider-fill cyan" id="syncThresh-fill" style="width: 66%"></div>
+          <input type="range" id="syncThreshSlider" min="0.5" max="0.95" step="0.05" value="0.80">
+        </div>
+        <input type="number" class="number-input" id="syncThresh-input" value="0.80" step="0.05">
+      </div>
+      <div class="formula-desc" style="font-size: 9px; color: #52525B; margin-top: 4px;">
+        Particles grow when local coherence > threshold
+      </div>
+    </div>
+
+    <div class="control-card">
+      <div class="control-header">
+        <span class="control-label">Coherence Scale</span>
+        <span class="control-value cyan"><span id="cohScale-display">8</span></span>
+      </div>
+      <div class="slider-row">
+        <div class="slider-track">
+          <div class="slider-fill cyan" id="cohScale-fill" style="width: 53%"></div>
+          <input type="range" id="cohScaleSlider" min="1" max="15" step="1" value="8">
+        </div>
+        <input type="number" class="number-input" id="cohScale-input" value="8" step="1">
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Audio Controls -->
+    <div class="control-card">
+      <div class="toggle-row">
+        <span class="control-label">Enable Sound</span>
+        <button class="info-btn" onclick="openEducationModal('audio')" style="margin-right: auto; margin-left: 8px;">?</button>
+        <div class="toggle" id="audioToggle">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+
+      <div class="control-header">
+        <span class="control-label">Volume</span>
+        <span class="control-value cyan">V = <span id="audioVol-display">0.15</span></span>
+      </div>
+      <div class="slider-row">
+        <div class="slider-track">
+          <div class="slider-fill cyan" id="audioVol-fill" style="width: 30%"></div>
+          <input type="range" id="audioVolSlider" min="0" max="0.5" step="0.05" value="0.15">
+        </div>
+        <input type="number" class="number-input" id="audioVol-input" value="0.15" step="0.05">
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-header">
+          <span class="formula-icon">♪</span>
+          <span class="formula-label">Spectrum Sonification</span>
+        </div>
+        <div class="formula-eq">ONE: R × Ω | MANY: (1-R) × δᵢ</div>
+        <div class="formula-desc">The collective (Ω) emerges as individuals (δᵢ) fade. Z-position maps to 55-880 Hz.</div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Action Buttons -->
+    <div style="display: flex; gap: 8px;">
+      <button id="resetBtn" style="flex: 1; background: rgba(0, 255, 170, 0.1); color: #00ffaa; border: 1px solid rgba(0, 255, 170, 0.3); padding: 10px; border-radius: 4px; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 11px;">RESET</button>
+      <button id="pauseBtn" style="flex: 1; background: rgba(0, 255, 255, 0.1); color: #00ffff; border: 1px solid rgba(0, 255, 255, 0.3); padding: 10px; border-radius: 4px; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 11px;">PAUSE</button>
+    </div>
+
+    <div class="keyboard-hints">
+      <div class="hint"><span class="key">SPACE</span> - Pause/Resume</div>
+      <div class="hint"><span class="key">R</span> - Reset Field</div>
+      <div class="hint"><span class="key">H</span> - Toggle UI</div>
+      <div class="hint"><span class="key">↑↓</span> - Coupling ±0.1</div>
+      <div class="hint"><span class="key">←→</span> - Speed ±0.01</div>
+    </div>
+  </div>
+
+  <!-- CENTER: 3D Canvas -->
+  <div id="canvas-container">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <!-- RIGHT: Metrics Panel -->
+  <div id="metrics-panel" class="hidden">
+    <div class="panel-header">
+      <div class="code-comment">// COMPUTED_QUANTITIES</div>
+      <div class="panel-title">Field Metrics</div>
+    </div>
+
+    <!-- Grid Info -->
+    <div class="mini-metric" style="margin-bottom: 12px;">
+      <div class="label">Oscillator Grid</div>
+      <div class="value">N = 5,832 (18³)</div>
+    </div>
+
+    <!-- Order Parameter R -->
+    <div class="metric-card highlight">
+      <div class="metric-header">
+        <span class="metric-label">Order Parameter</span>
+        <span class="metric-badge" id="sync-badge">SYNC</span>
+      </div>
+      <div class="metric-value green" id="r-display">R = 0.000</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="r-progress" style="width: 0%"></div>
+      </div>
+      <div class="metric-formula">R = |⟨e^{iθ}⟩| = √(⟨cos θ⟩² + ⟨sin θ⟩²)</div>
+      <div class="metric-note">R=0: incoherence | R=1: full sync</div>
+    </div>
+
+    <!-- Theory vs Measured -->
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Theoretical Prediction</span>
+        <span class="metric-badge amber" id="error-badge">Δ = 0.0%</span>
+      </div>
+      <div class="metric-value small white" id="r-theory-display">R_theory = 0.000</div>
+      <div class="metric-formula">For K > K_c: R = √(1 - K_c/K)</div>
+      <div class="metric-note">For K < K_c: R = 0 (thermodynamic limit)</div>
+    </div>
+
+    <!-- Mini Metrics -->
+    <div class="metrics-row">
+      <div class="mini-metric">
+        <div class="label">Entropy</div>
+        <div class="value" id="entropy-display">0.00</div>
+      </div>
+      <div class="mini-metric">
+        <div class="label">FPS</div>
+        <div class="value" id="fps-display">0</div>
+      </div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="mini-metric">
+        <div class="label">Critical K_c</div>
+        <div class="value" id="kc-metric-display">2.83</div>
+      </div>
+      <div class="mini-metric">
+        <div class="label">g(0)</div>
+        <div class="value" id="g0-display">0.225</div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+    <div class="code-comment">// DIAGNOSTIC_CHARTS</div>
+
+    <!-- R(t) Trajectory Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-label">R(t) Trajectory</span>
+        <span class="chart-status green" id="convergence-status">initializing</span>
+      </div>
+      <div class="chart-area">
+        <canvas id="chart-rt"></canvas>
+      </div>
+    </div>
+
+    <!-- Phase Distribution Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-label">Phase Distribution p(θ)</span>
+        <span class="chart-status" id="phase-status">0 → 2π</span>
+      </div>
+      <div class="chart-area">
+        <canvas id="chart-phase"></canvas>
+      </div>
+    </div>
+
+    <!-- R(K) Bifurcation Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-label">R(K) Bifurcation</span>
+        <span class="chart-status amber" id="bifurcation-status">K_c marked</span>
+      </div>
+      <div class="chart-area">
+        <canvas id="chart-rk"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Education Modal -->
+  <div id="education-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modal-title">Understanding the Kuramoto Model</div>
+          <div class="modal-subtitle" id="modal-subtitle">Phase synchronization in coupled oscillators</div>
+        </div>
+        <button class="modal-close" onclick="closeEducationModal()">×</button>
+      </div>
+      <div id="modal-body">
+        <!-- Content injected by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js Loading -->
+  <script>
+    (function() {
+      const cdnUrls = [
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
+        'https://unpkg.com/three@0.128.0/build/three.min.js'
+      ];
+
+      const postScripts = [
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FXAAShader.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js'
+      ];
+
+      let currentCdnIndex = 0;
+
+      function loadScript(url) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = url;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+
+      async function loadPostProcessing() {
+        try {
+          for (const url of postScripts) {
+            await loadScript(url);
+          }
+          initApp();
+        } catch (error) {
+          console.error('Post-processing failed:', error);
+          initApp();
+        }
+      }
+
+      function loadThreeJS() {
+        if (currentCdnIndex >= cdnUrls.length) {
+          document.getElementById('loading').textContent = '✗ Failed to load';
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = cdnUrls[currentCdnIndex];
+        script.onload = () => loadPostProcessing();
+        script.onerror = () => { currentCdnIndex++; loadThreeJS(); };
+        document.head.appendChild(script);
+      }
+
+      loadThreeJS();
+    })();
+  </script>
+
+  <script>
+    // ========================================
+    // EDUCATION MODAL SYSTEM
+    // ========================================
+    const educationContent = {
+      overview: {
+        title: 'Understanding the Kuramoto Model',
+        subtitle: 'The mathematics of collective synchronization',
+        sections: [
+          {
+            title: 'What You\'re Seeing',
+            content: `This visualization shows 5,832 coupled oscillators (18×18×18 grid) synchronizing through
+                     local interactions. Each point represents an oscillator with its own natural frequency,
+                     influenced by its neighbors through the coupling parameter K.`
+          },
+          {
+            title: 'The Core Equation',
+            equation: 'dθᵢ/dt = ωᵢ + (K/N) Σⱼ sin(θⱼ - θᵢ) + σξᵢ(t)',
+            eqDesc: 'Rate of phase change = natural frequency + coupling + noise',
+            content: `<strong>θᵢ</strong> = phase of oscillator i<br>
+                     <strong>ωᵢ</strong> = natural frequency (from Lorentzian distribution)<br>
+                     <strong>K</strong> = coupling strength (how much oscillators influence each other)<br>
+                     <strong>σξᵢ(t)</strong> = random noise (thermal fluctuations)`
+          },
+          {
+            title: 'The Phase Transition',
+            content: `Below K_c (critical coupling): oscillators remain incoherent (R ≈ 0)<br>
+                     Above K_c: spontaneous synchronization emerges (R → 1)<br><br>
+                     This is a <em>second-order phase transition</em>, similar to magnetization or
+                     superconductivity. The "Edge of Chaos" (R ≈ 0.5) is where computation is most powerful.`
+          }
+        ],
+        tryIt: [
+          { label: 'Full Chaos', action: 'setK(0)', desc: 'K = 0' },
+          { label: 'Critical Point', action: 'setK(2.83)', desc: 'K = K_c' },
+          { label: 'Edge of Chaos', action: 'setK(3.5)', desc: 'K = 3.5' },
+          { label: 'Full Sync', action: 'setK(8)', desc: 'K = 8' }
+        ]
+      },
+      coupling: {
+        title: 'Coupling Strength (K)',
+        subtitle: 'The force that binds oscillators together',
+        sections: [
+          {
+            title: 'What K Controls',
+            content: `K determines how strongly each oscillator is influenced by its neighbors' phases.
+                     When K = 0, oscillators ignore each other completely. As K increases, oscillators
+                     begin to "pull" each other toward phase alignment.`
+          },
+          {
+            title: 'The Kuramoto Equation',
+            equation: 'dθᵢ/dt = ωᵢ + (K/N) Σⱼ sin(θⱼ - θᵢ)',
+            eqDesc: 'The sin term creates attraction toward neighboring phases',
+            content: `When θⱼ > θᵢ (neighbor ahead): sin is positive → speeds up oscillator i<br>
+                     When θⱼ < θᵢ (neighbor behind): sin is negative → slows down oscillator i<br><br>
+                     This creates a <em>phase-locking</em> tendency.`
+          },
+          {
+            title: 'Critical Coupling K_c',
+            equation: 'K_c = 2 / [π × g(0)]',
+            eqDesc: 'For Lorentzian distribution: K_c ≈ 2.83',
+            content: `g(0) is the density of natural frequencies at ω = 0. The critical point K_c
+                     marks the phase transition from disorder to order.<br><br>
+                     <strong>K < K_c:</strong> Incoherence persists (R → 0)<br>
+                     <strong>K > K_c:</strong> Order parameter grows as R = √(1 - K_c/K)`
+          },
+          {
+            title: 'Visual & Audio Effects',
+            content: `<strong>Low K (0-2):</strong> Random colors, chaotic motion, FM noise in audio<br>
+                     <strong>Medium K (2-4):</strong> Clusters form, partial sync, harmonic emergence<br>
+                     <strong>High K (5+):</strong> Uniform color, locked phases, pure tones<br><br>
+                     The bridge connections between oscillators appear when phases align within the sync threshold.`
+          }
+        ],
+        tryIt: [
+          { label: 'Chaos', action: 'setK(0.5)', desc: 'K = 0.5' },
+          { label: 'Sub-critical', action: 'setK(2.0)', desc: 'K = 2.0' },
+          { label: 'Critical', action: 'setK(2.83)', desc: 'K = K_c' },
+          { label: 'Super-critical', action: 'setK(4.0)', desc: 'K = 4.0' },
+          { label: 'Strong', action: 'setK(7.0)', desc: 'K = 7.0' }
+        ]
+      },
+      noise: {
+        title: 'Noise Intensity (σ)',
+        subtitle: 'Thermal fluctuations and stochastic perturbations',
+        sections: [
+          {
+            title: 'What σ Controls',
+            content: `σ (sigma) controls the intensity of random noise added to each oscillator.
+                     This represents thermal fluctuations, external disturbances, or intrinsic
+                     randomness in real systems (neural noise, molecular Brownian motion, etc.)`
+          },
+          {
+            title: 'The Wiener Process',
+            equation: '+ σξᵢ(t)',
+            eqDesc: 'White noise scaled by intensity σ',
+            content: `ξᵢ(t) is Gaussian white noise (〈ξᵢ(t)〉 = 0, 〈ξᵢ(t)ξⱼ(t\')〉 = δᵢⱼδ(t-t\'))<br><br>
+                     Each oscillator receives independent random kicks, with the amplitude
+                     controlled by σ. This is mathematically equivalent to Brownian motion.`
+          },
+          {
+            title: 'Effect on Synchronization',
+            content: `<strong>σ = 0:</strong> Deterministic dynamics, clean sync possible<br>
+                     <strong>Small σ (0.01-0.1):</strong> Fluctuations around equilibrium<br>
+                     <strong>Large σ (0.2+):</strong> Noise overwhelms coupling, destroys order<br><br>
+                     High noise effectively <em>raises</em> the critical coupling K_c, making
+                     synchronization harder to achieve.`
+          },
+          {
+            title: 'Audio Mapping',
+            content: `Noise contributes to the "chaos" in the FM synthesis. When order is low
+                     (R → 0), the audio becomes noisy and harsh. High σ prevents the system from
+                     reaching the pure, crystalline tones of full synchronization.`
+          }
+        ],
+        tryIt: [
+          { label: 'Silent', action: 'setNoise(0)', desc: 'σ = 0' },
+          { label: 'Subtle', action: 'setNoise(0.02)', desc: 'σ = 0.02' },
+          { label: 'Moderate', action: 'setNoise(0.1)', desc: 'σ = 0.1' },
+          { label: 'Strong', action: 'setNoise(0.3)', desc: 'σ = 0.3' },
+          { label: 'Overwhelming', action: 'setNoise(0.5)', desc: 'σ = 0.5' }
+        ]
+      },
+      speed: {
+        title: 'Simulation Speed (dt)',
+        subtitle: 'Time step for Euler integration',
+        sections: [
+          {
+            title: 'What dt Controls',
+            content: `dt is the discrete time step used in numerical integration. Smaller values
+                     give more accurate physics but slower computation. Larger values run faster
+                     but may introduce numerical artifacts.`
+          },
+          {
+            title: 'Euler Method',
+            equation: 'θ(t+dt) = θ(t) + [dθ/dt] × dt',
+            eqDesc: 'Simple forward integration',
+            content: `Each frame, we compute the rate of change dθ/dt from the Kuramoto equation,
+                     then update each phase by adding (rate × dt).<br><br>
+                     This is the simplest integration method. More sophisticated methods
+                     (Runge-Kutta) would give better accuracy but at computational cost.`
+          },
+          {
+            title: 'Stability Considerations',
+            content: `<strong>Small dt (0.01-0.03):</strong> Slow, accurate, stable<br>
+                     <strong>Medium dt (0.05-0.1):</strong> Good balance for visualization<br>
+                     <strong>Large dt (0.12+):</strong> Fast but may show artifacts<br><br>
+                     If dt is too large, oscillators may "overshoot" and create non-physical behavior.`
+          }
+        ],
+        tryIt: [
+          { label: 'Slow-Mo', action: 'setSpeed(0.02)', desc: 'dt = 0.02' },
+          { label: 'Normal', action: 'setSpeed(0.08)', desc: 'dt = 0.08' },
+          { label: 'Fast', action: 'setSpeed(0.12)', desc: 'dt = 0.12' },
+          { label: 'Maximum', action: 'setSpeed(0.15)', desc: 'dt = 0.15' }
+        ]
+      },
+      audio: {
+        title: 'Expanded Spectrum Sonification',
+        subtitle: 'The ONE emerging from the MANY through their RELATIONSHIP',
+        sections: [
+          {
+            title: 'The Sound of Coherence',
+            content: `You are hearing the mathematics directly. Not a metaphor—the actual
+                     dynamics of synchronization translated into sound. The collective voice
+                     (Ω) emerges as individual deviations (δᵢ) fade, controlled by R.`
+          },
+          {
+            title: 'Layer 1: THE ONE (Collective)',
+            equation: 'f_collective = f₀(z) × (1 + Ω × scale)',
+            eqDesc: 'Amplitude scales with R — emerges from chaos',
+            content: `<strong>Ω = (1/N) Σᵢ dθᵢ/dt</strong> — the mean field frequency<br><br>
+                     This is the voice of the WHOLE. At R = 0, it's silent (no collective).
+                     As R → 1, it dominates — the many have become one. A single voice,
+                     pure and crystalline.`
+          },
+          {
+            title: 'Layer 2: THE MANY (Individuals)',
+            equation: 'f_individual = f₀(z) × (1 + (Ω + δᵢ) × scale)',
+            eqDesc: 'Amplitude scales with (1-R) — fades into unity',
+            content: `<strong>δᵢ = dθᵢ/dt - Ω</strong> — individual deviation from collective<br><br>
+                     These are the voices of the PARTS. At R = 0, they're everything — a sea
+                     of individuals, each singing alone. As R → 1, they vanish — absorbed
+                     into the collective.`
+          },
+          {
+            title: 'Layer 3: Harmonic Structure',
+            equation: 'Aₙ = A₁ × (1 - R_local)^(n-1)',
+            eqDesc: 'Harmonics simplify with coherence',
+            content: `<strong>Chaos (R → 0):</strong> Rich harmonics, complex FM timbre<br>
+                     <strong>Order (R → 1):</strong> Pure sine, crystalline simplicity<br><br>
+                     The harmonic content of each voice is determined by its local coherence.
+                     Coherent oscillators emit pure tones. Incoherent ones have rich overtones.`
+          },
+          {
+            title: 'Layer 4: Spatial Depth',
+            equation: 'f₀(z) = 55 × 2^(4z/gridSize)',
+            eqDesc: '4 octaves: 55 Hz (bass) → 880 Hz (treble)',
+            content: `Position in the field maps to frequency register:<br>
+                     <strong>Bottom (z = 0):</strong> Bass (55 Hz)<br>
+                     <strong>Top (z = max):</strong> Treble (880 Hz)<br><br>
+                     Synchronization creates VERTICAL CHORDS. A column locking in =
+                     harmonic stack. You hear the spatial structure.`
+          },
+          {
+            title: 'The Clarity Filter',
+            equation: 'cutoff = 300 + R² × 12000 Hz',
+            eqDesc: 'The crystalline highs emerge with coherence',
+            content: `In chaos, only low frequencies pass — muffled, searching. As sync
+                     emerges, the filter opens, revealing the crystalline highs. The
+                     brightness you hear IS the order parameter.`
+          },
+          {
+            title: 'The Edge of Chaos Pulse',
+            equation: 'depth = 4R(1-R) × 0.08',
+            eqDesc: 'Peaks at R = 0.5 — the transition breathes',
+            content: `At the critical point, a subtle pulsation emerges — the system
+                     "breathing" between order and chaos. This is where computation
+                     is most powerful. The edge of chaos has its own rhythm.`
+          }
+        ],
+        tryIt: [
+          { label: 'Pure Chaos', action: 'setK(0.5)', desc: 'K = 0.5 — Many voices, no collective' },
+          { label: 'Edge of Chaos', action: 'setK(2.83)', desc: 'K = K_c — The transition breathes' },
+          { label: 'Partial Sync', action: 'setK(4)', desc: 'K = 4 — Collective emerging' },
+          { label: 'Crystalline', action: 'setK(7)', desc: 'K = 7 — The ONE dominates' }
+        ]
+      }
+    };
+
+    function openEducationModal(topic) {
+      const modal = document.getElementById('education-modal');
+      const content = educationContent[topic];
+      if (!content) return;
+
+      document.getElementById('modal-title').textContent = content.title;
+      document.getElementById('modal-subtitle').textContent = content.subtitle;
+
+      let html = '';
+
+      // Sections
+      content.sections.forEach(section => {
+        html += `<div class="modal-section">`;
+        html += `<div class="modal-section-title">${section.title}</div>`;
+
+        if (section.equation) {
+          html += `<div class="modal-equation">`;
+          html += `<div class="modal-eq-main">${section.equation}</div>`;
+          if (section.eqDesc) {
+            html += `<div class="modal-eq-desc">${section.eqDesc}</div>`;
+          }
+          html += `</div>`;
+        }
+
+        if (section.content) {
+          html += `<div class="modal-text">${section.content}</div>`;
+        }
+
+        html += `</div>`;
+      });
+
+      // Try It section
+      if (content.tryIt && content.tryIt.length > 0) {
+        html += `<div class="modal-try-it">`;
+        html += `<div class="modal-try-title">Try These Values</div>`;
+        html += `<div class="try-values">`;
+        content.tryIt.forEach(item => {
+          html += `<button class="try-btn" onclick="${item.action}; closeEducationModal();">`;
+          html += `<span class="label">${item.desc}</span>`;
+          html += `${item.label}`;
+          html += `</button>`;
+        });
+        html += `</div></div>`;
+      }
+
+      document.getElementById('modal-body').innerHTML = html;
+      modal.classList.add('active');
+    }
+
+    function closeEducationModal() {
+      document.getElementById('education-modal').classList.remove('active');
+    }
+
+    // Close modal on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeEducationModal();
+    });
+
+    // Close modal on background click
+    document.getElementById('education-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'education-modal') closeEducationModal();
+    });
+
+    // Global setters for Try It buttons (will be defined by initApp)
+    let setK = () => {}, setNoise = () => {}, setSpeed = () => {};
+
+    function initApp() {
+      if (typeof THREE === 'undefined') return;
+
+      // ========================================
+      // GLOBAL STATE
+      // ========================================
+      let scene, camera, renderer;
+      let composer, bloomPass, fxaaPass;
+      let oscillators, velocities, omegas;
+      let coupling = [];
+      let volumeCloud;
+
+      // Audio System
+      let audioContext, audioEnabled = false;
+      let oscillatorNodes = [];
+      let masterGain, filterNode, harmonicGain;
+      let clarityFilter, globalPulseLFO, pulseDepthGain;
+      let fmCarriers = [], fmModulators = [], fmModGains = [];
+      let spatialAgents = [];
+      const CHROMATIC_VOICES = 24;
+      const SPATIAL_AGENTS = 100;
+      let audioUpdateCounter = 0;
+      let audioBaseFreq = 220;
+      let audioVolume = 0.15;
+      let audioListener;
+
+      // Parameters
+      let gridSize = 18;
+      let totalOscillators = 0;
+      let K = 3.5;
+      let noise = 0.05;
+      let dt = 0.08;
+      let opacity = 0.85;
+      let baseSize = 2;
+      let coherenceScale = 8;
+      let syncThreshold = 0.8;
+      let hueOffset = 0.0;
+      let paused = false;
+      let time = 0;
+
+      // Computed Quantities
+      let orderParam = 0;
+      let Rtheory = 0;
+      let Kc = 2.83;
+      let g0 = 0.225;
+      let entropy = 0;
+      let Rhistory = [];
+      const maxHistory = 150;
+
+      // Bridge System
+      let bridgesEnabled = true;
+      let bridgeThreshold = 25 * Math.PI / 180;
+      let bridgeRadiusFactor = 1.0;
+      let edgeMesh = null, maxEdges = 0;
+      const _tmpColor = new THREE.Color();
+      const _UP = new THREE.Vector3(0, 1, 0);
+      let bridgeFrameSkip = 2, bridgeFrameCounter = 0;
+
+      // Performance
+      let fps = 0;
+      let frameCount = 0;
+      let lastTime = performance.now();
+      let fpsHistory = [];
+
+      // Cache
+      let volumeCloudGeometry = null;
+      let volumeCloudMaterial = null;
+      let needsRebuild = true;
+
+      // Chart Contexts
+      let chartContexts = {};
+
+      // ========================================
+      // COLOR HELPERS
+      // ========================================
+      function hsv2rgb(h, s, v) {
+        const i = Math.floor(h * 6);
+        const f = h * 6 - i;
+        const p = v * (1 - s);
+        const q = v * (1 - f * s);
+        const t = v * (1 - (1 - f) * s);
+        let r, g, b;
+        switch (i % 6) {
+          case 0: r = v; g = t; b = p; break;
+          case 1: r = q; g = v; b = p; break;
+          case 2: r = p; g = v; b = t; break;
+          case 3: r = p; g = q; b = v; break;
+          case 4: r = t; g = p; b = v; break;
+          default: r = v; g = p; b = q; break;
+        }
+        return { r, g, b };
+      }
+
+      function phaseToSpectrum(phase, hueOffset01) {
+        const h = (phase / (2 * Math.PI) + hueOffset01) % 1;
+        return hsv2rgb(h, 1.0, 0.95);
+      }
+
+      // ========================================
+      // THREE.JS SETUP
+      // ========================================
+      function initThreeJS() {
+        scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.0018);
+
+        camera = new THREE.PerspectiveCamera(60, 1, 1, 1000);
+        camera.position.set(100, 70, 100);
+        camera.lookAt(0, 0, 0);
+
+        audioListener = new THREE.AudioListener();
+        camera.add(audioListener);
+
+        const canvas = document.getElementById('canvas');
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+
+        const container = document.getElementById('canvas-container');
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.05;
+
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+
+        // Lighting
+        scene.add(new THREE.AmbientLight(0x0a2a3a, 0.4));
+        const pl1 = new THREE.PointLight(0x00ffaa, 1.2, 400);
+        pl1.position.set(80, 80, 80);
+        scene.add(pl1);
+        const pl2 = new THREE.PointLight(0x00ffff, 0.8, 400);
+        pl2.position.set(-80, -80, -80);
+        scene.add(pl2);
+
+        initPost();
+        setupControls();
+      }
+
+      function initPost() {
+        if (!THREE.EffectComposer) return;
+
+        composer = new THREE.EffectComposer(renderer);
+        composer.addPass(new THREE.RenderPass(scene, camera));
+
+        fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
+        const pr = renderer.getPixelRatio();
+        const container = document.getElementById('canvas-container');
+        fxaaPass.uniforms['resolution'].value.set(
+          1 / (container.clientWidth * pr),
+          1 / (container.clientHeight * pr)
+        );
+        composer.addPass(fxaaPass);
+
+        bloomPass = new THREE.UnrealBloomPass(
+          new THREE.Vector2(container.clientWidth, container.clientHeight),
+          0.9, 0.5, 0.92
+        );
+        composer.addPass(bloomPass);
+      }
+
+      // ========================================
+      // CONTROLS
+      // ========================================
+      function setupControls() {
+        let isDragging = false;
+        let previousPosition = { x: 0, y: 0 };
+
+        const onDrag = (dx, dy) => {
+          const spherical = new THREE.Spherical();
+          spherical.setFromVector3(camera.position);
+          spherical.theta -= dx * 0.01;
+          spherical.phi += dy * 0.01;
+          spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+          camera.position.setFromSpherical(spherical);
+          camera.lookAt(0, 0, 0);
+        };
+
+        const canvas = document.getElementById('canvas');
+        canvas.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          previousPosition = { x: e.clientX, y: e.clientY };
+        });
+
+        document.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          onDrag(e.clientX - previousPosition.x, e.clientY - previousPosition.y);
+          previousPosition = { x: e.clientX, y: e.clientY };
+        });
+
+        document.addEventListener('mouseup', () => isDragging = false);
+
+        canvas.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const spherical = new THREE.Spherical();
+          spherical.setFromVector3(camera.position);
+          spherical.radius += e.deltaY * 0.1;
+          spherical.radius = Math.max(40, Math.min(300, spherical.radius));
+          camera.position.setFromSpherical(spherical);
+          camera.lookAt(0, 0, 0);
+        }, { passive: false });
+
+        // Keyboard
+        document.addEventListener('keydown', (e) => {
+          switch (e.key.toLowerCase()) {
+            case ' ':
+              e.preventDefault();
+              paused = !paused;
+              document.getElementById('pauseBtn').textContent = paused ? 'RESUME' : 'PAUSE';
+              break;
+            case 'r':
+              needsRebuild = true;
+              initOscillatorField();
+              Rhistory = [];
+              break;
+            case 'h':
+              document.getElementById('control-panel').classList.toggle('hidden');
+              document.getElementById('metrics-panel').classList.toggle('hidden');
+              break;
+            case 'arrowup':
+              K = Math.min(10, K + 0.1);
+              updateSlider('k', K);
+              break;
+            case 'arrowdown':
+              K = Math.max(0, K - 0.1);
+              updateSlider('k', K);
+              break;
+            case 'arrowright':
+              dt = Math.min(0.15, dt + 0.01);
+              updateSlider('speed', dt);
+              break;
+            case 'arrowleft':
+              dt = Math.max(0.01, dt - 0.01);
+              updateSlider('speed', dt);
+              break;
+          }
+        });
+
+        setupUI();
+      }
+
+      // ========================================
+      // UI SETUP
+      // ========================================
+
+      // Global setters for education modal "Try It" buttons
+      window.setK = function(value) {
+        K = value;
+        document.getElementById('kSlider').value = value;
+        document.getElementById('k-input').value = value.toFixed(2);
+        const percent = ((value - 0) / (10 - 0)) * 100;
+        document.getElementById('k-fill').style.width = percent + '%';
+        document.getElementById('k-display').textContent = value.toFixed(2);
+        updateKDisplay();
+      };
+
+      window.setNoise = function(value) {
+        noise = value;
+        document.getElementById('noiseSlider').value = value;
+        document.getElementById('noise-input').value = value.toFixed(2);
+        const percent = ((value - 0) / (0.5 - 0)) * 100;
+        document.getElementById('noise-fill').style.width = percent + '%';
+        document.getElementById('noise-display').textContent = value.toFixed(2);
+      };
+
+      window.setSpeed = function(value) {
+        dt = value;
+        document.getElementById('speedSlider').value = value;
+        document.getElementById('speed-input').value = value.toFixed(2);
+        const percent = ((value - 0.01) / (0.15 - 0.01)) * 100;
+        document.getElementById('speed-fill').style.width = percent + '%';
+        document.getElementById('speed-display').textContent = value.toFixed(2);
+      };
+
+      function setupUI() {
+        // Coupling K
+        setupSliderControl('k', 'kSlider', 0, 10, K, (v) => { K = v; updateKDisplay(); }, 'green');
+        // Noise
+        setupSliderControl('noise', 'noiseSlider', 0, 0.5, noise, (v) => { noise = v; }, 'amber');
+        // Speed
+        setupSliderControl('speed', 'speedSlider', 0.01, 0.15, dt, (v) => { dt = v; }, 'cyan');
+        // Sync Threshold
+        setupSliderControl('syncThresh', 'syncThreshSlider', 0.5, 0.95, syncThreshold, (v) => { syncThreshold = v; }, 'cyan');
+        // Coherence Scale
+        setupSliderControl('cohScale', 'cohScaleSlider', 1, 15, coherenceScale, (v) => { coherenceScale = v; }, 'cyan');
+        // Audio Vol
+        setupSliderControl('audioVol', 'audioVolSlider', 0, 0.5, audioVolume, (v) => {
+          audioVolume = v;
+          if (masterGain) masterGain.gain.setValueAtTime(audioVolume, audioContext.currentTime);
+        }, 'cyan');
+
+        // Audio Toggle
+        document.getElementById('audioToggle').addEventListener('click', function() {
+          audioEnabled = !audioEnabled;
+          this.classList.toggle('active', audioEnabled);
+          if (audioEnabled) startAudio();
+          else stopAudio();
+        });
+
+        // Buttons
+        document.getElementById('resetBtn').addEventListener('click', () => {
+          needsRebuild = true;
+          initOscillatorField();
+          Rhistory = [];
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+          paused = !paused;
+          document.getElementById('pauseBtn').textContent = paused ? 'RESUME' : 'PAUSE';
+        });
+
+        // Window resize
+        window.addEventListener('resize', handleResize);
+      }
+
+      function setupSliderControl(id, sliderId, min, max, initial, onChange, colorClass) {
+        const slider = document.getElementById(sliderId);
+        const input = document.getElementById(`${id}-input`);
+        const fill = document.getElementById(`${id}-fill`);
+        const display = document.getElementById(`${id}-display`);
+
+        const updateFill = (v) => {
+          const pct = ((v - min) / (max - min)) * 100;
+          if (fill) fill.style.width = `${pct}%`;
+        };
+
+        const updateValue = (v) => {
+          const clamped = Math.max(min, Math.min(max, v));
+          slider.value = clamped;
+          if (input) input.value = clamped.toFixed(2);
+          if (display) display.textContent = clamped.toFixed(2);
+          updateFill(clamped);
+          onChange(clamped);
+        };
+
+        slider.addEventListener('input', (e) => updateValue(parseFloat(e.target.value)));
+        if (input) input.addEventListener('change', (e) => updateValue(parseFloat(e.target.value)));
+
+        updateFill(initial);
+      }
+
+      function updateSlider(id, value) {
+        const slider = document.getElementById(id === 'k' ? 'kSlider' : id === 'speed' ? 'speedSlider' : `${id}Slider`);
+        const input = document.getElementById(`${id}-input`);
+        const display = document.getElementById(`${id}-display`);
+        const fill = document.getElementById(`${id}-fill`);
+
+        if (slider) slider.value = value;
+        if (input) input.value = value.toFixed(2);
+        if (display) display.textContent = value.toFixed(2);
+
+        // Update fill
+        const min = parseFloat(slider?.min || 0);
+        const max = parseFloat(slider?.max || 10);
+        const pct = ((value - min) / (max - min)) * 100;
+        if (fill) fill.style.width = `${pct}%`;
+      }
+
+      function updateKDisplay() {
+        const ratio = K / Kc;
+        document.getElementById('k-ratio-display').textContent = ratio.toFixed(2);
+        document.getElementById('kc-display').textContent = Kc.toFixed(2);
+
+        const status = document.getElementById('k-status');
+        if (K > Kc) {
+          status.textContent = 'ABOVE CRITICAL';
+          status.className = 'live-value green';
+        } else {
+          status.textContent = 'BELOW CRITICAL';
+          status.className = 'live-value amber';
+        }
+      }
+
+      function handleResize() {
+        const container = document.getElementById('canvas-container');
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        const pr = renderer.getPixelRatio();
+
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+
+        if (composer) composer.setSize(w, h);
+        if (fxaaPass) fxaaPass.uniforms['resolution'].value.set(1 / (w * pr), 1 / (h * pr));
+
+        initCharts();
+      }
+
+      // ========================================
+      // OSCILLATOR FIELD
+      // ========================================
+      function initOscillatorField() {
+        totalOscillators = gridSize * gridSize * gridSize;
+
+        oscillators = new Float32Array(totalOscillators);
+        velocities = new Float32Array(totalOscillators);
+        omegas = new Float32Array(totalOscillators);
+
+        for (let z = 0; z < gridSize; z++) {
+          for (let y = 0; y < gridSize; y++) {
+            for (let x = 0; x < gridSize; x++) {
+              const idx = z * gridSize * gridSize + y * gridSize + x;
+              omegas[idx] = (Math.sin(x * 0.1) + Math.cos(y * 0.1)) * 0.05;
+              oscillators[idx] = Math.random() * 2 * Math.PI;
+              velocities[idx] = 0;
+            }
+          }
+        }
+
+        initializeCoupling();
+        computeG0Kc();
+        needsRebuild = true;
+        time = 0;
+        buildBridgeMesh();
+      }
+
+      function initializeCoupling() {
+        coupling = [];
+        for (let i = 0; i < totalOscillators; i++) {
+          const x = i % gridSize;
+          const y = Math.floor(i / gridSize) % gridSize;
+          const z = Math.floor(i / (gridSize * gridSize));
+          coupling[i] = getNeighbors(x, y, z);
+        }
+      }
+
+      function getNeighbors(x, y, z) {
+        let neighbors = [];
+        const dirs = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]];
+        for (const [dx, dy, dz] of dirs) {
+          const nx = x + dx, ny = y + dy, nz = z + dz;
+          if (nx >= 0 && nx < gridSize && ny >= 0 && ny < gridSize && nz >= 0 && nz < gridSize) {
+            neighbors.push({ idx: nz * gridSize * gridSize + ny * gridSize + nx, weight: 1.0 });
+          }
+        }
+        let sum = 0;
+        for (const n of neighbors) sum += n.weight;
+        if (sum > 0) for (const n of neighbors) n.weight /= sum;
+        return neighbors;
+      }
+
+      function computeG0Kc() {
+        // For uniform frequency spread, approximate g(0)
+        // Using standard Lorentzian approximation
+        const freqSpread = 0.5;
+        g0 = 1 / (Math.PI * freqSpread);
+        Kc = 2 / (Math.PI * g0);
+
+        document.getElementById('g0-display').textContent = g0.toFixed(3);
+        document.getElementById('kc-metric-display').textContent = Kc.toFixed(2);
+        updateKDisplay();
+      }
+
+      // ========================================
+      // DYNAMICS
+      // ========================================
+      function updateDynamics() {
+        if (paused) return;
+
+        const newOscillators = new Float32Array(totalOscillators);
+        const damping = 0.10;
+        const invDamping = 1 - damping;
+        const TWO_PI = 2 * Math.PI;
+        const noiseFactor = noise * Math.sqrt(dt);
+
+        for (let i = 0; i < totalOscillators; i++) {
+          const currentPhase = oscillators[i];
+          const neighbors = coupling[i];
+
+          let couplingTerm = 0;
+          for (let j = 0; j < neighbors.length; j++) {
+            const n = neighbors[j];
+            couplingTerm += n.weight * Math.sin(oscillators[n.idx] - currentPhase);
+          }
+
+          const noiseTerm = (Math.random() - 0.5) * noiseFactor;
+          const newVel = (omegas[i] + K * couplingTerm + noiseTerm) * dt;
+
+          velocities[i] = invDamping * velocities[i] + damping * newVel;
+
+          let newPhase = currentPhase + velocities[i];
+          if (newPhase >= TWO_PI) newPhase -= TWO_PI;
+          else if (newPhase < 0) newPhase += TWO_PI;
+          newOscillators[i] = newPhase;
+        }
+
+        oscillators = newOscillators;
+        time += dt;
+      }
+
+      // ========================================
+      // COMPUTED QUANTITIES
+      // ========================================
+      function getLocalCoherence(idx) {
+        const phase = oscillators[idx];
+        let sumCos = 0, sumSin = 0;
+        const neighbors = coupling[idx];
+        if (neighbors.length === 0) return 0;
+
+        for (const n of neighbors) {
+          const diff = oscillators[n.idx] - phase;
+          sumCos += Math.cos(diff);
+          sumSin += Math.sin(diff);
+        }
+
+        sumCos /= neighbors.length;
+        sumSin /= neighbors.length;
+        return Math.sqrt(sumCos * sumCos + sumSin * sumSin);
+      }
+
+      function calculateOrderParameter() {
+        let sumCos = 0, sumSin = 0;
+        for (let i = 0; i < totalOscillators; i++) {
+          sumCos += Math.cos(oscillators[i]);
+          sumSin += Math.sin(oscillators[i]);
+        }
+        sumCos /= totalOscillators;
+        sumSin /= totalOscillators;
+        return Math.sqrt(sumCos * sumCos + sumSin * sumSin);
+      }
+
+      function calculateEntropy() {
+        const bins = 20;
+        const histogram = new Array(bins).fill(0);
+
+        for (let i = 0; i < totalOscillators; i++) {
+          const bin = Math.floor(oscillators[i] / (2 * Math.PI) * bins);
+          histogram[Math.min(bin, bins - 1)]++;
+        }
+
+        let ent = 0;
+        for (let i = 0; i < bins; i++) {
+          if (histogram[i] > 0) {
+            const p = histogram[i] / totalOscillators;
+            ent -= p * Math.log(p);
+          }
+        }
+
+        return ent / Math.log(bins);
+      }
+
+      function computeTheory() {
+        if (K > Kc) {
+          Rtheory = Math.sqrt(1 - Kc / K);
+        } else {
+          Rtheory = 0;
+        }
+      }
+
+      // ========================================
+      // EXPANDED SPECTRUM SONIFICATION SYSTEM
+      // The sound of coherence itself
+      // ========================================
+
+      // Spectrum Constants
+      const BASS_FREQ = 55;           // Bottom of field
+      const TREBLE_FREQ = 880;        // Top of field
+      const Z_OCTAVES = 4;            // 4 octaves across z-axis
+      const COLLECTIVE_VOICES = 8;    // Layer 1: The ONE
+      const INDIVIDUAL_VOICES = 32;   // Layer 2: The MANY
+      const HARMONICS_PER_VOICE = 4;  // Layer 3: Overtone structure
+
+      // New audio state
+      let collectiveVoices = [];      // Layer 1: The ONE emerging
+      let individualVoices = [];      // Layer 2: The MANY fading
+      let meanFieldOmega = 0;         // Collective frequency
+      let deviations = [];            // Individual deviations from collective
+
+      function initAudio() {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+          // Master routing
+          masterGain = audioContext.createGain();
+          masterGain.gain.value = audioVolume;
+
+          // Clarity filter: opens with coherence
+          clarityFilter = audioContext.createBiquadFilter();
+          clarityFilter.type = 'lowpass';
+          clarityFilter.frequency.value = 300;
+          clarityFilter.Q.value = 0.7;
+
+          // Warmth filter
+          filterNode = audioContext.createBiquadFilter();
+          filterNode.type = 'lowpass';
+          filterNode.frequency.value = 2000;
+          filterNode.Q.value = 1.0;
+
+          // Subtle pulsation tied to order parameter
+          globalPulseLFO = audioContext.createOscillator();
+          globalPulseLFO.type = 'sine';
+          globalPulseLFO.frequency.value = 1.5;
+
+          pulseDepthGain = audioContext.createGain();
+          pulseDepthGain.gain.value = 0;
+
+          // Audio graph
+          clarityFilter.connect(filterNode);
+          filterNode.connect(masterGain);
+          masterGain.connect(audioContext.destination);
+
+          globalPulseLFO.connect(pulseDepthGain);
+          pulseDepthGain.connect(masterGain.gain);
+          globalPulseLFO.start();
+        }
+      }
+
+      function startAudio() {
+        if (!audioContext) initAudio();
+        stopAudio();
+
+        // ========================================
+        // LAYER 1: THE ONE (Collective Voice)
+        // Emerges as R increases
+        // ========================================
+        for (let z = 0; z < COLLECTIVE_VOICES; z++) {
+          // Map z to frequency register: bass at bottom, treble at top
+          const zNorm = z / (COLLECTIVE_VOICES - 1);
+          const baseFreq = BASS_FREQ * Math.pow(2, zNorm * Z_OCTAVES);
+
+          // Create oscillator with harmonics
+          const fundamental = audioContext.createOscillator();
+          fundamental.type = 'sine';
+          fundamental.frequency.value = baseFreq;
+
+          const fundGain = audioContext.createGain();
+          fundGain.gain.value = 0;
+
+          fundamental.connect(fundGain);
+          fundGain.connect(clarityFilter);
+          fundamental.start();
+
+          // Harmonics (pure sine ratios - the crystalline structure)
+          const harmonics = [];
+          for (let h = 2; h <= HARMONICS_PER_VOICE; h++) {
+            const harmOsc = audioContext.createOscillator();
+            harmOsc.type = 'sine';
+            harmOsc.frequency.value = baseFreq * h;
+
+            const harmGain = audioContext.createGain();
+            harmGain.gain.value = 0;
+
+            harmOsc.connect(harmGain);
+            harmGain.connect(clarityFilter);
+            harmOsc.start();
+
+            harmonics.push({ osc: harmOsc, gain: harmGain, ratio: h });
+          }
+
+          collectiveVoices.push({
+            fundamental, fundGain, harmonics,
+            baseFreq, zLayer: z
+          });
+        }
+
+        // ========================================
+        // LAYER 2: THE MANY (Individual Voices)
+        // Fade as R increases
+        // ========================================
+        const step = Math.max(1, Math.floor(totalOscillators / INDIVIDUAL_VOICES));
+
+        for (let i = 0; i < INDIVIDUAL_VOICES; i++) {
+          const oscIndex = (i * step) % totalOscillators;
+
+          // Get z-position for this oscillator → frequency register
+          const iz = oscIndex % gridSize;
+          const zNorm = iz / (gridSize - 1);
+          const baseFreq = BASS_FREQ * Math.pow(2, zNorm * Z_OCTAVES);
+
+          // FM synthesis for individual voice - complex timbre in chaos
+          const carrier = audioContext.createOscillator();
+          carrier.type = 'sine';
+          carrier.frequency.value = baseFreq;
+
+          const modulator = audioContext.createOscillator();
+          modulator.type = 'sine';
+          modulator.frequency.value = baseFreq * 2.01; // Slight detune for richness
+
+          const modGain = audioContext.createGain();
+          modGain.gain.value = 50; // Start with moderate FM
+
+          const voiceGain = audioContext.createGain();
+          voiceGain.gain.value = 0;
+
+          // Create panner for spatial positioning
+          const panner = audioContext.createStereoPanner();
+          const panValue = (i / INDIVIDUAL_VOICES) * 2 - 1; // Spread across stereo field
+          panner.pan.value = panValue * 0.7;
+
+          // FM routing
+          modulator.connect(modGain);
+          modGain.connect(carrier.frequency);
+          carrier.connect(voiceGain);
+          voiceGain.connect(panner);
+          panner.connect(clarityFilter);
+
+          modulator.start();
+          carrier.start();
+
+          // Harmonics that simplify with coherence
+          const harmonics = [];
+          for (let h = 2; h <= 3; h++) {
+            const harmOsc = audioContext.createOscillator();
+            harmOsc.type = 'sine';
+            harmOsc.frequency.value = baseFreq * h;
+
+            const harmGain = audioContext.createGain();
+            harmGain.gain.value = 0;
+
+            harmOsc.connect(harmGain);
+            harmGain.connect(panner);
+            harmOsc.start();
+
+            harmonics.push({ osc: harmOsc, gain: harmGain, ratio: h });
+          }
+
+          individualVoices.push({
+            carrier, modulator, modGain, voiceGain, panner, harmonics,
+            oscIndex, baseFreq, zLayer: iz
+          });
+        }
+
+        // Initialize deviations array
+        deviations = new Float32Array(INDIVIDUAL_VOICES);
+
+        audioEnabled = true;
+      }
+
+      function stopAudio() {
+        // Stop collective voices
+        collectiveVoices.forEach(voice => {
+          voice.fundGain.gain.setValueAtTime(0, audioContext.currentTime);
+          voice.fundamental.stop(audioContext.currentTime + 0.1);
+          voice.harmonics.forEach(h => {
+            h.gain.gain.setValueAtTime(0, audioContext.currentTime);
+            h.osc.stop(audioContext.currentTime + 0.1);
+          });
+        });
+        collectiveVoices = [];
+
+        // Stop individual voices
+        individualVoices.forEach(voice => {
+          voice.voiceGain.gain.setValueAtTime(0, audioContext.currentTime);
+          voice.carrier.stop(audioContext.currentTime + 0.1);
+          voice.modulator.stop(audioContext.currentTime + 0.1);
+          voice.harmonics.forEach(h => {
+            h.gain.gain.setValueAtTime(0, audioContext.currentTime);
+            h.osc.stop(audioContext.currentTime + 0.1);
+          });
+        });
+        individualVoices = [];
+
+        audioEnabled = false;
+      }
+
+      function computeMeanField() {
+        // Compute Ω = mean of dθ/dt (the collective frequency)
+        let sumOmega = 0;
+        for (let i = 0; i < totalOscillators; i++) {
+          sumOmega += velocities[i]; // velocities stores dθ/dt
+        }
+        meanFieldOmega = sumOmega / totalOscillators;
+
+        // Compute individual deviations δᵢ = dθᵢ/dt - Ω
+        const step = Math.max(1, Math.floor(totalOscillators / INDIVIDUAL_VOICES));
+        for (let i = 0; i < INDIVIDUAL_VOICES; i++) {
+          const oscIndex = (i * step) % totalOscillators;
+          deviations[i] = velocities[oscIndex] - meanFieldOmega;
+        }
+      }
+
+      function updateAudio() {
+        if (!audioEnabled || !audioContext) return;
+        if (collectiveVoices.length === 0 && individualVoices.length === 0) return;
+        if (++audioUpdateCounter % 3 !== 0) return;
+
+        const now = audioContext.currentTime;
+        const rampTime = 0.08;
+
+        // Compute the mean field
+        computeMeanField();
+
+        // R controls the balance between ONE and MANY
+        const R = orderParam;
+        const oneMinusR = 1 - R;
+
+        // ========================================
+        // LAYER 1: THE ONE (Collective)
+        // Amplitude scales with R - emerges from chaos
+        // ========================================
+        const collectiveAmp = audioVolume * R * R * 0.6;
+
+        collectiveVoices.forEach((voice, z) => {
+          // Frequency modulated by collective Ω
+          const freqScale = 1 + meanFieldOmega * 0.1;
+          const targetFreq = voice.baseFreq * freqScale;
+          voice.fundamental.frequency.setTargetAtTime(targetFreq, now, rampTime);
+
+          // Amplitude: stronger at high R
+          voice.fundGain.gain.setTargetAtTime(collectiveAmp, now, rampTime);
+
+          // Harmonics: PURE at high R (crystalline)
+          voice.harmonics.forEach((h, hIdx) => {
+            h.osc.frequency.setTargetAtTime(targetFreq * h.ratio, now, rampTime);
+            // Harmonics fade in with extreme coherence (R > 0.7)
+            const harmAmp = collectiveAmp * Math.max(0, (R - 0.7) * 3) / (hIdx + 2);
+            h.gain.gain.setTargetAtTime(harmAmp, now, rampTime);
+          });
+        });
+
+        // ========================================
+        // LAYER 2: THE MANY (Individuals)
+        // Amplitude scales with (1-R) - fades into unity
+        // ========================================
+        const individualAmp = audioVolume * oneMinusR * 0.4;
+
+        individualVoices.forEach((voice, i) => {
+          const oscIndex = voice.oscIndex;
+          const localR = getLocalCoherence(oscIndex);
+          const delta = deviations[i] || 0;
+
+          // Frequency: base + collective + individual deviation
+          const freqScale = 1 + (meanFieldOmega + delta) * 0.15;
+          const targetFreq = voice.baseFreq * Math.max(0.5, Math.min(2, freqScale));
+          voice.carrier.frequency.setTargetAtTime(targetFreq, now, rampTime);
+          voice.modulator.frequency.setTargetAtTime(targetFreq * 2.01, now, rampTime);
+
+          // FM modulation depth: HIGH in chaos, LOW in order
+          // Chaos = complex timbre, Order = pure sine
+          const modDepth = 10 + oneMinusR * oneMinusR * 150;
+          voice.modGain.gain.setTargetAtTime(modDepth, now, rampTime);
+
+          // Amplitude: weighted by how far from collective (deviation magnitude)
+          const deviationWeight = Math.min(1, Math.abs(delta) * 2 + 0.3);
+          const targetGain = individualAmp * deviationWeight * (1 - localR * 0.5);
+          voice.voiceGain.gain.setTargetAtTime(targetGain, now, rampTime);
+
+          // Harmonics: RICH in chaos, FADE in order
+          voice.harmonics.forEach((h, hIdx) => {
+            h.osc.frequency.setTargetAtTime(targetFreq * h.ratio, now, rampTime);
+            // Harmonic amplitude: (1 - R_local)^n
+            const harmAmp = targetGain * Math.pow(1 - localR, hIdx + 1) * 0.5;
+            h.gain.gain.setTargetAtTime(harmAmp, now, rampTime);
+          });
+        });
+
+        // ========================================
+        // GLOBAL FILTERS
+        // ========================================
+
+        // Clarity filter: opens with R² (crystalline highs emerge)
+        const clarityFreq = 300 + (R * R) * 12000;
+        clarityFilter.frequency.setTargetAtTime(clarityFreq, now, rampTime);
+
+        // Warmth filter
+        const warmthFreq = 600 + R * 2400;
+        filterNode.frequency.setTargetAtTime(warmthFreq, now, rampTime);
+
+        // Pulse depth: subtle at mid-R (edge of chaos breathing)
+        const edgeFactor = 4 * R * (1 - R); // Peak at R = 0.5
+        const pulseDepth = edgeFactor * 0.08;
+        pulseDepthGain.gain.setTargetAtTime(pulseDepth, now, rampTime);
+
+        // Pulse rate: faster near transition
+        const pulseRate = 1 + edgeFactor * 2;
+        globalPulseLFO.frequency.setTargetAtTime(pulseRate, now, rampTime);
+      }
+
+      // ========================================
+      // BRIDGES
+      // ========================================
+      function buildBridgeMesh() {
+        if (edgeMesh) {
+          scene.remove(edgeMesh);
+          edgeMesh.geometry.dispose();
+          edgeMesh.material.dispose();
+        }
+        maxEdges = 3 * totalOscillators;
+
+        const geom = new THREE.CylinderBufferGeometry(1, 1, 1, 8, 1, true);
+        const mat = new THREE.MeshBasicMaterial({
+          color: 0xffffff, vertexColors: true, transparent: true,
+          opacity: 0.85, depthTest: true, depthWrite: false, fog: false, side: THREE.DoubleSide
+        });
+
+        edgeMesh = new THREE.InstancedMesh(geom, mat, maxEdges);
+        edgeMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(maxEdges * 3), 3);
+        edgeMesh.frustumCulled = false;
+        edgeMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        edgeMesh.count = 0;
+        scene.add(edgeMesh);
+      }
+
+      function updateBridges() {
+        if (!bridgesEnabled || !edgeMesh) { if (edgeMesh) edgeMesh.count = 0; return; }
+        if ((bridgeFrameCounter++ % bridgeFrameSkip) !== 0) return;
+
+        const G = gridSize, s = 80 / G;
+        const r = Math.max(1e-3, (s * 0.12) * bridgeRadiusFactor);
+        const dirs = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+        const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3();
+        const P1 = new THREE.Vector3(), P2 = new THREE.Vector3();
+        const TWO = 2 * Math.PI;
+        const dphi = (a, b) => { let d = (a - b) % TWO; if (d < -Math.PI) d += TWO; else if (d > Math.PI) d -= TWO; return Math.abs(d); };
+
+        let w = 0;
+        for (let z = 0; z < G; z++) {
+          for (let y = 0; y < G; y++) {
+            for (let x = 0; x < G; x++) {
+              const i = z * G * G + y * G + x, th = oscillators[i];
+              P1.set((x - G / 2) * s, (y - G / 2) * s, (z - G / 2) * s);
+
+              for (const [dx, dy, dz] of dirs) {
+                const nx = x + dx, ny = y + dy, nz = z + dz;
+                if (nx >= G || ny >= G || nz >= G) continue;
+
+                const j = nz * G * G + ny * G + nx, tj = oscillators[j];
+                if (dphi(th, tj) > bridgeThreshold) continue;
+
+                P2.set((nx - G / 2) * s, (ny - G / 2) * s, (nz - G / 2) * s);
+                const mid = P1.clone().add(P2).multiplyScalar(0.5);
+                const dir = P2.clone().sub(P1);
+                const L = Math.max(1e-4, dir.length());
+                Q.setFromUnitVectors(_UP, dir.normalize());
+                S.set(r, L, r);
+                M.compose(mid, Q, S);
+                edgeMesh.setMatrixAt(w, M);
+                _tmpColor.setRGB(1.0, 1.0, 1.0);
+                edgeMesh.setColorAt(w, _tmpColor);
+                if (++w >= maxEdges) break;
+              }
+            }
+          }
+        }
+        edgeMesh.count = w;
+        edgeMesh.instanceMatrix.needsUpdate = true;
+        if (edgeMesh.instanceColor) edgeMesh.instanceColor.needsUpdate = true;
+      }
+
+      // ========================================
+      // VISUALIZATION
+      // ========================================
+      function createVolumeCloud() {
+        if (volumeCloud) {
+          scene.remove(volumeCloud);
+          if (volumeCloudGeometry) volumeCloudGeometry.dispose();
+          if (volumeCloudMaterial) volumeCloudMaterial.dispose();
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        const positions = [], colors = [], sizes = [];
+        const scale = 80 / gridSize;
+
+        for (let z = 0; z < gridSize; z++) {
+          for (let y = 0; y < gridSize; y++) {
+            for (let x = 0; x < gridSize; x++) {
+              const idx = z * gridSize * gridSize + y * gridSize + x;
+              positions.push((x - gridSize / 2) * scale, (y - gridSize / 2) * scale, (z - gridSize / 2) * scale);
+
+              const phase = oscillators[idx];
+              const color = phaseToSpectrum(phase, hueOffset);
+              colors.push(color.r, color.g, color.b);
+
+              const coherence = getLocalCoherence(idx);
+              let size;
+              if (coherence > syncThreshold) {
+                const normalizedCoherence = (coherence - syncThreshold) / (1.0 - syncThreshold);
+                size = baseSize * (1.0 + normalizedCoherence * coherenceScale * 0.5);
+              } else {
+                size = baseSize;
+              }
+              sizes.push(size);
+            }
+          }
+        }
+
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+        const material = new THREE.ShaderMaterial({
+          uniforms: { opacity: { value: opacity } },
+          vertexShader: `
+            attribute float size;
+            attribute vec3 color;
+            varying vec3 vColor;
+            void main() {
+              vColor = color;
+              vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+              gl_PointSize = size * (300.0 / max(-mvPosition.z, 1.0));
+              gl_Position = projectionMatrix * mvPosition;
+            }
+          `,
+          fragmentShader: `
+            uniform float opacity;
+            varying vec3 vColor;
+            void main() {
+              vec2 p = gl_PointCoord - vec2(0.5);
+              float r = length(p);
+              float edge = 0.5;
+              float aa = 0.02;
+              float mask = 1.0 - smoothstep(edge - aa, edge + aa, r);
+              if (mask <= 0.001) discard;
+              float core = exp(-22.0 * r * r);
+              float halo = exp(-4.5 * r * r) * 0.3;
+              vec3 base = vColor * (0.6 + 0.4 * halo) + core * vColor * 0.25;
+              gl_FragColor = vec4(base, opacity * mask);
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+
+        volumeCloud = new THREE.Points(geometry, material);
+        volumeCloudGeometry = geometry;
+        volumeCloudMaterial = material;
+        scene.add(volumeCloud);
+      }
+
+      function updateVolumeCloud() {
+        if (!volumeCloud || !volumeCloudGeometry) return;
+
+        const colors = volumeCloudGeometry.attributes.color.array;
+        const sizes = volumeCloudGeometry.attributes.size.array;
+
+        for (let i = 0; i < totalOscillators; i++) {
+          const phase = oscillators[i];
+          const color = phaseToSpectrum(phase, hueOffset);
+          colors[i * 3] = color.r;
+          colors[i * 3 + 1] = color.g;
+          colors[i * 3 + 2] = color.b;
+
+          const coherence = getLocalCoherence(i);
+          let size;
+          if (coherence > syncThreshold) {
+            const normalizedCoherence = (coherence - syncThreshold) / (1.0 - syncThreshold);
+            size = baseSize * (1.0 + normalizedCoherence * coherenceScale * 2.0);
+          } else {
+            size = baseSize * 0.5;
+          }
+          sizes[i] = size;
+        }
+
+        volumeCloudGeometry.attributes.color.needsUpdate = true;
+        volumeCloudGeometry.attributes.size.needsUpdate = true;
+
+        if (volumeCloudMaterial) volumeCloudMaterial.uniforms.opacity.value = opacity;
+      }
+
+      // ========================================
+      // CHARTS
+      // ========================================
+      function initCharts() {
+        const rtCanvas = document.getElementById('chart-rt');
+        const phaseCanvas = document.getElementById('chart-phase');
+        const rkCanvas = document.getElementById('chart-rk');
+
+        if (rtCanvas) {
+          const rect = rtCanvas.parentElement.getBoundingClientRect();
+          rtCanvas.width = rect.width;
+          rtCanvas.height = rect.height;
+          chartContexts.rt = rtCanvas.getContext('2d');
+        }
+
+        if (phaseCanvas) {
+          const rect = phaseCanvas.parentElement.getBoundingClientRect();
+          phaseCanvas.width = rect.width;
+          phaseCanvas.height = rect.height;
+          chartContexts.phase = phaseCanvas.getContext('2d');
+        }
+
+        if (rkCanvas) {
+          const rect = rkCanvas.parentElement.getBoundingClientRect();
+          rkCanvas.width = rect.width;
+          rkCanvas.height = rect.height;
+          chartContexts.rk = rkCanvas.getContext('2d');
+        }
+      }
+
+      function renderCharts() {
+        renderRTChart();
+        renderPhaseChart();
+        renderRKChart();
+      }
+
+      function renderRTChart() {
+        const ctx = chartContexts.rt;
+        if (!ctx) return;
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const margin = { left: 5, right: 5, top: 5, bottom: 5 };
+        const plotW = w - margin.left - margin.right;
+        const plotH = h - margin.top - margin.bottom;
+
+        // R_theory line
+        const theoryY = margin.top + (1 - Rtheory) * plotH;
+        ctx.beginPath();
+        ctx.strokeStyle = '#52525B';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.moveTo(margin.left, theoryY);
+        ctx.lineTo(w - margin.right, theoryY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // R(t) trajectory
+        if (Rhistory.length > 1) {
+          ctx.beginPath();
+          ctx.strokeStyle = '#22C55E';
+          ctx.lineWidth = 1.5;
+
+          for (let i = 0; i < Rhistory.length; i++) {
+            const x = margin.left + (i / (maxHistory - 1)) * plotW;
+            const y = margin.top + (1 - Rhistory[i]) * plotH;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+
+          // Current point
+          const lastX = margin.left + ((Rhistory.length - 1) / (maxHistory - 1)) * plotW;
+          const lastY = margin.top + (1 - Rhistory[Rhistory.length - 1]) * plotH;
+          ctx.beginPath();
+          ctx.arc(lastX, lastY, 3, 0, 2 * Math.PI);
+          ctx.fillStyle = '#22C55E';
+          ctx.fill();
+        }
+      }
+
+      function renderPhaseChart() {
+        const ctx = chartContexts.phase;
+        if (!ctx) return;
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const margin = { left: 5, right: 5, top: 5, bottom: 5 };
+        const plotW = w - margin.left - margin.right;
+        const plotH = h - margin.top - margin.bottom;
+
+        // Compute histogram
+        const bins = 16;
+        const histogram = new Array(bins).fill(0);
+        for (let i = 0; i < totalOscillators; i++) {
+          const bin = Math.floor(oscillators[i] / (2 * Math.PI) * bins);
+          histogram[Math.min(bin, bins - 1)]++;
+        }
+        const maxCount = Math.max(...histogram);
+
+        // Draw bars
+        const barWidth = plotW / bins - 1;
+        ctx.fillStyle = '#22C55E';
+
+        for (let i = 0; i < bins; i++) {
+          const barHeight = (histogram[i] / maxCount) * plotH;
+          const x = margin.left + (i / bins) * plotW;
+          const y = margin.top + plotH - barHeight;
+          ctx.fillRect(x, y, barWidth, barHeight);
+        }
+      }
+
+      function renderRKChart() {
+        const ctx = chartContexts.rk;
+        if (!ctx) return;
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const margin = { left: 5, right: 5, top: 5, bottom: 5 };
+        const plotW = w - margin.left - margin.right;
+        const plotH = h - margin.top - margin.bottom;
+
+        const Kmax = 10;
+
+        // Theoretical curve
+        ctx.beginPath();
+        ctx.strokeStyle = '#22C55E';
+        ctx.lineWidth = 1.5;
+
+        for (let i = 0; i <= 100; i++) {
+          const kVal = (i / 100) * Kmax;
+          let rVal = 0;
+          if (kVal > Kc) rVal = Math.sqrt(1 - Kc / kVal);
+
+          const x = margin.left + (kVal / Kmax) * plotW;
+          const y = margin.top + (1 - rVal) * plotH;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // K_c line
+        const kcX = margin.left + (Kc / Kmax) * plotW;
+        ctx.beginPath();
+        ctx.strokeStyle = '#F59E0B';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.moveTo(kcX, margin.top);
+        ctx.lineTo(kcX, h - margin.bottom);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Current state marker
+        const currentX = margin.left + (K / Kmax) * plotW;
+        const currentY = margin.top + (1 - orderParam) * plotH;
+        ctx.beginPath();
+        ctx.arc(currentX, currentY, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = '#22C55E';
+        ctx.fill();
+        ctx.strokeStyle = '#F4F4F5';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // ========================================
+      // INFO UPDATE
+      // ========================================
+      function updateInfo() {
+        orderParam = calculateOrderParameter();
+        entropy = calculateEntropy();
+        computeTheory();
+
+        // R display
+        document.getElementById('r-display').textContent = `R = ${orderParam.toFixed(3)}`;
+        document.getElementById('r-progress').style.width = `${orderParam * 100}%`;
+
+        // Sync badge
+        const badge = document.getElementById('sync-badge');
+        if (orderParam > 0.5) {
+          badge.textContent = 'SYNC';
+          badge.className = 'metric-badge';
+        } else if (orderParam > 0.2) {
+          badge.textContent = 'PARTIAL';
+          badge.className = 'metric-badge amber';
+        } else {
+          badge.textContent = 'CHAOS';
+          badge.className = 'metric-badge gray';
+        }
+
+        // Theory
+        document.getElementById('r-theory-display').textContent = `R_theory = ${Rtheory.toFixed(3)}`;
+        const error = Rtheory > 0 ? Math.abs(orderParam - Rtheory) / Rtheory * 100 : 0;
+        document.getElementById('error-badge').textContent = `Δ = ${error.toFixed(1)}%`;
+
+        // Entropy
+        document.getElementById('entropy-display').textContent = entropy.toFixed(2);
+
+        // Convergence status
+        const convStatus = document.getElementById('convergence-status');
+        if (Rhistory.length > 10) {
+          const recent = Rhistory.slice(-10);
+          const avg = recent.reduce((a, b) => a + b, 0) / recent.length;
+          const variance = recent.reduce((s, r) => s + Math.pow(r - avg, 2), 0) / recent.length;
+          if (variance < 0.001) convStatus.textContent = 'converged';
+          else if (variance < 0.01) convStatus.textContent = 'converging';
+          else convStatus.textContent = 'fluctuating';
+        }
+
+        // R history
+        Rhistory.push(orderParam);
+        if (Rhistory.length > maxHistory) Rhistory.shift();
+
+        // FPS
+        frameCount++;
+        const now = performance.now();
+        if (now - lastTime >= 1000) {
+          fps = Math.round(frameCount * 1000 / (now - lastTime));
+          fpsHistory.push(fps);
+          if (fpsHistory.length > 5) fpsHistory.shift();
+          const avgFps = fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length;
+          document.getElementById('fps-display').textContent = Math.round(avgFps);
+          frameCount = 0;
+          lastTime = now;
+        }
+      }
+
+      // ========================================
+      // ANIMATION LOOP
+      // ========================================
+      function animate() {
+        requestAnimationFrame(animate);
+
+        updateDynamics();
+
+        if (needsRebuild) {
+          createVolumeCloud();
+          needsRebuild = false;
+        } else {
+          updateVolumeCloud();
+        }
+
+        updateBridges();
+        updateInfo();
+        updateAudio();
+
+        // Auto-rotate
+        const spherical = new THREE.Spherical();
+        spherical.setFromVector3(camera.position);
+        spherical.theta += 0.002;
+        camera.position.setFromSpherical(spherical);
+        camera.lookAt(0, 0, 0);
+
+        // Dynamic exposure
+        renderer.toneMappingExposure = 0.95 + 0.3 * orderParam;
+
+        if (composer) composer.render();
+        else renderer.render(scene, camera);
+
+        // Render charts (throttled)
+        if (frameCount % 5 === 0) renderCharts();
+      }
+
+      // ========================================
+      // INIT
+      // ========================================
+      function init() {
+        initThreeJS();
+        initOscillatorField();
+        initCharts();
+
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('control-panel').classList.remove('hidden');
+        document.getElementById('metrics-panel').classList.remove('hidden');
+
+        animate();
+      }
+
+      init();
+    }
+  </script>
+</body>
+</html>

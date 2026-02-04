@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>✨ Kuramoto Merkabah Field - Crystalline Beauty</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: 'Courier New', monospace;
+      background: radial-gradient(ellipse at center, #0a0118 0%, #000000 100%);
+      color: #00ffaa;
+      overflow: hidden;
+      position: relative;
+      touch-action: none;
+    }
+    
+    #canvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      cursor: grab;
+      touch-action: none;
+    }
+    
+    #canvas:active {
+      cursor: grabbing;
+    }
+    
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(5, 0, 15, 0.92);
+      border: 1px solid rgba(0, 255, 170, 0.4);
+      padding: 12px;
+      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 20px rgba(0, 255, 170, 0.2);
+      z-index: 100;
+      font-size: 0.8em;
+    }
+    
+    #info h2 {
+      margin-bottom: 8px;
+      text-shadow: 0 0 12px #00ffaa;
+      font-size: 1.1em;
+      letter-spacing: 1.5px;
+      color: #00ffdd;
+    }
+    
+    #info div {
+      margin: 4px 0;
+      font-size: 0.85em;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+    
+    #info span {
+      color: #00ffff;
+      font-weight: bold;
+      text-shadow: 0 0 6px #00ffff;
+    }
+    
+    #controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(5, 0, 15, 0.92);
+      border: 1px solid rgba(0, 255, 170, 0.4);
+      padding: 12px;
+      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      width: 240px;
+      max-height: calc(100vh - 20px);
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 0 20px rgba(0, 255, 170, 0.2);
+    }
+    
+    .control-group {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 255, 170, 0.15);
+    }
+    
+    .control-group:last-child {
+      border-bottom: none;
+    }
+    
+    .control-group h3 {
+      margin-bottom: 8px;
+      color: #00ffdd;
+      font-size: 0.85em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 0 6px #00ffdd;
+    }
+    
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 0.7em;
+    }
+    
+    .value {
+      color: #00ffff;
+      font-weight: bold;
+      min-width: 45px;
+      text-align: right;
+      text-shadow: 0 0 4px #00ffff;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, rgba(0, 255, 170, 0.3) 0%, rgba(0, 255, 255, 0.3) 100%);
+      outline: none;
+      -webkit-appearance: none;
+      border-radius: 4px;
+      margin-top: 3px;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle, #ffffff 20%, #00ffff 100%);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle, #ffffff 20%, #00ffff 100%);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff;
+      border: none;
+    }
+    
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(0, 255, 170, 0.12) 0%, rgba(0, 255, 255, 0.12) 100%);
+      color: #00ffaa;
+      border: 1px solid rgba(0, 255, 170, 0.4);
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-size: 0.7em;
+    }
+    
+    button:hover, button:active {
+      background: linear-gradient(135deg, rgba(0, 255, 170, 0.22) 0%, rgba(0, 255, 255, 0.22) 100%);
+      box-shadow: 0 0 12px rgba(0, 255, 170, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.8em;
+      text-shadow: 0 0 20px #00ffaa;
+      animation: pulse 1.5s ease-in-out infinite;
+      z-index: 1000;
+      letter-spacing: 2px;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.4);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00ffaa 0%, #00ffff 100%);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">†⟡ Initializing...</div>
+  
+  <canvas id="canvas"></canvas>
+  
+  <div id="info" class="hidden">
+    <h2>✨ CRYSTALLINE MERKABAH</h2>
+    <div>Grid: <span id="dimensions">0³</span></div>
+    <div>Order: <span id="orderParam">0.000</span></div>
+    <div>Entropy: <span id="entropy">0.000</span></div>
+    <div>FPS: <span id="fps">0</span></div>
+  </div>
+  
+  <div id="controls" class="hidden">
+    <div class="control-group">
+      <h3>⚡ Dynamics</h3>
+      <label>
+        Coupling (K)
+        <span class="value" id="kVal">3.5</span>
+      </label>
+      <input type="range" id="kSlider" min="0" max="8" step="0.1" value="3.5">
+      
+      <label>
+        Noise (σ)
+        <span class="value" id="noiseVal">0.05</span>
+      </label>
+      <input type="range" id="noiseSlider" min="0" max="0.5" step="0.01" value="0.05">
+      
+      <label>
+        Speed
+        <span class="value" id="speedVal">0.08</span>
+      </label>
+      <input type="range" id="speedSlider" min="0.01" max="0.15" step="0.01" value="0.08">
+    </div>
+    
+    <div class="control-group">
+      <h3>🎨 Visual</h3>
+      <label>
+        Base Size
+        <span class="value" id="baseSizeVal">2</span>
+      </label>
+      <input type="range" id="baseSizeSlider" min="0.5" max="5" step="0.5" value="2">
+      
+      <label>
+        Coherence Scale
+        <span class="value" id="cohScaleVal">8</span>
+      </label>
+      <input type="range" id="cohScaleSlider" min="1" max="15" step="1" value="8">
+      
+      <label>
+        Sync Threshold
+        <span class="value" id="syncThreshVal">0.80</span>
+      </label>
+      <input type="range" id="syncThreshSlider" min="0.5" max="0.95" step="0.05" value="0.80">
+      
+      <label>
+        Hue Offset
+        <span class="value" id="hueVal">0.00</span>
+      </label>
+      <input type="range" id="hueSlider" min="0" max="1" step="0.01" value="0">
+      
+      <label>
+        Opacity
+        <span class="value" id="opacityVal">0.85</span>
+      </label>
+      <input type="range" id="opacitySlider" min="0.3" max="1" step="0.05" value="0.85">
+    </div>
+    
+
+    <div class="control-group">
+      <h3>🎵 Audio Resonance</h3>
+      <label style="display: flex; align-items: center; margin-bottom: 8px;">
+        <input type="checkbox" id="audioToggle" style="margin-right: 8px; width: auto;">
+        <span>Enable Sound</span>
+      </label>
+
+      <label>
+        Base Frequency (Hz)
+        <span class="value" id="audioBaseVal">220</span>
+      </label>
+      <input type="range" id="audioBaseSlider" min="110" max="880" step="10" value="220">
+
+      <label>
+        Volume
+        <span class="value" id="audioVolVal">0.15</span>
+      </label>
+      <input type="range" id="audioVolSlider" min="0" max="0.5" step="0.05" value="0.15">
+    </div>
+
+    <div class="control-group">
+      <h3>⚙️ Structure</h3>
+      <div style="color: #00ffaa; font-size: 0.9em;">Grid: 18³ = 5,832 particles</div>
+    </div>
+
+    <div class="control-group">
+      <h3>🎮 Actions</h3>
+      <button id="resetBtn">Reset Random</button>
+      <button id="pauseBtn">Pause</button>
+    </div>
+
+    <div class="control-group">
+      <h3>⌨️ Keyboard Shortcuts</h3>
+      <div style="font-size: 0.65em; line-height: 1.6; color: rgba(0, 255, 170, 0.8);">
+        <div><span style="color: #00ffff;">SPACE</span> - Pause/Resume</div>
+        <div><span style="color: #00ffff;">R</span> - Reset Field</div>
+        <div><span style="color: #00ffff;">H</span> - Hide/Show UI</div>
+        <div><span style="color: #00ffff;">↑↓</span> - Coupling ±0.1</div>
+        <div><span style="color: #00ffff;">←→</span> - Speed ±0.01</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const cdnUrls = [
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
+        'https://unpkg.com/three@0.128.0/build/three.min.js'
+      ];
+      
+      // Post-processing scripts to load after THREE.js
+      const postScripts = [
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FXAAShader.js',
+        'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js'
+      ];
+      
+      let currentCdnIndex = 0;
+      
+      function loadScript(url) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = url;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+      
+      async function loadPostProcessing() {
+        try {
+          for (const url of postScripts) {
+            await loadScript(url);
+          }
+          initApp();
+        } catch (error) {
+          console.error('Failed to load post-processing:', error);
+          initApp(); // Try to run anyway
+        }
+      }
+      
+      function loadThreeJS() {
+        if (currentCdnIndex >= cdnUrls.length) {
+          document.getElementById('loading').textContent = '✗ Failed to load';
+          return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = cdnUrls[currentCdnIndex];
+        
+        script.onload = () => loadPostProcessing();
+        script.onerror = () => {
+          currentCdnIndex++;
+          loadThreeJS();
+        };
+        
+        document.head.appendChild(script);
+      }
+      
+      loadThreeJS();
+    })();
+  </script>
+
+  <script>
+    function initApp() {
+      if (typeof THREE === 'undefined') return;
+
+      // ========================================
+      // Global Variables
+      // ========================================
+      let scene, camera, renderer;
+      let composer, bloomPass, fxaaPass;  // ✨ Post-processing
+      let oscillators, velocities, omegas;
+      let coupling = [];
+      let volumeCloud;
+
+      // 🎵 ADVANCED SPECTRAL AUDIO SYSTEM - The Field's Voice
+      let audioContext, audioEnabled = false;
+      let oscillatorNodes = [];  // 24 fundamental voices with FM synthesis
+      let agentAudioNodes = [];  // Per-agent 3D spatialized audio sources
+      let masterGain, filterNode, harmonicGain;
+      const CHROMATIC_VOICES = 24;  // 2 full octaves for richer spectrum
+      let audioUpdateCounter = 0;
+      let audioBaseFreq = 110;  // A2 note (lower base for 2 octaves)
+      let audioVolume = 0.15;
+
+      // FM Synthesis system
+      let fmCarriers = [];      // Carrier oscillators (the sound you hear)
+      let fmModulators = [];    // Modulator oscillators (shape the timbre)
+      let fmModGains = [];      // Modulation depth controls (chaos-to-order)
+
+      // Master Effects Chain
+      let clarityFilter;        // BiquadFilterNode - maps R to cutoff (300Hz → 20kHz)
+      let globalPulseLFO;       // Low-frequency oscillator for rhythmic throbbing
+      let pulseDepthGain;       // LFO depth control - maps R to pulse intensity
+      let audioListener;        // THREE.AudioListener for 3D spatial audio
+
+      // 3D Spatial Audio - Agent-Level Sonification
+      const SPATIAL_AGENTS = 100;  // Number of 3D-positioned audio agents
+      let spatialAgents = [];       // Array of {pannerNode, gainNode, oscillator, agentIndex}
+
+      // Parameters
+      let gridSize = 18;  // Denser field (5,832 particles)
+      let totalOscillators = 0;
+      let K = 3.5;
+      let noise = 0.05;
+      let dt = 0.08;
+      let opacity = 0.85;
+      let baseSize = 2;
+      let coherenceScale = 8;
+      let syncThreshold = 0.8;  // Coherence threshold for size increase
+      let hueOffset = 0.0;
+      let paused = false;
+      let time = 0;
+      
+      // Bridges
+      let bridgesEnabled = true;
+      let bridgeThreshold = 25 * Math.PI/180;  // radians - looser default for visibility
+      let bridgeRadiusFactor = 1.0;
+      let edgeMesh = null, maxEdges = 0;
+      const _tmpColor = new THREE.Color();
+      const _UP = new THREE.Vector3(0,1,0);
+      let bridgeFrameSkip = 2, bridgeFrameCounter = 0;
+      
+      // Performance
+      let fps = 0;
+      let frameCount = 0;
+      let lastTime = performance.now();
+      let fpsHistory = [];
+
+      // Adaptive quality
+      let adaptiveQuality = true;
+      let targetFPS = 55;  // Target 55+ FPS (leaving headroom for 60Hz)
+      let qualityCheckCounter = 0;
+      
+      // Cache
+      let volumeCloudGeometry = null;
+      let volumeCloudMaterial = null;
+      let needsRebuild = true;
+      
+      // ========================================
+      // Color Helpers
+      // ========================================
+      function hsv2rgb(h, s, v) {
+        const i = Math.floor(h * 6);
+        const f = h * 6 - i;
+        const p = v * (1 - s);
+        const q = v * (1 - f * s);
+        const t = v * (1 - (1 - f) * s);
+        let r, g, b;
+        switch (i % 6) {
+          case 0: r=v; g=t; b=p; break;
+          case 1: r=q; g=v; b=p; break;
+          case 2: r=p; g=v; b=t; break;
+          case 3: r=p; g=q; b=v; break;
+          case 4: r=t; g=p; b=v; break;
+          default: r=v; g=p; b=q; break;
+        }
+        return { r, g, b };
+      }
+      
+      function phaseToSpectrum(phase, hueOffset01) {
+        const h = (phase / (2 * Math.PI) + hueOffset01) % 1;
+        // Use V=0.95 instead of 1.0 to prevent white blowout
+        // Full saturation (S=1.0) ensures vibrant colors
+        return hsv2rgb(h, 1.0, 0.95);
+      }
+      
+      function meanHue(thetaA, thetaB, offset01) {
+        const h1 = (thetaA/(2*Math.PI) + offset01) % 1;
+        const h2 = (thetaB/(2*Math.PI) + offset01) % 1;
+        const a1 = h1*2*Math.PI, a2 = h2*2*Math.PI;
+        const x = Math.cos(a1)+Math.cos(a2), y = Math.sin(a1)+Math.sin(a2);
+        let h = Math.atan2(y,x)/(2*Math.PI); 
+        if (h<0) h+=1;
+        return h;
+      }
+      
+      // ========================================
+      // Three.js Setup
+      // ========================================
+      function initThreeJS() {
+        scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.0018);  // Less fog mush
+
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.set(100, 70, 100);
+        camera.lookAt(0, 0, 0);
+
+        // 🎵 Initialize THREE.AudioListener for 3D spatial audio
+        // This will be used to create positioned audio sources in the field
+        audioListener = new THREE.AudioListener();
+        camera.add(audioListener);
+        
+        const canvas = document.getElementById('canvas');
+        renderer = new THREE.WebGLRenderer({
+          canvas: canvas,
+          antialias: true,
+          alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        // ✨ PROPER COLOR + TONE MAPPING ✨
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.05;
+        renderer.physicallyCorrectLights = true;
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x0a2a3a, 0.4);
+        scene.add(ambientLight);
+        
+        const pointLight1 = new THREE.PointLight(0x00ffaa, 1.2, 400);
+        pointLight1.position.set(80, 80, 80);
+        scene.add(pointLight1);
+        
+        const pointLight2 = new THREE.PointLight(0x00ffff, 0.8, 400);
+        pointLight2.position.set(-80, -80, -80);
+        scene.add(pointLight2);
+        
+        // ✨ INITIALIZE POST-PROCESSING STACK ✨
+        initPost();
+        
+        setupControls();
+      }
+      
+      function initPost() {
+        if (!THREE.EffectComposer) {
+          console.warn('Post-processing not available, skipping');
+          return;
+        }
+        
+        composer = new THREE.EffectComposer(renderer);
+        composer.addPass(new THREE.RenderPass(scene, camera));
+        
+        // FXAA for crisp anti-aliasing
+        fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
+        const pr = renderer.getPixelRatio();
+        fxaaPass.uniforms['resolution'].value.set(
+          1 / (window.innerWidth * pr), 
+          1 / (window.innerHeight * pr)
+        );
+        composer.addPass(fxaaPass);
+        
+        // UnrealBloom for tasteful glow - tuned to prevent white blowout
+        bloomPass = new THREE.UnrealBloomPass(
+          new THREE.Vector2(window.innerWidth, window.innerHeight),
+          0.9,   // strength - increased for more glow
+          0.5,   // radius - slightly larger spread
+          0.92   // threshold - higher to be more selective (only brightest pixels bloom)
+        );
+        composer.addPass(bloomPass);
+      }
+      
+      function setupControls() {
+        let isDragging = false;
+        let previousPosition = { x: 0, y: 0 };
+        
+        const onDrag = (dx, dy) => {
+          const spherical = new THREE.Spherical();
+          spherical.setFromVector3(camera.position);
+          spherical.theta -= dx * 0.01;
+          spherical.phi += dy * 0.01;
+          spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+          camera.position.setFromSpherical(spherical);
+          camera.lookAt(0, 0, 0);
+        };
+        
+        // Mouse
+        document.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          previousPosition = { x: e.clientX, y: e.clientY };
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          onDrag(e.clientX - previousPosition.x, e.clientY - previousPosition.y);
+          previousPosition = { x: e.clientX, y: e.clientY };
+        });
+        
+        document.addEventListener('mouseup', () => isDragging = false);
+        
+        // Touch
+        document.addEventListener('touchstart', (e) => {
+          if (e.touches.length !== 1) return;
+          isDragging = true;
+          const t = e.touches[0];
+          previousPosition = { x: t.clientX, y: t.clientY };
+        }, { passive: true });
+        
+        document.addEventListener('touchmove', (e) => {
+          if (!isDragging || e.touches.length !== 1) return;
+          const t = e.touches[0];
+          onDrag(t.clientX - previousPosition.x, t.clientY - previousPosition.y);
+          previousPosition = { x: t.clientX, y: t.clientY };
+        }, { passive: true });
+        
+        document.addEventListener('touchend', () => isDragging = false);
+        
+        // Zoom
+        document.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const spherical = new THREE.Spherical();
+          spherical.setFromVector3(camera.position);
+          spherical.radius += e.deltaY * 0.1;
+          spherical.radius = Math.max(40, Math.min(300, spherical.radius));
+          camera.position.setFromSpherical(spherical);
+          camera.lookAt(0, 0, 0);
+        }, { passive: false });
+
+        // Keyboard controls for power users
+        document.addEventListener('keydown', (e) => {
+          switch(e.key.toLowerCase()) {
+            case ' ':  // Space - pause/resume
+              e.preventDefault();
+              paused = !paused;
+              document.getElementById('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+              break;
+            case 'r':  // R - reset
+              needsRebuild = true;
+              initOscillatorField();
+              break;
+            case 'h':  // H - toggle UI
+              document.getElementById('controls').classList.toggle('hidden');
+              document.getElementById('info').classList.toggle('hidden');
+              break;
+            case 'arrowup':  // Arrow up - increase coupling
+              K = Math.min(8, K + 0.1);
+              document.getElementById('kSlider').value = K;
+              document.getElementById('kVal').textContent = K.toFixed(1);
+              break;
+            case 'arrowdown':  // Arrow down - decrease coupling
+              K = Math.max(0, K - 0.1);
+              document.getElementById('kSlider').value = K;
+              document.getElementById('kVal').textContent = K.toFixed(1);
+              break;
+            case 'arrowright':  // Arrow right - increase speed
+              dt = Math.min(0.15, dt + 0.01);
+              document.getElementById('speedSlider').value = dt;
+              document.getElementById('speedVal').textContent = dt.toFixed(2);
+              break;
+            case 'arrowleft':  // Arrow left - decrease speed
+              dt = Math.max(0.01, dt - 0.01);
+              document.getElementById('speedSlider').value = dt;
+              document.getElementById('speedVal').textContent = dt.toFixed(2);
+              break;
+          }
+        });
+
+        setupUI();
+      }
+      
+      // ========================================
+      // Oscillator Field - RANDOM ONLY
+      // ========================================
+      function initOscillatorField() {
+        totalOscillators = gridSize * gridSize * gridSize;
+        
+        oscillators = new Float32Array(totalOscillators);
+        velocities = new Float32Array(totalOscillators);
+        omegas = new Float32Array(totalOscillators);
+
+        for (let z = 0; z < gridSize; z++) {
+          for (let y = 0; y < gridSize; y++) {
+            for (let x = 0; x < gridSize; x++) {
+              const idx = z * gridSize * gridSize + y * gridSize + x;
+              
+              // Natural frequency with slight variation
+              const omega = (Math.sin(x * 0.1) + Math.cos(y * 0.1)) * 0.05;
+              omegas[idx] = omega;
+              
+              // Always random initial phase
+              oscillators[idx] = Math.random() * 2 * Math.PI;
+              velocities[idx] = 0;
+            }
+          }
+        }
+        
+        initializeCoupling();
+        needsRebuild = true;
+        time = 0;
+        buildBridgeMesh(); // Build bridge mesh
+      }
+      
+      function initializeCoupling() {
+        coupling = [];
+        
+        for (let i = 0; i < totalOscillators; i++) {
+          const x = i % gridSize;
+          const y = Math.floor(i / gridSize) % gridSize;
+          const z = Math.floor(i / (gridSize * gridSize));
+          
+          coupling[i] = getNeighbors(x, y, z);
+        }
+      }
+      
+      function getNeighbors(x, y, z) {
+        let neighbors = [];
+        
+        // Always use 6-connectivity (faces only)
+        const dirs = [[-1,0,0], [1,0,0], [0,-1,0], [0,1,0], [0,0,-1], [0,0,1]];
+        for (const [dx, dy, dz] of dirs) {
+          const nx = x + dx, ny = y + dy, nz = z + dz;
+          if (nx >= 0 && nx < gridSize && ny >= 0 && ny < gridSize && nz >= 0 && nz < gridSize) {
+            neighbors.push({ 
+              idx: nz * gridSize * gridSize + ny * gridSize + nx, 
+              weight: 1.0 
+            });
+          }
+        }
+        
+        // Normalize weights
+        let sum = 0;
+        for (const n of neighbors) sum += n.weight;
+        if (sum > 0) for (const n of neighbors) n.weight /= sum;
+        
+        return neighbors;
+      }
+      
+      // ========================================
+      // Dynamics - Optimized with cached constants
+      // ========================================
+      function updateDynamics() {
+        if (paused) return;
+
+        const newOscillators = new Float32Array(totalOscillators);
+        const damping = 0.10;
+        const invDamping = 1 - damping;
+        const TWO_PI = 2 * Math.PI;
+        const noiseFactor = noise * Math.sqrt(dt);
+
+        // Cache frequently used values
+        for (let i = 0; i < totalOscillators; i++) {
+          const currentPhase = oscillators[i];
+          const neighbors = coupling[i];
+
+          // Compute coupling term with optimized loop
+          let couplingTerm = 0;
+          for (let j = 0; j < neighbors.length; j++) {
+            const n = neighbors[j];
+            couplingTerm += n.weight * Math.sin(oscillators[n.idx] - currentPhase);
+          }
+
+          // Natural frequency + coupling + noise
+          const noiseTerm = (Math.random() - 0.5) * noiseFactor;
+          const newVel = (omegas[i] + K * couplingTerm + noiseTerm) * dt;
+
+          // Velocity smoothing with cached damping
+          velocities[i] = invDamping * velocities[i] + damping * newVel;
+
+          // Update phase with proper wrapping
+          let newPhase = currentPhase + velocities[i];
+          if (newPhase >= TWO_PI) newPhase -= TWO_PI;
+          else if (newPhase < 0) newPhase += TWO_PI;
+          newOscillators[i] = newPhase;
+        }
+
+        oscillators = newOscillators;
+        time += dt;
+      }
+      
+      // ========================================
+      // Local Coherence with proper normalization
+      // ========================================
+      function getLocalCoherence(idx) {
+        const phase = oscillators[idx];
+        let sumCos = 0, sumSin = 0;
+        const neighbors = coupling[idx];
+        
+        if (neighbors.length === 0) return 0;
+        
+        for (const n of neighbors) {
+          const diff = oscillators[n.idx] - phase;
+          sumCos += Math.cos(diff);
+          sumSin += Math.sin(diff);
+        }
+        
+        sumCos /= neighbors.length;
+        sumSin /= neighbors.length;
+        
+        // This gives true 0-1 range: 0 when random, 1 when perfectly synchronized
+        return Math.sqrt(sumCos * sumCos + sumSin * sumSin);
+      }
+      
+      function calculateOrderParameter() {
+        let sumCos = 0, sumSin = 0;
+        for (let i = 0; i < totalOscillators; i++) {
+          sumCos += Math.cos(oscillators[i]);
+          sumSin += Math.sin(oscillators[i]);
+        }
+        sumCos /= totalOscillators;
+        sumSin /= totalOscillators;
+        return Math.sqrt(sumCos * sumCos + sumSin * sumSin);
+      }
+      
+      function calculateEntropy() {
+        const bins = 20;
+        const histogram = new Array(bins).fill(0);
+        
+        for (let i = 0; i < totalOscillators; i++) {
+          const bin = Math.floor(oscillators[i] / (2 * Math.PI) * bins);
+          histogram[Math.min(bin, bins - 1)]++;
+        }
+        
+        let entropy = 0;
+        for (let i = 0; i < bins; i++) {
+          if (histogram[i] > 0) {
+            const p = histogram[i] / totalOscillators;
+            entropy -= p * Math.log(p);
+          }
+        }
+        
+        return entropy / Math.log(bins);
+      }
+      
+      // ========================================
+      // 🎵 SPECTRAL AUDIO SYSTEM - The Field Sings Its Colors
+      // ========================================
+
+      function initAudio() {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+          // Harmonic layer gain (for overtones)
+          harmonicGain = audioContext.createGain();
+          harmonicGain.gain.value = 0;  // Start silent, ramp with order
+
+          // Master gain for fundamental voices
+          masterGain = audioContext.createGain();
+          masterGain.gain.value = audioVolume;
+
+          // 🎯 MASTER EFFECTS CHAIN
+
+          // 1. "Clarity" Filter - Maps R to cutoff frequency
+          // Chaos (R≈0) = muffled 300Hz, Order (R→1) = bright 20kHz
+          clarityFilter = audioContext.createBiquadFilter();
+          clarityFilter.type = 'lowpass';
+          clarityFilter.frequency.value = 300;  // Start dark
+          clarityFilter.Q.value = 1.0;
+
+          // 2. Global Pulse LFO - Creates rhythmic throbbing
+          globalPulseLFO = audioContext.createOscillator();
+          globalPulseLFO.type = 'sine';
+          globalPulseLFO.frequency.value = 2;  // 2 Hz pulse (will be R-mapped)
+
+          // Pulse depth gain - controls LFO intensity (R-mapped)
+          pulseDepthGain = audioContext.createGain();
+          pulseDepthGain.gain.value = 0;  // Start with no pulse
+
+          // Low-pass filter for brightness control (legacy)
+          filterNode = audioContext.createBiquadFilter();
+          filterNode.type = 'lowpass';
+          filterNode.frequency.value = 2000;
+          filterNode.Q.value = 1.0;
+
+          // Audio graph:
+          // FM voices → clarityFilter → filterNode → masterGain → destination
+          // harmonics → harmonicGain → masterGain → destination
+          // globalPulseLFO → pulseDepthGain → masterGain.gain (amplitude modulation)
+
+          clarityFilter.connect(filterNode);
+          filterNode.connect(masterGain);
+          harmonicGain.connect(masterGain);
+          masterGain.connect(audioContext.destination);
+
+          // Connect LFO to master gain for global pulse effect
+          globalPulseLFO.connect(pulseDepthGain);
+          pulseDepthGain.connect(masterGain.gain);
+
+          // Start LFO
+          globalPulseLFO.start();
+
+          console.log('🎵 Advanced spectral audio initialized:');
+          console.log('   - 24 chromatic FM voices (Carrier + Modulator)');
+          console.log('   - Clarity Filter (R → 300Hz-20kHz)');
+          console.log('   - Global Pulse LFO (R → pulse depth)');
+        }
+      }
+
+      function startAudio() {
+        if (!audioContext) initAudio();
+        stopAudio();
+
+        // Create FM synthesis voices (24 semitones = 2 octaves)
+        // Each voice has: Modulator → ModGain → Carrier.frequency
+        for (let i = 0; i < CHROMATIC_VOICES; i++) {
+          const semitone = i;  // 0-23 semitones
+          const carrierFreq = audioBaseFreq * Math.pow(2, semitone / 12);
+
+          // 🎯 FM SYNTHESIS VOICE
+          // Modulator oscillator - creates timbre variation
+          const modulator = audioContext.createOscillator();
+          modulator.type = 'sine';
+          modulator.frequency.value = carrierFreq * 2;  // 2:1 ratio (harmonic FM)
+
+          // Modulation depth gain - controls chaos/order
+          // High modGain = chaotic/inharmonic, Low modGain = pure sine
+          const modGain = audioContext.createGain();
+          modGain.gain.value = 100;  // Start with chaos (will be R-mapped)
+
+          // Carrier oscillator - the sound you hear
+          const carrier = audioContext.createOscillator();
+          carrier.type = 'sine';
+          carrier.frequency.value = carrierFreq;
+
+          // Voice output gain
+          const voiceGain = audioContext.createGain();
+          voiceGain.gain.value = 0;  // Start silent
+
+          // FM synthesis routing: Modulator → ModGain → Carrier.frequency
+          modulator.connect(modGain);
+          modGain.connect(carrier.frequency);
+
+          // Audio path: Carrier → VoiceGain → ClarityFilter
+          carrier.connect(voiceGain);
+          voiceGain.connect(clarityFilter);
+
+          // Start oscillators
+          modulator.start();
+          carrier.start();
+
+          // Create harmonic overtone (2nd harmonic = octave up)
+          const harmOsc = audioContext.createOscillator();
+          const harmGainNode = audioContext.createGain();
+
+          harmOsc.type = 'sine';
+          harmOsc.frequency.value = carrierFreq * 2;  // Octave up
+          harmGainNode.gain.value = 0;
+
+          harmOsc.connect(harmGainNode);
+          harmGainNode.connect(harmonicGain);  // Harmonics through separate gain
+          harmOsc.start();
+
+          oscillatorNodes.push({
+            carrier,          // Carrier oscillator (replaces old 'osc')
+            modulator,        // Modulator oscillator (NEW)
+            modGain,          // Modulation depth control (NEW - maps to R)
+            gain: voiceGain,  // Voice output gain
+            harmOsc,
+            harmGain: harmGainNode,
+            semitone: i,
+            baseFreq: carrierFreq
+          });
+        }
+
+        // Initialize 3D spatial agents
+        initSpatialAgents();
+
+        audioEnabled = true;
+        console.log(`🎵 FM Field voice active: ${CHROMATIC_VOICES} FM voices (Carrier + Modulator)`);
+        console.log(`   Modulation depth will map to order parameter R (chaos → order)`);
+      }
+
+      function stopAudio() {
+        oscillatorNodes.forEach(node => {
+          node.gain.gain.setValueAtTime(0, audioContext.currentTime);
+          node.harmGain.gain.setValueAtTime(0, audioContext.currentTime);
+          node.carrier.stop(audioContext.currentTime + 0.1);
+          node.modulator.stop(audioContext.currentTime + 0.1);
+          node.harmOsc.stop(audioContext.currentTime + 0.1);
+        });
+        oscillatorNodes = [];
+
+        // Stop spatial agents
+        spatialAgents.forEach(agent => {
+          agent.oscillator.stop(audioContext.currentTime + 0.1);
+          agent.oscillator.disconnect();
+          agent.gainNode.disconnect();
+          agent.pannerNode.disconnect();
+        });
+        spatialAgents = [];
+
+        audioEnabled = false;
+      }
+
+      // ========================================
+      // 🎯 3D SPATIAL AUDIO - AGENT-LEVEL SONIFICATION
+      // ========================================
+
+      function initSpatialAgents() {
+        if (!audioContext || !audioListener) return;
+
+        // Sample SPATIAL_AGENTS oscillators from the field (evenly distributed)
+        const step = Math.floor(totalOscillators / SPATIAL_AGENTS);
+
+        for (let i = 0; i < SPATIAL_AGENTS; i++) {
+          const agentIndex = i * step;
+
+          // Create PannerNode for 3D spatial positioning
+          const pannerNode = audioContext.createPanner();
+          pannerNode.panningModel = 'HRTF';  // Head-related transfer function (binaural)
+          pannerNode.distanceModel = 'inverse';
+          pannerNode.refDistance = 10;
+          pannerNode.maxDistance = 200;
+          pannerNode.rolloffFactor = 1;
+          pannerNode.coneInnerAngle = 360;
+          pannerNode.coneOuterAngle = 360;
+          pannerNode.coneOuterGain = 0;
+
+          // Create oscillator for this agent
+          const oscillator = audioContext.createOscillator();
+          oscillator.type = 'sine';
+          oscillator.frequency.value = audioBaseFreq;  // Will be updated based on phase
+
+          // Create gain for this agent
+          const gainNode = audioContext.createGain();
+          gainNode.gain.value = audioVolume * 0.3 / SPATIAL_AGENTS;  // Quieter, distributed
+
+          // Audio graph: Oscillator → Gain → Panner → Destination (bypassing filters)
+          oscillator.connect(gainNode);
+          gainNode.connect(pannerNode);
+          pannerNode.connect(audioContext.destination);
+
+          oscillator.start();
+
+          spatialAgents.push({
+            oscillator,
+            gainNode,
+            pannerNode,
+            agentIndex
+          });
+        }
+
+        console.log(`🎯 3D Spatial Audio: ${SPATIAL_AGENTS} positioned agents in field`);
+      }
+
+      function updateSpatialAgents() {
+        if (!audioEnabled || spatialAgents.length === 0) return;
+
+        const now = audioContext.currentTime;
+        const rampTime = 0.05;
+
+        for (let i = 0; i < spatialAgents.length; i++) {
+          const agent = spatialAgents[i];
+          const agentIndex = agent.agentIndex;
+
+          if (agentIndex >= totalOscillators) continue;
+
+          // Get agent's 3D position from the grid
+          const ix = Math.floor(agentIndex / (gridSize * gridSize));
+          const iy = Math.floor((agentIndex % (gridSize * gridSize)) / gridSize);
+          const iz = agentIndex % gridSize;
+
+          // Convert to world coordinates (centered around origin)
+          const spacing = 10;
+          const offset = (gridSize - 1) * spacing / 2;
+          const x = ix * spacing - offset;
+          const y = iy * spacing - offset;
+          const z = iz * spacing - offset;
+
+          // Update PannerNode position
+          agent.pannerNode.positionX.setValueAtTime(x, now);
+          agent.pannerNode.positionY.setValueAtTime(y, now);
+          agent.pannerNode.positionZ.setValueAtTime(z, now);
+
+          // Map agent's phase to frequency
+          const phase = oscillators[agentIndex];
+          const normalizedPhase = phase / (2 * Math.PI);
+          const semitone = Math.floor(normalizedPhase * 24) % 24;  // 0-23 semitones
+          const freq = audioBaseFreq * Math.pow(2, semitone / 12);
+
+          agent.oscillator.frequency.setTargetAtTime(freq, now, rampTime);
+
+          // Map local coherence to volume
+          const coherence = getLocalCoherence(agentIndex);
+          const targetGain = coherence > 0.3 ? (audioVolume * 0.3 * coherence / SPATIAL_AGENTS) : 0;
+          agent.gainNode.gain.setTargetAtTime(targetGain, now, rampTime);
+        }
+      }
+
+      // Compute spectral histogram: which phases (colors) are coherently populated?
+      function computeSpectralHistogram() {
+        const histogram = new Array(CHROMATIC_VOICES).fill(0);
+
+        // For each oscillator particle
+        for (let i = 0; i < totalOscillators; i++) {
+          const phase = oscillators[i];  // 0 to 2π
+          const coherence = getLocalCoherence(i);
+
+          // Map phase to chromatic bin (0-11)
+          const bin = Math.floor((phase / (2 * Math.PI)) * CHROMATIC_VOICES) % CHROMATIC_VOICES;
+
+          // Accumulate coherence-weighted strength
+          // Only coherent regions contribute to the sound
+          if (coherence > 0.3) {  // Minimum coherence threshold
+            histogram[bin] += coherence;
+          }
+        }
+
+        // Normalize by max possible accumulation
+        const maxPossible = totalOscillators;
+        for (let i = 0; i < CHROMATIC_VOICES; i++) {
+          histogram[i] /= maxPossible;
+        }
+
+        return histogram;
+      }
+
+      function updateAudio() {
+        if (!audioEnabled || !audioContext || oscillatorNodes.length === 0) return;
+        if (++audioUpdateCounter % 3 !== 0) return;  // Update every 3 frames
+
+        const orderParam = calculateOrderParameter();
+        const spectrum = computeSpectralHistogram();
+
+        const now = audioContext.currentTime;
+        const rampTime = 0.05;  // Smooth transitions
+
+        // 🎯 MASTER EFFECTS - MAP R TO SYSTEM-LEVEL PARAMETERS
+
+        // 1. Clarity Filter: Map R to cutoff frequency (300Hz → 20kHz)
+        // Chaos (R≈0) = muffled, Order (R→1) = bright and crystalline
+        const clarityFreq = 300 + (orderParam * orderParam) * 19700;  // Quadratic for dramatic opening
+        clarityFilter.frequency.setTargetAtTime(clarityFreq, now, rampTime);
+
+        // 2. Global Pulse LFO: Map R to pulse depth
+        // Chaos (R≈0) = no pulse, Order (R→1) = strong rhythmic throb
+        const pulseDepth = orderParam * orderParam * 0.1;  // Max 10% amplitude modulation
+        pulseDepthGain.gain.setTargetAtTime(pulseDepth, now, rampTime);
+
+        // 3. Global Pulse LFO frequency: Map phase speed to LFO rate
+        // Calculate average angular velocity of field
+        let avgOmega = 0;
+        for (let i = 0; i < totalOscillators; i++) {
+          avgOmega += omegas[i];
+        }
+        avgOmega /= totalOscillators;
+        const lfoFreq = 1 + Math.abs(avgOmega) * 2;  // 1-5 Hz range
+        globalPulseLFO.frequency.setTargetAtTime(lfoFreq, now, rampTime);
+
+        // Harmonic richness scales with order parameter
+        // Low order (chaos) = fundamentals only
+        // High order (sync) = fundamentals + harmonics
+        const harmonicStrength = orderParam * orderParam;  // Quadratic for dramatic emergence
+        harmonicGain.gain.setTargetAtTime(audioVolume * harmonicStrength * 0.5, now, rampTime);
+
+        // 🎯 FM SYNTHESIS - UPDATE EACH CHROMATIC VOICE
+        for (let i = 0; i < CHROMATIC_VOICES; i++) {
+          const node = oscillatorNodes[i];
+          const strength = spectrum[i];
+
+          // Voice output volume: proportional to coherence strength
+          const targetGain = audioVolume * strength * 2.5;  // 2.5x for clarity
+          node.gain.gain.setTargetAtTime(targetGain, now, rampTime);
+
+          // Harmonic volume: follows fundamental but scaled by order
+          const harmTargetGain = targetGain * harmonicStrength;
+          node.harmGain.gain.setTargetAtTime(harmTargetGain, now, rampTime);
+
+          // 🎯 FM MODULATION DEPTH - THE CHAOS-TO-ORDER NARRATIVE
+          // Map order parameter R INVERSELY to modulation depth
+          // Chaos (R≈0) → high modGain (100+) = noisy, inharmonic timbre
+          // Order (R→1) → low modGain (0-10) = pure sine wave
+          const chaosAmount = 1 - orderParam;  // Invert: 1=chaos, 0=order
+          const modDepth = 10 + chaosAmount * chaosAmount * 200;  // 10 (order) → 210 (chaos)
+          node.modGain.gain.setTargetAtTime(modDepth, now, rampTime);
+
+          // Carrier frequency: add slight vibrato during high sync
+          const vibratoDepth = orderParam * 0.01;  // ±1% max when fully synchronized
+          const vibratoRate = 2 + i * 0.1;  // Slightly different rates per voice
+          const vibrato = Math.sin(now * vibratoRate) * vibratoDepth;
+
+          const targetCarrierFreq = node.baseFreq * (1 + vibrato);
+          const targetModulatorFreq = node.baseFreq * 2 * (1 + vibrato);  // 2:1 FM ratio
+          const targetHarmFreq = node.baseFreq * 2 * (1 + vibrato);  // Octave follows vibrato
+
+          node.carrier.frequency.setTargetAtTime(targetCarrierFreq, now, rampTime);
+          node.modulator.frequency.setTargetAtTime(targetModulatorFreq, now, rampTime);
+          node.harmOsc.frequency.setTargetAtTime(targetHarmFreq, now, rampTime);
+        }
+
+        // Legacy filter: still used for secondary brightness control
+        const targetCutoff = 600 + orderParam * 1800;  // 600Hz (dark) → 2400Hz (crystalline)
+        filterNode.frequency.setTargetAtTime(targetCutoff, now, rampTime);
+
+        // Filter resonance (Q): add shimmer during high synchronization
+        const targetQ = 0.8 + orderParam * 1.5;  // 0.8 → 2.3
+        filterNode.Q.setTargetAtTime(targetQ, now, rampTime);
+
+        // 🎯 Update 3D spatial agents
+        updateSpatialAgents();
+      }
+
+      // ========================================
+      // Bridge System
+      // ========================================
+      function buildBridgeMesh() {
+        if (edgeMesh) {
+          scene.remove(edgeMesh);
+          edgeMesh.geometry.dispose();
+          edgeMesh.material.dispose();
+        }
+        maxEdges = 3 * totalOscillators; // +X +Y +Z
+
+        const geom = new THREE.CylinderBufferGeometry(1,1,1,8,1,true); // height along +Y
+        const mat = new THREE.MeshBasicMaterial({
+          color: 0xffffff,               // white base (tinted by instanceColor)
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.85,                 // slightly more crisp
+          depthTest: true,
+          depthWrite: false,             // layer nicely with bloom
+          fog: false,
+          side: THREE.DoubleSide
+        });
+
+        edgeMesh = new THREE.InstancedMesh(geom, mat, maxEdges);
+
+        // 🔑 three r128: explicitly create instanceColor so setColorAt affects rendering
+        edgeMesh.instanceColor = new THREE.InstancedBufferAttribute(
+          new Float32Array(maxEdges * 3), 3
+        );
+
+        edgeMesh.frustumCulled = false;  // 🔑 prevent incorrect culling of long/scaled instances
+        edgeMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        edgeMesh.count = 0;
+        scene.add(edgeMesh);
+      }
+      
+      function updateBridges() {
+        if (!bridgesEnabled || !edgeMesh) { 
+          if(edgeMesh) edgeMesh.count = 0; 
+          return; 
+        }
+        if ((bridgeFrameCounter++ % bridgeFrameSkip) !== 0) return;
+
+        const G = gridSize, s = 80/G;
+        const r = Math.max(1e-3, (s*0.12)*bridgeRadiusFactor);
+        const dirs = [[1,0,0],[0,1,0],[0,0,1]]; // faces only
+        const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3();
+        const P1 = new THREE.Vector3(), P2 = new THREE.Vector3();
+        const TWO = 2*Math.PI;
+        const dphi = (a,b) => { 
+          let d=(a-b)%TWO; 
+          if(d<-Math.PI) d+=TWO; 
+          else if(d>Math.PI) d-=TWO; 
+          return Math.abs(d); 
+        };
+
+        let w = 0;
+        for (let z=0; z<G; z++) {
+          for (let y=0; y<G; y++) {
+            for (let x=0; x<G; x++) {
+              const i = z*G*G + y*G + x, th = oscillators[i];
+              P1.set((x-G/2)*s,(y-G/2)*s,(z-G/2)*s);
+              
+              for (const [dx,dy,dz] of dirs) {
+                const nx=x+dx, ny=y+dy, nz=z+dz; 
+                if (nx>=G||ny>=G||nz>=G) continue;
+                
+                const j = nz*G*G + ny*G + nx, tj = oscillators[j];
+                if (dphi(th,tj) > bridgeThreshold) continue;
+
+                P2.set((nx-G/2)*s,(ny-G/2)*s,(nz-G/2)*s);
+                const mid = P1.clone().add(P2).multiplyScalar(0.5);
+                const dir = P2.clone().sub(P1);
+                const L = Math.max(1e-4, dir.length());
+                Q.setFromUnitVectors(_UP, dir.normalize());
+                S.set(r, L, r);
+                M.compose(mid, Q, S);
+                edgeMesh.setMatrixAt(w, M);
+
+                // WHITE BRIDGES for testing
+                _tmpColor.setRGB(1.0, 1.0, 1.0);  // Pure white
+                edgeMesh.setColorAt(w, _tmpColor);
+
+                if (++w >= maxEdges) break;
+              }
+            }
+          }
+        }
+        edgeMesh.count = w;
+        edgeMesh.instanceMatrix.needsUpdate = true;
+        if (edgeMesh.instanceColor) edgeMesh.instanceColor.needsUpdate = true;
+      }
+      
+      // ========================================
+      // Visualization with COHERENCE-BASED SIZE
+      // ========================================
+      function createVolumeCloud() {
+        // Properly dispose old cloud to reset shaders and prevent memory leaks
+        if (volumeCloud) {
+          scene.remove(volumeCloud);
+          if (volumeCloudGeometry) volumeCloudGeometry.dispose();
+          if (volumeCloudMaterial) volumeCloudMaterial.dispose();
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+        const colors = [];
+        const sizes = [];
+        
+        const scale = 80 / gridSize;
+        
+        for (let z = 0; z < gridSize; z++) {
+          for (let y = 0; y < gridSize; y++) {
+            for (let x = 0; x < gridSize; x++) {
+              const idx = z * gridSize * gridSize + y * gridSize + x;
+              
+              positions.push(
+                (x - gridSize / 2) * scale,
+                (y - gridSize / 2) * scale,
+                (z - gridSize / 2) * scale
+              );
+              
+              // Color based on phase
+              const phase = oscillators[idx];
+              const color = phaseToSpectrum(phase, hueOffset);
+              colors.push(color.r, color.g, color.b);
+              
+              // Size based on STRICT coherence threshold
+              const coherence = getLocalCoherence(idx);
+              // Binary threshold: only grow if coherence exceeds threshold
+              let size;
+              if (coherence > syncThreshold) {
+                // Map threshold-1.0 to size multiplier
+                const normalizedCoherence = (coherence - syncThreshold) / (1.0 - syncThreshold);
+                size = baseSize * (1.0 + normalizedCoherence * coherenceScale * 0.5);
+              } else {
+                // Below threshold: all dots are baseline size
+                size = baseSize;
+              }
+              sizes.push(size);
+            }
+          }
+        }
+        
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+        const material = new THREE.ShaderMaterial({
+          uniforms: {
+            opacity: { value: opacity }
+          },
+          extensions: {
+            derivatives: true  // Enable fwidth() for AA
+          },
+          vertexShader: `
+            precision mediump float;
+            attribute float size;
+            attribute vec3 color;
+            varying vec3 vColor;
+            varying float vSize;
+
+            void main() {
+              vColor = color;
+              vSize = size;
+              vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+              gl_PointSize = size * (300.0 / max(-mvPosition.z, 1.0));
+              gl_Position = projectionMatrix * mvPosition;
+            }
+          `,
+          fragmentShader: `
+            precision mediump float;
+            uniform float opacity;
+            varying vec3 vColor;
+            varying float vSize;
+
+            void main() {
+              vec2 p = gl_PointCoord - vec2(0.5);
+              float r = length(p);
+
+              // Smooth, resolution-independent circle edge
+              float edge = 0.5;
+              float aa = fwidth(r);  // Derivative AA
+              float mask = 1.0 - smoothstep(edge - aa, edge + aa, r);
+              if (mask <= 0.001) discard;
+
+              // Crisp luminous core + subtle halo
+              float core = exp(-22.0 * r * r);  // Sharp center
+              float halo = exp(-4.5 * r * r) * 0.3;
+
+              // Enhanced color with better depth and saturation
+              // Deeper base (0.6) with richer halo contribution
+              vec3 base = vColor * (0.6 + 0.4 * halo) + core * vColor * 0.25;
+
+              gl_FragColor = vec4(base, opacity * mask);
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        
+        volumeCloud = new THREE.Points(geometry, material);
+        volumeCloudGeometry = geometry;
+        volumeCloudMaterial = material;
+        scene.add(volumeCloud);
+      }
+      
+      function updateVolumeCloud() {
+        if (!volumeCloud || !volumeCloudGeometry) return;
+
+        const colors = volumeCloudGeometry.attributes.color.array;
+        const sizes = volumeCloudGeometry.attributes.size.array;
+
+        // Update colors and sizes from phase/coherence
+        for (let i = 0; i < totalOscillators; i++) {
+          // Color from phase
+          const phase = oscillators[i];
+          const color = phaseToSpectrum(phase, hueOffset);
+          colors[i * 3] = color.r;
+          colors[i * 3 + 1] = color.g;
+          colors[i * 3 + 2] = color.b;
+
+          // Size from coherence threshold
+          const coherence = getLocalCoherence(i);
+          let size;
+          if (coherence > syncThreshold) {
+            const normalizedCoherence = (coherence - syncThreshold) / (1.0 - syncThreshold);
+            // DRAMATIC size scaling - breathe with power!
+            size = baseSize * (1.0 + normalizedCoherence * coherenceScale * 2.0);
+          } else {
+            size = baseSize * 0.5;  // Shrink unsynchronized particles dramatically
+          }
+          sizes[i] = size;
+        }
+
+        volumeCloudGeometry.attributes.color.needsUpdate = true;
+        volumeCloudGeometry.attributes.size.needsUpdate = true;
+
+        if (volumeCloudMaterial) {
+          volumeCloudMaterial.uniforms.opacity.value = opacity;
+        }
+      }
+      
+      // ========================================
+      // UI
+      // ========================================
+      function setupUI() {
+        document.getElementById('kSlider').addEventListener('input', (e) => {
+          K = parseFloat(e.target.value);
+          document.getElementById('kVal').textContent = K.toFixed(1);
+        });
+        
+        document.getElementById('noiseSlider').addEventListener('input', (e) => {
+          noise = parseFloat(e.target.value);
+          document.getElementById('noiseVal').textContent = noise.toFixed(2);
+        });
+        
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+          dt = parseFloat(e.target.value);
+          document.getElementById('speedVal').textContent = dt.toFixed(2);
+        });
+        
+        document.getElementById('baseSizeSlider').addEventListener('input', (e) => {
+          baseSize = parseFloat(e.target.value);
+          document.getElementById('baseSizeVal').textContent = baseSize.toFixed(1);
+        });
+        
+        document.getElementById('cohScaleSlider').addEventListener('input', (e) => {
+          coherenceScale = parseFloat(e.target.value);
+          document.getElementById('cohScaleVal').textContent = coherenceScale.toFixed(0);
+        });
+        
+        document.getElementById('syncThreshSlider').addEventListener('input', (e) => {
+          syncThreshold = parseFloat(e.target.value);
+          document.getElementById('syncThreshVal').textContent = syncThreshold.toFixed(2);
+        });
+        
+        document.getElementById('hueSlider').addEventListener('input', (e) => {
+          hueOffset = parseFloat(e.target.value);
+          document.getElementById('hueVal').textContent = hueOffset.toFixed(2);
+        });
+        
+        document.getElementById('opacitySlider').addEventListener('input', (e) => {
+          opacity = parseFloat(e.target.value);
+          document.getElementById('opacityVal').textContent = opacity.toFixed(2);
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+          needsRebuild = true;
+          initOscillatorField();
+        });
+        
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+          paused = !paused;
+          document.getElementById('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+        });
+
+        // 🎵 Audio controls
+        document.getElementById('audioToggle').addEventListener('change', (e) => {
+          if (e.target.checked) {
+            startAudio();
+          } else {
+            stopAudio();
+          }
+        });
+
+        document.getElementById('audioBaseSlider').addEventListener('input', (e) => {
+          audioBaseFreq = parseFloat(e.target.value);
+          document.getElementById('audioBaseVal').textContent = audioBaseFreq.toFixed(0);
+        });
+
+        document.getElementById('audioVolSlider').addEventListener('input', (e) => {
+          audioVolume = parseFloat(e.target.value);
+          document.getElementById('audioVolVal').textContent = audioVolume.toFixed(2);
+          if (masterGain) {
+            masterGain.gain.setValueAtTime(audioVolume, audioContext.currentTime);
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          const pr = renderer.getPixelRatio();
+          
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+          
+          // Update composer and FXAA
+          if (composer) {
+            composer.setSize(w, h);
+          }
+          if (fxaaPass) {
+            fxaaPass.uniforms['resolution'].value.set(1 / (w * pr), 1 / (h * pr));
+          }
+        });
+      }
+      
+      // ========================================
+      // Info Display
+      // ========================================
+      function updateInfo() {
+        document.getElementById('dimensions').textContent = `${gridSize}³`;
+
+        const R = calculateOrderParameter();
+        const entropy = calculateEntropy();
+
+        document.getElementById('orderParam').textContent = R.toFixed(3);
+        document.getElementById('entropy').textContent = entropy.toFixed(3);
+
+        // FPS tracking with adaptive quality
+        frameCount++;
+        const now = performance.now();
+        if (now - lastTime >= 1000) {
+          fps = Math.round(frameCount * 1000 / (now - lastTime));
+          fpsHistory.push(fps);
+          if (fpsHistory.length > 5) fpsHistory.shift();
+          const avgFps = fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length;
+          document.getElementById('fps').textContent = Math.round(avgFps);
+
+          // Adaptive quality management - adjust bridge update rate
+          if (adaptiveQuality && ++qualityCheckCounter % 3 === 0) {
+            if (avgFps < targetFPS && bridgeFrameSkip < 10) {
+              bridgeFrameSkip++;  // Reduce bridge update frequency if slow
+            } else if (avgFps > targetFPS + 5 && bridgeFrameSkip > 1) {
+              bridgeFrameSkip--;  // Increase bridge updates if we have FPS headroom
+            }
+          }
+
+          frameCount = 0;
+          lastTime = now;
+        }
+      }
+      
+      // ========================================
+      // Animation Loop
+      // ========================================
+      function animate() {
+        requestAnimationFrame(animate);
+        
+        updateDynamics();
+        
+        if (needsRebuild) {
+          createVolumeCloud();
+          needsRebuild = false;
+        } else {
+          updateVolumeCloud();
+        }
+        
+        updateBridges(); // Update bridge connections
+
+        updateInfo();
+        updateAudio(); // 🎵 Update audio frequencies coupled to synchronization
+
+        // Gentle auto-rotate
+        const spherical = new THREE.Spherical();
+        spherical.setFromVector3(camera.position);
+        spherical.theta += 0.002;
+        camera.position.setFromSpherical(spherical);
+        camera.lookAt(0, 0, 0);
+        
+        // ✨ Dynamic exposure tied to order parameter for living brightness
+        const orderParam = calculateOrderParameter();
+        renderer.toneMappingExposure = 0.95 + 0.3 * orderParam;
+        
+        // Render with post-processing if available, otherwise fallback
+        if (composer) {
+          composer.render();
+        } else {
+          renderer.render(scene, camera);
+        }
+      }
+      
+      // ========================================
+      // Initialize
+      // ========================================
+      function init() {
+        initThreeJS();
+        initOscillatorField();
+        
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('info').classList.remove('hidden');
+        document.getElementById('controls').classList.remove('hidden');
+        
+        animate();
+      }
+      
+      init();
+    }
+  </script>
+</body>
+</html>
