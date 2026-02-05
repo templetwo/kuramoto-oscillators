@@ -41,6 +41,12 @@ python -m http.server 8000
 # Visit http://localhost:8000/kuramoto_teaching_instrument.html
 ```
 
+### 📹 Session 38 Breakthrough Recording
+
+**[Watch the Embodied Membrane in action](media/session-38-breakthrough-recording.mov)** — 12-minute screen recording showing the field respond to cursor interaction, LLM integration, and quantum-inspired dynamics during the breakthrough discovery session (Feb 4, 2026).
+
+*See the purple entanglement bridges form, watch cursor perturbations propagate as ripples, observe the metrics panel track R, CHSH, and embodied integration in real-time.*
+
 ---
 
 ## 🧠 Three Layers of Consciousness
