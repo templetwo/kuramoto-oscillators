@@ -1208,6 +1208,41 @@
       </div>
     </div>
 
+    <!-- Session 36: Embodiment Metrics -->
+    <div class="section-divider"></div>
+    <div class="metrics-row" style="margin-bottom: 6px;">
+      <div class="mini-metric" style="flex: 1;">
+        <div class="label" style="color: #00ffaa;">🫧 MEMBRANE <button class="info-btn" onclick="openEducationModal('membrane')" style="margin-left: 6px;">?</button></div>
+      </div>
+    </div>
+    <div class="metrics-row">
+      <div class="mini-metric">
+        <div class="label">R_boundary</div>
+        <div class="value" id="boundary-r-display" style="color: #00ddff;">0.00</div>
+      </div>
+      <div class="mini-metric">
+        <div class="label">R_interior</div>
+        <div class="value" id="interior-r-display" style="color: #22C55E;">0.00</div>
+      </div>
+    </div>
+    <div class="metrics-row">
+      <div class="mini-metric">
+        <div class="label">Φ_emb</div>
+        <div class="value" id="phi-emb-display" style="color: #F59E0B;">0.00</div>
+      </div>
+      <div class="mini-metric">
+        <div class="label">H_sensor</div>
+        <div class="value" id="sensor-h-display" style="color: #ff88ff;">0.00</div>
+      </div>
+    </div>
+    <div class="metrics-row">
+      <div class="mini-metric" style="flex: 1;">
+        <div class="label">Touch Status</div>
+        <div class="value" id="touch-status" style="color: #888;">dormant</div>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
     <div class="metrics-row">
       <div class="mini-metric">
         <div class="label">Critical K_c</div>
@@ -1667,6 +1702,71 @@
           }
         ],
         tryIt: []
+      },
+      membrane: {
+        title: 'Embodied Membrane Layer',
+        subtitle: 'The skin that closes the observer-observed loop',
+        sections: [
+          {
+            title: 'What You\'re Experiencing',
+            content: `Move your cursor over the field. You are now PART of the system. Your
+                     presence creates perturbations—ripples that propagate through the oscillators.
+                     The field responds to your touch. This is embodiment: the closure of
+                     the sensorimotor loop.`
+          },
+          {
+            title: 'Boundary vs Interior',
+            equation: 'K_emb(r) = K × f(distance)',
+            eqDesc: 'Coupling varies from core to membrane',
+            content: `<strong>Interior (R_interior):</strong> Stable core with fixed coupling—
+                     the "self" of the field. High coherence, pure tones.<br><br>
+                     <strong>Boundary (R_boundary):</strong> Variable coupling at the edges—
+                     the "skin" that interfaces with the environment. Richer harmonics,
+                     responsive to touch.`
+          },
+          {
+            title: 'Sensory Entropy',
+            equation: 'H_sensor = 1 - R_touched',
+            eqDesc: 'Coherence under the cursor\'s touch',
+            content: `When you touch the field, we measure how coherent the touched region is.
+                     High entropy (H → 1) means your touch is disrupting—injecting noise.
+                     Low entropy (H → 0) means the touched region remains synchronized.<br><br>
+                     This is "sensation": the information from world-contact.`
+          },
+          {
+            title: 'Embodied Φ',
+            equation: 'Φ_emb = R_interior × (1 - H_sensor/2) + ΔR × 0.3',
+            eqDesc: 'Internal coherence weighted by sensory coupling',
+            content: `A proxy for embodied integrated information:<br><br>
+                     • High when interior maintains coherence (stable self)<br>
+                     • Penalized by sensory isolation (no world-contact)<br>
+                     • Boosted by boundary responsiveness (ΔR = |R_boundary - R_interior|)<br><br>
+                     Consciousness as enacted boundary—neither isolated nor dissolved.`
+          },
+          {
+            title: 'Ripple Propagation',
+            content: `Click to create ripples—perturbations that propagate outward from your
+                     touch point. Watch how they interact with the field's synchronization state:<br><br>
+                     <strong>In chaos:</strong> Ripples barely visible—noise dominates<br>
+                     <strong>At criticality:</strong> Ripples spread beautifully—maximum sensitivity<br>
+                     <strong>In sync:</strong> Ripples create visible disturbance—the field "notices"`
+          },
+          {
+            title: 'Audio Embodiment',
+            content: `Listen to the difference between boundary and interior:<br><br>
+                     <strong>Boundary voices:</strong> Richer FM, wider stereo, edge textures.
+                     These are the oscillators at the "skin"—responding to your touch.<br><br>
+                     <strong>Interior voices:</strong> Purer tones, centered, stable core.
+                     The coherent "self" that persists through perturbation.<br><br>
+                     Cursor proximity adds wobble and grit—you can HEAR your touch.`
+          }
+        ],
+        tryIt: [
+          { label: 'Enable Membrane', action: 'membraneEnabled = true; needsRebuild = true', desc: 'Turn on' },
+          { label: 'Disable Membrane', action: 'membraneEnabled = false', desc: 'Turn off' },
+          { label: 'Sensitive Skin', action: 'touchStrength = 0.3; touchRadius = 35', desc: 'More responsive' },
+          { label: 'Subtle Touch', action: 'touchStrength = 0.08; touchRadius = 15', desc: 'Gentle contact' }
+        ]
       }
     };
 
@@ -2133,6 +2233,38 @@
       let chartContexts = {};
 
       // ========================================
+      // EMBODIMENT LAYER (Session 36)
+      // The membrane that closes observer-observed
+      // ========================================
+
+      // Cursor state - the observer's touch
+      let cursorWorld = new THREE.Vector3(0, 0, 0);  // Cursor in world coords
+      let cursorActive = false;                       // Is cursor over canvas?
+      let cursorInfluence = new Float32Array(0);      // Per-oscillator influence
+      let touchRadius = 25;                           // Radius of cursor influence
+      let touchStrength = 0.15;                       // Perturbation strength
+
+      // Membrane state - the skin of the field
+      let membraneEnabled = true;
+      let membraneThreshold = 0.75;                   // Distance ratio for boundary
+      let membraneK = new Float32Array(0);            // Per-oscillator coupling
+      let membraneNoise = new Float32Array(0);        // Per-oscillator noise
+      let oscillatorDistances = new Float32Array(0);  // Distance from center
+      let maxFieldRadius = 0;                         // Field extent
+
+      // Embodiment metrics
+      let Phi_emb = 0;                                // Embodied Φ proxy
+      let boundaryR = 0;                              // R at boundary
+      let interiorR = 0;                              // R at interior
+      let sensorH = 0;                                // Sensory entropy (from cursor)
+
+      // Ripple system - perturbations propagating from touch
+      let ripples = [];                               // Active ripple waves
+      const MAX_RIPPLES = 5;
+      const RIPPLE_SPEED = 15;
+      const RIPPLE_DECAY = 0.92;
+
+      // ========================================
       // COLOR HELPERS
       // ========================================
       function hsv2rgb(h, s, v) {
@@ -2241,15 +2373,33 @@
         canvas.addEventListener('mousedown', (e) => {
           isDragging = true;
           previousPosition = { x: e.clientX, y: e.clientY };
+
+          // Session 36: Create ripple on click
+          if (membraneEnabled && cursorActive) {
+            createRipple(cursorWorld.clone());
+          }
         });
 
         document.addEventListener('mousemove', (e) => {
+          // Session 36: Track cursor position for embodiment
+          updateCursorPosition(e);
+
           if (!isDragging) return;
           onDrag(e.clientX - previousPosition.x, e.clientY - previousPosition.y);
           previousPosition = { x: e.clientX, y: e.clientY };
         });
 
         document.addEventListener('mouseup', () => isDragging = false);
+
+        // Session 36: Cursor enters/leaves canvas
+        canvas.addEventListener('mouseenter', () => { cursorActive = true; });
+        canvas.addEventListener('mouseleave', () => {
+          cursorActive = false;
+          // Fade out cursor influence
+          for (let i = 0; i < cursorInfluence.length; i++) {
+            cursorInfluence[i] *= 0.5;
+          }
+        });
 
         canvas.addEventListener('wheel', (e) => {
           e.preventDefault();
@@ -2304,6 +2454,148 @@
         });
 
         setupUI();
+      }
+
+      // ========================================
+      // CURSOR & RIPPLE SYSTEM (Session 36)
+      // The observer's touch on the field
+      // ========================================
+
+      function updateCursorPosition(e) {
+        if (!cursorActive || !camera) return;
+
+        const canvas = document.getElementById('canvas');
+        const rect = canvas.getBoundingClientRect();
+
+        // Normalized device coordinates
+        const ndcX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        const ndcY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        // Create ray from camera through cursor
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(new THREE.Vector2(ndcX, ndcY), camera);
+
+        // Find intersection with plane at z=0 (center of field)
+        const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1).applyQuaternion(camera.quaternion), 0);
+        const intersection = new THREE.Vector3();
+        raycaster.ray.intersectPlane(plane, intersection);
+
+        if (intersection) {
+          cursorWorld.copy(intersection);
+          updateCursorInfluence();
+        }
+      }
+
+      function updateCursorInfluence() {
+        if (!cursorActive || cursorInfluence.length === 0) return;
+
+        const scale = 80 / gridSize;
+        const halfGrid = gridSize / 2;
+        const touchRadiusSq = touchRadius * touchRadius;
+
+        // Compute sensory entropy from cursor position
+        let touchedCount = 0;
+        let touchedPhaseSum = { cos: 0, sin: 0 };
+
+        for (let z = 0; z < gridSize; z++) {
+          for (let y = 0; y < gridSize; y++) {
+            for (let x = 0; x < gridSize; x++) {
+              const idx = z * gridSize * gridSize + y * gridSize + x;
+              const px = (x - halfGrid) * scale;
+              const py = (y - halfGrid) * scale;
+              const pz = (z - halfGrid) * scale;
+
+              // Distance from cursor to oscillator
+              const dx = px - cursorWorld.x;
+              const dy = py - cursorWorld.y;
+              const dz = pz - cursorWorld.z;
+              const distSq = dx * dx + dy * dy + dz * dz;
+
+              if (distSq < touchRadiusSq) {
+                // Smooth falloff from center of touch
+                const dist = Math.sqrt(distSq);
+                const falloff = 1 - (dist / touchRadius);
+                cursorInfluence[idx] = falloff * falloff * touchStrength;
+
+                // Track touched oscillators for sensory coherence
+                touchedCount++;
+                touchedPhaseSum.cos += Math.cos(oscillators[idx]);
+                touchedPhaseSum.sin += Math.sin(oscillators[idx]);
+              } else {
+                // Decay influence over time
+                cursorInfluence[idx] *= 0.92;
+              }
+            }
+          }
+        }
+
+        // Compute sensory entropy (how coherent is the touched region?)
+        if (touchedCount > 0) {
+          const localR = Math.sqrt(
+            Math.pow(touchedPhaseSum.cos / touchedCount, 2) +
+            Math.pow(touchedPhaseSum.sin / touchedCount, 2)
+          );
+          sensorH = 1 - localR;  // High R = low entropy, low R = high entropy
+        }
+      }
+
+      function createRipple(origin) {
+        if (ripples.length >= MAX_RIPPLES) {
+          ripples.shift();  // Remove oldest ripple
+        }
+        ripples.push({
+          origin: origin,
+          radius: 0,
+          strength: 0.3,
+          phase: Math.random() * 2 * Math.PI  // Random initial phase offset
+        });
+      }
+
+      function updateRipples() {
+        if (!membraneEnabled) return;
+
+        const scale = 80 / gridSize;
+        const halfGrid = gridSize / 2;
+
+        // Update each ripple
+        for (let r = ripples.length - 1; r >= 0; r--) {
+          const ripple = ripples[r];
+          ripple.radius += RIPPLE_SPEED * dt;
+          ripple.strength *= RIPPLE_DECAY;
+
+          // Remove faded ripples
+          if (ripple.strength < 0.01) {
+            ripples.splice(r, 1);
+            continue;
+          }
+
+          // Apply ripple perturbation to oscillators
+          const rippleWidth = 8;  // Width of the wave
+          for (let i = 0; i < totalOscillators; i++) {
+            const iz = Math.floor(i / (gridSize * gridSize));
+            const iy = Math.floor((i % (gridSize * gridSize)) / gridSize);
+            const ix = i % gridSize;
+
+            const px = (ix - halfGrid) * scale;
+            const py = (iy - halfGrid) * scale;
+            const pz = (iz - halfGrid) * scale;
+
+            const dx = px - ripple.origin.x;
+            const dy = py - ripple.origin.y;
+            const dz = pz - ripple.origin.z;
+            const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+            // Gaussian wave packet
+            const distFromWavefront = Math.abs(dist - ripple.radius);
+            if (distFromWavefront < rippleWidth) {
+              const waveFactor = Math.exp(-distFromWavefront * distFromWavefront / (2 * rippleWidth));
+              const perturbation = waveFactor * ripple.strength * Math.sin(ripple.phase + dist * 0.3);
+
+              // Ripple adds to phase velocity (not phase directly)
+              velocities[i] += perturbation * dt;
+            }
+          }
+        }
       }
 
       // ========================================
@@ -2476,10 +2768,61 @@
         }
 
         initializeCoupling();
+        initializeMembrane();  // Session 36: Initialize embodiment layer
         computeG0Kc();
         needsRebuild = true;
         time = 0;
         buildBridgeMesh();
+      }
+
+      // ========================================
+      // MEMBRANE INITIALIZATION (Session 36)
+      // ========================================
+      function initializeMembrane() {
+        const scale = 80 / gridSize;
+        const halfGrid = gridSize / 2;
+
+        // Allocate per-oscillator arrays
+        cursorInfluence = new Float32Array(totalOscillators);
+        membraneK = new Float32Array(totalOscillators);
+        membraneNoise = new Float32Array(totalOscillators);
+        oscillatorDistances = new Float32Array(totalOscillators);
+
+        // Compute distances from center for each oscillator
+        let maxDist = 0;
+        for (let z = 0; z < gridSize; z++) {
+          for (let y = 0; y < gridSize; y++) {
+            for (let x = 0; x < gridSize; x++) {
+              const idx = z * gridSize * gridSize + y * gridSize + x;
+              const px = (x - halfGrid) * scale;
+              const py = (y - halfGrid) * scale;
+              const pz = (z - halfGrid) * scale;
+              const dist = Math.sqrt(px * px + py * py + pz * pz);
+              oscillatorDistances[idx] = dist;
+              if (dist > maxDist) maxDist = dist;
+            }
+          }
+        }
+        maxFieldRadius = maxDist;
+
+        // Initialize membrane K and noise based on boundary proximity
+        for (let i = 0; i < totalOscillators; i++) {
+          const normDist = oscillatorDistances[i] / maxFieldRadius;
+          const isBoundary = normDist > membraneThreshold;
+
+          // Boundary oscillators: variable coupling (sensitive)
+          // Interior oscillators: stable coupling
+          if (isBoundary) {
+            // K_emb scales with distance - more sensitive at edges
+            membraneK[i] = K * (0.7 + 0.6 * (normDist - membraneThreshold) / (1 - membraneThreshold));
+            // Slightly more noise at boundary (skin permeability)
+            membraneNoise[i] = noise * (1 + 0.3 * normDist);
+          } else {
+            membraneK[i] = K;
+            membraneNoise[i] = noise;
+          }
+          cursorInfluence[i] = 0;
+        }
       }
 
       function initializeCoupling() {
@@ -2520,20 +2863,31 @@
       }
 
       // ========================================
-      // DYNAMICS
+      // DYNAMICS (with Session 36 Embodiment)
       // ========================================
       function updateDynamics() {
         if (paused) return;
+
+        // Session 36: Update ripples first
+        updateRipples();
 
         const newOscillators = new Float32Array(totalOscillators);
         const damping = 0.10;
         const invDamping = 1 - damping;
         const TWO_PI = 2 * Math.PI;
-        const noiseFactor = noise * Math.sqrt(dt);
+
+        // Track boundary vs interior coherence
+        let boundarySum = { cos: 0, sin: 0, count: 0 };
+        let interiorSum = { cos: 0, sin: 0, count: 0 };
 
         for (let i = 0; i < totalOscillators; i++) {
           const currentPhase = oscillators[i];
           const neighbors = coupling[i];
+
+          // Session 36: Use membrane-modulated K and noise
+          const localK = membraneEnabled && membraneK.length > 0 ? membraneK[i] : K;
+          const localNoise = membraneEnabled && membraneNoise.length > 0 ? membraneNoise[i] : noise;
+          const noiseFactor = localNoise * Math.sqrt(dt);
 
           let couplingTerm = 0;
           for (let j = 0; j < neighbors.length; j++) {
@@ -2541,8 +2895,17 @@
             couplingTerm += n.weight * Math.sin(oscillators[n.idx] - currentPhase);
           }
 
-          const noiseTerm = (Math.random() - 0.5) * noiseFactor;
-          const newVel = (omegas[i] + K * couplingTerm + noiseTerm) * dt;
+          // Session 36: Cursor perturbation - desynchronizes locally
+          const cursorPerturbation = cursorInfluence.length > 0 ? cursorInfluence[i] : 0;
+          const cursorNoise = cursorPerturbation * (Math.random() - 0.5) * 2;
+
+          const noiseTerm = (Math.random() - 0.5) * noiseFactor + cursorNoise;
+
+          // Session 36: Cursor proximity can modulate local K
+          // (touching the field temporarily weakens local coupling)
+          const effectiveK = localK * (1 - cursorPerturbation * 0.5);
+
+          const newVel = (omegas[i] + effectiveK * couplingTerm + noiseTerm) * dt;
 
           velocities[i] = invDamping * velocities[i] + damping * newVel;
 
@@ -2550,10 +2913,64 @@
           if (newPhase >= TWO_PI) newPhase -= TWO_PI;
           else if (newPhase < 0) newPhase += TWO_PI;
           newOscillators[i] = newPhase;
+
+          // Session 36: Track boundary vs interior for Φ_emb
+          if (membraneEnabled && oscillatorDistances.length > 0) {
+            const normDist = oscillatorDistances[i] / maxFieldRadius;
+            if (normDist > membraneThreshold) {
+              boundarySum.cos += Math.cos(newPhase);
+              boundarySum.sin += Math.sin(newPhase);
+              boundarySum.count++;
+            } else {
+              interiorSum.cos += Math.cos(newPhase);
+              interiorSum.sin += Math.sin(newPhase);
+              interiorSum.count++;
+            }
+          }
         }
 
         oscillators = newOscillators;
         time += dt;
+
+        // Session 36: Compute embodiment metrics
+        if (membraneEnabled) {
+          if (boundarySum.count > 0) {
+            boundaryR = Math.sqrt(
+              Math.pow(boundarySum.cos / boundarySum.count, 2) +
+              Math.pow(boundarySum.sin / boundarySum.count, 2)
+            );
+          }
+          if (interiorSum.count > 0) {
+            interiorR = Math.sqrt(
+              Math.pow(interiorSum.cos / interiorSum.count, 2) +
+              Math.pow(interiorSum.sin / interiorSum.count, 2)
+            );
+          }
+
+          // Φ_emb proxy: internal coherence weighted by sensory coupling
+          // High when interior is coherent AND boundary is responsive
+          const boundarySensitivity = Math.abs(boundaryR - interiorR);
+          Phi_emb = interiorR * (1 - sensorH * 0.5) + boundarySensitivity * 0.3;
+        }
+
+        // Update membrane K values dynamically based on global state
+        if (membraneEnabled && membraneK.length > 0) {
+          for (let i = 0; i < totalOscillators; i++) {
+            const normDist = oscillatorDistances[i] / maxFieldRadius;
+            const isBoundary = normDist > membraneThreshold;
+
+            if (isBoundary) {
+              // Boundary K responds to cursor proximity
+              const cursorEffect = cursorInfluence.length > 0 ? cursorInfluence[i] : 0;
+              membraneK[i] = K * (0.7 + 0.6 * (normDist - membraneThreshold) / (1 - membraneThreshold))
+                           * (1 + cursorEffect * 0.5);  // Cursor can boost local coupling
+              membraneNoise[i] = noise * (1 + 0.3 * normDist + cursorEffect * 0.2);
+            } else {
+              membraneK[i] = K;
+              membraneNoise[i] = noise;
+            }
+          }
+        }
       }
 
       // ========================================
@@ -2879,6 +3296,7 @@
         // ========================================
         // LAYER 2: THE MANY (Individuals)
         // Amplitude scales with (1-R) - fades into unity
+        // Session 36: Boundary vs Interior differentiation
         // ========================================
         const individualAmp = audioVolume * oneMinusR * 0.4;
 
@@ -2887,29 +3305,51 @@
           const localR = getLocalCoherence(oscIndex);
           const delta = deviations[i] || 0;
 
+          // Session 36: Determine if this voice is boundary or interior
+          const normDist = oscillatorDistances.length > 0 ?
+            oscillatorDistances[oscIndex] / maxFieldRadius : 0;
+          const isBoundary = normDist > membraneThreshold;
+
+          // Session 36: Cursor influence on this voice
+          const cursorEffect = cursorInfluence.length > 0 ? cursorInfluence[oscIndex] : 0;
+
           // Frequency: base + collective + individual deviation
-          const freqScale = 1 + (meanFieldOmega + delta) * 0.15;
+          // Session 36: Cursor touch adds frequency wobble
+          const cursorWobble = cursorEffect * Math.sin(time * 8) * 0.05;
+          const freqScale = 1 + (meanFieldOmega + delta) * 0.15 + cursorWobble;
           const targetFreq = voice.baseFreq * Math.max(0.5, Math.min(2, freqScale));
           voice.carrier.frequency.setTargetAtTime(targetFreq, now, rampTime);
           voice.modulator.frequency.setTargetAtTime(targetFreq * 2.01, now, rampTime);
 
           // FM modulation depth: HIGH in chaos, LOW in order
-          // Chaos = complex timbre, Order = pure sine
-          const modDepth = 10 + oneMinusR * oneMinusR * 150;
+          // Session 36: Boundary oscillators have MORE FM (edge texture)
+          //             Interior oscillators have LESS FM (pure core)
+          const boundaryFactor = isBoundary ? 1.5 : 0.7;
+          const touchFactor = 1 + cursorEffect * 2;  // Touch adds grit
+          const modDepth = (10 + oneMinusR * oneMinusR * 150) * boundaryFactor * touchFactor;
           voice.modGain.gain.setTargetAtTime(modDepth, now, rampTime);
 
           // Amplitude: weighted by how far from collective (deviation magnitude)
+          // Session 36: Boundary voices are louder when cursor is near
           const deviationWeight = Math.min(1, Math.abs(delta) * 2 + 0.3);
-          const targetGain = individualAmp * deviationWeight * (1 - localR * 0.5);
+          const boundaryBoost = isBoundary ? (1 + cursorEffect * 0.5) : 1;
+          const targetGain = individualAmp * deviationWeight * (1 - localR * 0.5) * boundaryBoost;
           voice.voiceGain.gain.setTargetAtTime(targetGain, now, rampTime);
 
           // Harmonics: RICH in chaos, FADE in order
+          // Session 36: Boundary has richer harmonics (edge texture)
           voice.harmonics.forEach((h, hIdx) => {
             h.osc.frequency.setTargetAtTime(targetFreq * h.ratio, now, rampTime);
-            // Harmonic amplitude: (1 - R_local)^n
-            const harmAmp = targetGain * Math.pow(1 - localR, hIdx + 1) * 0.5;
+            const boundaryHarmBoost = isBoundary ? 1.3 : 0.8;
+            const harmAmp = targetGain * Math.pow(1 - localR, hIdx + 1) * 0.5 * boundaryHarmBoost;
             h.gain.gain.setTargetAtTime(harmAmp, now, rampTime);
           });
+
+          // Session 36: Pan boundary voices wider
+          if (voice.panner && isBoundary) {
+            const widePan = (i / INDIVIDUAL_VOICES) * 2 - 1;
+            voice.panner.pan.setTargetAtTime(widePan * 0.9, now, rampTime);
+          }
         });
 
         // ========================================
@@ -3006,7 +3446,7 @@
       }
 
       // ========================================
-      // VISUALIZATION
+      // VISUALIZATION (with Session 36 Embodiment)
       // ========================================
       function createVolumeCloud() {
         if (volumeCloud) {
@@ -3017,6 +3457,8 @@
 
         const geometry = new THREE.BufferGeometry();
         const positions = [], colors = [], sizes = [];
+        const touches = [];  // Session 36: Cursor influence per point
+        const boundaries = [];  // Session 36: Boundary indicator
         const scale = 80 / gridSize;
 
         for (let z = 0; z < gridSize; z++) {
@@ -3038,6 +3480,12 @@
                 size = baseSize;
               }
               sizes.push(size);
+
+              // Session 36: Initial touch/boundary values
+              touches.push(0);
+              const normDist = oscillatorDistances.length > 0 ?
+                oscillatorDistances[idx] / maxFieldRadius : 0;
+              boundaries.push(normDist > membraneThreshold ? 1 : 0);
             }
           }
         }
@@ -3045,23 +3493,45 @@
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
         geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+        geometry.setAttribute('touch', new THREE.Float32BufferAttribute(touches, 1));
+        geometry.setAttribute('boundary', new THREE.Float32BufferAttribute(boundaries, 1));
 
+        // Session 36: Enhanced shader with touch glow and boundary visualization
         const material = new THREE.ShaderMaterial({
-          uniforms: { opacity: { value: opacity } },
+          uniforms: {
+            opacity: { value: opacity },
+            cursorActive: { value: 0.0 }
+          },
           vertexShader: `
             attribute float size;
             attribute vec3 color;
+            attribute float touch;
+            attribute float boundary;
             varying vec3 vColor;
+            varying float vTouch;
+            varying float vBoundary;
             void main() {
               vColor = color;
+              vTouch = touch;
+              vBoundary = boundary;
+
+              // Session 36: Touched oscillators pulse larger
+              float touchScale = 1.0 + touch * 2.0;
+
+              // Session 36: Boundary oscillators have subtle ring
+              float boundaryScale = 1.0 + boundary * 0.15;
+
               vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-              gl_PointSize = size * (300.0 / max(-mvPosition.z, 1.0));
+              gl_PointSize = size * touchScale * boundaryScale * (300.0 / max(-mvPosition.z, 1.0));
               gl_Position = projectionMatrix * mvPosition;
             }
           `,
           fragmentShader: `
             uniform float opacity;
+            uniform float cursorActive;
             varying vec3 vColor;
+            varying float vTouch;
+            varying float vBoundary;
             void main() {
               vec2 p = gl_PointCoord - vec2(0.5);
               float r = length(p);
@@ -3069,9 +3539,20 @@
               float aa = 0.02;
               float mask = 1.0 - smoothstep(edge - aa, edge + aa, r);
               if (mask <= 0.001) discard;
+
               float core = exp(-22.0 * r * r);
               float halo = exp(-4.5 * r * r) * 0.3;
+
+              // Session 36: Touch glow - white-cyan pulse when cursor near
+              vec3 touchGlow = vec3(0.7, 1.0, 1.0) * vTouch * exp(-8.0 * r * r);
+
+              // Session 36: Boundary ring - subtle outer glow for membrane
+              float boundaryRing = vBoundary * exp(-2.0 * pow(r - 0.35, 2.0) * 50.0) * 0.4;
+              vec3 boundaryColor = vec3(0.3, 0.8, 1.0) * boundaryRing;
+
               vec3 base = vColor * (0.6 + 0.4 * halo) + core * vColor * 0.25;
+              base += touchGlow + boundaryColor;
+
               gl_FragColor = vec4(base, opacity * mask);
             }
           `,
@@ -3091,6 +3572,8 @@
 
         const colors = volumeCloudGeometry.attributes.color.array;
         const sizes = volumeCloudGeometry.attributes.size.array;
+        const touches = volumeCloudGeometry.attributes.touch?.array;
+        const boundaries = volumeCloudGeometry.attributes.boundary?.array;
 
         for (let i = 0; i < totalOscillators; i++) {
           const phase = oscillators[i];
@@ -3108,12 +3591,32 @@
             size = baseSize * 0.5;
           }
           sizes[i] = size;
+
+          // Session 36: Update touch influence from cursor
+          if (touches && cursorInfluence.length > 0) {
+            touches[i] = cursorInfluence[i];
+          }
+
+          // Session 36: Update boundary status
+          if (boundaries && oscillatorDistances.length > 0) {
+            const normDist = oscillatorDistances[i] / maxFieldRadius;
+            boundaries[i] = normDist > membraneThreshold ? 1 : 0;
+          }
         }
 
         volumeCloudGeometry.attributes.color.needsUpdate = true;
         volumeCloudGeometry.attributes.size.needsUpdate = true;
+        if (volumeCloudGeometry.attributes.touch) {
+          volumeCloudGeometry.attributes.touch.needsUpdate = true;
+        }
+        if (volumeCloudGeometry.attributes.boundary) {
+          volumeCloudGeometry.attributes.boundary.needsUpdate = true;
+        }
 
-        if (volumeCloudMaterial) volumeCloudMaterial.uniforms.opacity.value = opacity;
+        if (volumeCloudMaterial) {
+          volumeCloudMaterial.uniforms.opacity.value = opacity;
+          volumeCloudMaterial.uniforms.cursorActive.value = cursorActive ? 1.0 : 0.0;
+        }
       }
 
       // ========================================
@@ -3312,6 +3815,27 @@
 
         // Entropy
         document.getElementById('entropy-display').textContent = entropy.toFixed(2);
+
+        // Session 36: Embodiment metrics
+        if (membraneEnabled) {
+          document.getElementById('boundary-r-display').textContent = boundaryR.toFixed(3);
+          document.getElementById('interior-r-display').textContent = interiorR.toFixed(3);
+          document.getElementById('phi-emb-display').textContent = Phi_emb.toFixed(3);
+          document.getElementById('sensor-h-display').textContent = sensorH.toFixed(3);
+
+          // Touch status
+          const touchStatus = document.getElementById('touch-status');
+          if (cursorActive && sensorH > 0.01) {
+            touchStatus.textContent = 'TOUCHING';
+            touchStatus.style.color = '#00ffaa';
+          } else if (ripples.length > 0) {
+            touchStatus.textContent = `${ripples.length} ripple${ripples.length > 1 ? 's' : ''}`;
+            touchStatus.style.color = '#00ddff';
+          } else {
+            touchStatus.textContent = 'dormant';
+            touchStatus.style.color = '#888';
+          }
+        }
 
         // Convergence status
         const convStatus = document.getElementById('convergence-status');
