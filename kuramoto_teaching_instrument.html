@@ -1274,6 +1274,10 @@
         <div class="label">Non-locality Status</div>
         <div class="value" id="quantum-status" style="color: #888;">classical</div>
       </div>
+      <div class="mini-metric" style="flex: 1;">
+        <div class="label">⚡ Vortices (+/-)</div>
+        <div class="value" id="vortex-count-display" style="color: #88ffaa;">+0 / -0</div>
+      </div>
     </div>
     <div class="section-divider"></div>
 
@@ -1369,10 +1373,14 @@
         <button class="llm-btn" onclick="stopGeneration()" style="background: rgba(255, 100, 100, 0.2); border-color: rgba(255, 100, 100, 0.5); color: #ff6b6b;">
           Stop
         </button>
+        <button class="llm-btn" onclick="clearGrokSession()" style="background: rgba(100, 200, 255, 0.15); border-color: rgba(100, 200, 255, 0.4); color: #64c8ff;" title="Start new conversation (clears context)">
+          🔄 New
+        </button>
       </div>
       <div class="llm-status">
         <span id="llm-status-text">Ready</span>
         <div class="llm-metrics">
+          <span class="llm-metric">Session: <span id="grok-session-count">0</span> msgs</span>
           <span class="llm-metric">Tokens: <span id="llm-token-count">0</span></span>
           <span class="llm-metric">Avg Entropy: <span id="llm-avg-entropy">—</span></span>
           <span class="llm-metric">Field R: <span id="llm-field-r">—</span></span>
@@ -1948,6 +1956,28 @@
     let llmTokenHistory = [];
     let llmEntropyHistory = [];
 
+    // Grok Session Persistence - maintains conversation context across API calls
+    let grokConversationHistory = [];
+    let grokSessionMessageCount = 0;
+    const GROK_MAX_HISTORY = 20; // Keep last N message pairs to avoid token limits
+
+    // Clear Grok conversation session
+    function clearGrokSession() {
+      grokConversationHistory = [];
+      grokSessionMessageCount = 0;
+      updateSessionCounter();
+      document.getElementById('token-stream').innerHTML = '';
+      document.getElementById('llm-status-text').textContent = 'Session cleared - fresh context';
+    }
+
+    // Update session counter display
+    function updateSessionCounter() {
+      const counter = document.getElementById('grok-session-count');
+      if (counter) {
+        counter.textContent = grokSessionMessageCount;
+      }
+    }
+
     // Panel toggle
     function toggleLLMPanel() {
       const panel = document.getElementById('llm-panel');
@@ -2216,7 +2246,7 @@
         return;
       }
 
-      // Reset state
+      // Reset per-generation state (but keep session history!)
       llmTokenHistory = [];
       llmEntropyHistory = [];
       document.getElementById('token-stream').innerHTML = '';
@@ -2228,13 +2258,28 @@
       // Clear the prompt input
       document.getElementById('llm-prompt').value = '';
 
+      // Add user message to session history
+      grokConversationHistory.push({ role: 'user', content: prompt });
+      grokSessionMessageCount++;
+
+      // Trim history if too long (keep system context fresh)
+      while (grokConversationHistory.length > GROK_MAX_HISTORY * 2) {
+        grokConversationHistory.shift(); // Remove oldest message
+      }
+
       llmAbortController = new AbortController();
       llmIsGenerating = true;
+
+      // Track accumulated response for history
+      let accumulatedResponse = '';
 
       try {
         // Get selected model
         const modelSelect = document.getElementById('llm-model');
         const model = modelSelect ? modelSelect.value : 'grok-4';
+
+        // Build messages with conversation history for persistent sessions
+        const messages = [...grokConversationHistory];
 
         const response = await fetch('https://api.x.ai/v1/chat/completions', {
           method: 'POST',
@@ -2244,9 +2289,7 @@
           },
           body: JSON.stringify({
             model: model,
-            messages: [
-              { role: 'user', content: prompt }
-            ],
+            messages: messages,
             stream: true,
             logprobs: true,
             top_logprobs: 5,
@@ -2289,6 +2332,9 @@
                   const token = choice.delta.content;
                   const logprobs = choice.logprobs;
 
+                  // Accumulate for session history
+                  accumulatedResponse += token;
+
                   if (logprobs?.content?.[0]) {
                     const tokenLogprob = logprobs.content[0];
                     const mapping = mapLLMToKuramoto(
@@ -2317,21 +2363,40 @@
           }
         }
 
-        document.getElementById('llm-status-text').textContent = 'Complete';
+        // Add assistant response to session history
+        if (accumulatedResponse.trim()) {
+          grokConversationHistory.push({ role: 'assistant', content: accumulatedResponse });
+          grokSessionMessageCount++;
+          updateSessionCounter();
+        }
+
+        document.getElementById('llm-status-text').textContent = `Complete (session: ${grokSessionMessageCount} msgs)`;
         document.getElementById('llm-status-text').classList.remove('streaming');
 
       } catch (error) {
         if (error.name === 'AbortError') {
           document.getElementById('llm-status-text').textContent = 'Stopped';
+          // Still add partial response to history if any
+          if (accumulatedResponse.trim()) {
+            grokConversationHistory.push({ role: 'assistant', content: accumulatedResponse + ' [stopped]' });
+            grokSessionMessageCount++;
+            updateSessionCounter();
+          }
         } else {
           console.error('Grok API error:', error);
           document.getElementById('llm-status-text').textContent = `Error: ${error.message}`;
+          // Remove the failed user message from history
+          if (grokConversationHistory.length > 0 && grokConversationHistory[grokConversationHistory.length - 1].role === 'user') {
+            grokConversationHistory.pop();
+            grokSessionMessageCount--;
+          }
         }
       } finally {
         llmIsGenerating = false;
         document.getElementById('generate-btn').disabled = false;
         document.getElementById('llm-status-text').classList.remove('streaming');
         llmAbortController = null;
+        updateSessionCounter();
       }
     }
 
@@ -2443,7 +2508,7 @@
       // Entangled pairs: distant oscillators with correlated phases
       let entangledPairs = [];                        // [{i, j, phi_corr, strength}]
       const NUM_ENTANGLED_PAIRS = 24;                 // Number of non-local bridges
-      const ENTANGLE_MIN_DIST = SPHERE_RADIUS * 1.2; // Min distance for entanglement
+      const ENTANGLE_MIN_DIST = 48; // Min distance for entanglement (SPHERE_RADIUS * 1.2 = 40 * 1.2)
 
       // Superposition state: boundary oscillators can hold multiple phase modes
       let superpositionStates = [];                   // [{idx, modes: [{phase, amp}], collapsed: bool}]
@@ -2459,6 +2524,23 @@
       let llmEntanglementTrigger = 0;                // From probability mass ratio
       let llmQuantumBranches = 0;                    // Count of viable alternatives
       let llmProbabilitySpread = 0;                  // Variance of top-k probs
+
+      // ========================================
+      // TOPOLOGICAL DEFECTS (Phase Vortices)
+      // Vortices are points where phase wraps around by ±2π
+      // Winding number W = (1/2π) ∮ ∇θ · dl
+      // ========================================
+      let vortexEnabled = true;
+      let detectedVortices = [];                    // [{position, charge, strength}]
+      let vortexMarkers = null;                     // THREE.js markers group
+      const VORTEX_DETECTION_RADIUS = 12;          // Radius for winding calculation
+      const VORTEX_THRESHOLD = 0.8;                // Min |winding| to count as vortex
+      const VORTEX_UPDATE_INTERVAL = 5;            // Frames between detections
+      let vortexFrameCount = 0;
+
+      // Vortex visualization settings - subtle glowing dots
+      const VORTEX_POSITIVE_COLOR = 0xff66aa;      // Soft pink for +1 charge
+      const VORTEX_NEGATIVE_COLOR = 0x66ddff;      // Soft cyan for -1 charge
 
       // Ripple system - perturbations propagating from touch
       let ripples = [];                               // Active ripple waves
@@ -3143,6 +3225,123 @@
         }
 
         return totalS / entangledPairs.length;
+      }
+
+      // ========================================
+      // TOPOLOGICAL DEFECT DETECTION
+      // Phase vortices: W = (1/2π) ∮ ∇θ · dl
+      // ========================================
+      function detectVortices() {
+        if (!vortexEnabled) return;
+
+        detectedVortices = [];
+        const checked = new Set();
+
+        // Sample points on the outer shells where vortices are visible
+        for (let i = 0; i < totalOscillators; i++) {
+          const pos = oscillatorPositions[i];
+          if (pos.shell < NUM_SHELLS * 0.6) continue; // Only check outer region
+          if (checked.has(i)) continue;
+
+          // Find neighbors within detection radius
+          const neighbors = [];
+          for (let j = 0; j < totalOscillators; j++) {
+            if (j === i) continue;
+            const other = oscillatorPositions[j];
+            const dx = pos.x - other.x;
+            const dy = pos.y - other.y;
+            const dz = pos.z - other.z;
+            const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (dist < VORTEX_DETECTION_RADIUS) {
+              // Sort by angle around the center point for proper winding
+              const angle = Math.atan2(other.z - pos.z, other.x - pos.x);
+              neighbors.push({ idx: j, angle, dist });
+              checked.add(j);
+            }
+          }
+
+          if (neighbors.length < 4) continue; // Need enough points for winding
+
+          // Sort neighbors by angle to form a loop
+          neighbors.sort((a, b) => a.angle - b.angle);
+
+          // Compute winding number around loop
+          let winding = 0;
+          for (let n = 0; n < neighbors.length; n++) {
+            const curr = oscillators[neighbors[n].idx];
+            const next = oscillators[neighbors[(n + 1) % neighbors.length].idx];
+            let dPhase = next - curr;
+
+            // Normalize to [-π, π]
+            while (dPhase > Math.PI) dPhase -= 2 * Math.PI;
+            while (dPhase < -Math.PI) dPhase += 2 * Math.PI;
+
+            winding += dPhase;
+          }
+
+          winding /= (2 * Math.PI);
+
+          // Check if we found a vortex
+          if (Math.abs(winding) > VORTEX_THRESHOLD) {
+            const charge = winding > 0 ? 1 : -1;
+            detectedVortices.push({
+              position: { x: pos.x, y: pos.y, z: pos.z },
+              charge: charge,
+              strength: Math.abs(winding),
+              centerIdx: i
+            });
+          }
+        }
+
+        updateVortexMarkers();
+      }
+
+      function initVortexMarkers() {
+        vortexMarkers = new THREE.Group();
+        scene.add(vortexMarkers);
+      }
+
+      function updateVortexMarkers() {
+        if (!vortexMarkers) return;
+
+        // Clear existing markers
+        while (vortexMarkers.children.length > 0) {
+          const mesh = vortexMarkers.children[0];
+          mesh.geometry.dispose();
+          mesh.material.dispose();
+          vortexMarkers.remove(mesh);
+        }
+
+        // Subtle pulsing time factor
+        const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.003);
+
+        // Create minimal markers for detected vortices
+        for (const vortex of detectedVortices) {
+          const color = vortex.charge > 0 ? VORTEX_POSITIVE_COLOR : VORTEX_NEGATIVE_COLOR;
+
+          // Small glowing sphere - subtle indicator
+          const geometry = new THREE.SphereGeometry(1.2 + pulse * 0.4, 8, 8);
+          const material = new THREE.MeshBasicMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.3 + pulse * 0.2
+          });
+
+          const marker = new THREE.Mesh(geometry, material);
+          marker.position.set(vortex.position.x, vortex.position.y, vortex.position.z);
+          vortexMarkers.add(marker);
+
+          // Tiny inner core - brighter
+          const coreGeo = new THREE.SphereGeometry(0.5, 6, 6);
+          const coreMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.6 + pulse * 0.3
+          });
+          const core = new THREE.Mesh(coreGeo, coreMat);
+          core.position.set(vortex.position.x, vortex.position.y, vortex.position.z);
+          vortexMarkers.add(core);
+        }
       }
 
       function initializeCoupling() {
@@ -4365,6 +4564,25 @@
           }
         }
 
+        // Session 38: Topological defect metrics
+        if (vortexEnabled) {
+          const vortexDisplay = document.getElementById('vortex-count-display');
+          if (vortexDisplay) {
+            const positiveVortices = detectedVortices.filter(v => v.charge > 0).length;
+            const negativeVortices = detectedVortices.filter(v => v.charge < 0).length;
+            vortexDisplay.textContent = `+${positiveVortices} / -${negativeVortices}`;
+
+            // Color based on total vortices (defects indicate disorder)
+            if (detectedVortices.length > 6) {
+              vortexDisplay.style.color = '#ff88aa';
+            } else if (detectedVortices.length > 2) {
+              vortexDisplay.style.color = '#ffaa88';
+            } else {
+              vortexDisplay.style.color = '#88ffaa';
+            }
+          }
+        }
+
         // Convergence status
         const convStatus = document.getElementById('convergence-status');
         if (Rhistory.length > 10) {
@@ -4413,6 +4631,13 @@
         updateInfo();
         updateAudio();
 
+        // Session 38: Detect topological defects (throttled)
+        vortexFrameCount++;
+        if (vortexFrameCount >= VORTEX_UPDATE_INTERVAL) {
+          vortexFrameCount = 0;
+          detectVortices();
+        }
+
         // Auto-rotate
         const spherical = new THREE.Spherical();
         spherical.setFromVector3(camera.position);
@@ -4436,6 +4661,7 @@
       function init() {
         initThreeJS();
         initOscillatorField();
+        initVortexMarkers();  // Session 38: Topological defects
         initCharts();
 
         document.getElementById('loading').classList.add('hidden');
