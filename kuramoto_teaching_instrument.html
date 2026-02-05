@@ -1243,6 +1243,40 @@
     </div>
     <div class="section-divider"></div>
 
+    <!-- Session 37: Quantum Membrane Panel -->
+    <div class="metrics-row" style="justify-content: center;">
+      <div class="mini-metric" style="flex: 1;">
+        <div class="label" style="color: #aa88ff;">⚛ QUANTUM <button class="info-btn" onclick="openEducationModal('quantum')" style="margin-left: 6px; border-color: rgba(170, 136, 255, 0.4); background: rgba(170, 136, 255, 0.1); color: #aa88ff;">?</button></div>
+      </div>
+    </div>
+    <div class="metrics-row">
+      <div class="mini-metric">
+        <div class="label">CHSH (S)</div>
+        <div class="value" id="chsh-display" style="color: #aa88ff;">0.00</div>
+      </div>
+      <div class="mini-metric">
+        <div class="label">Entangled</div>
+        <div class="value" id="entangled-pairs-display" style="color: #88ffaa;">0</div>
+      </div>
+    </div>
+    <div class="metrics-row">
+      <div class="mini-metric">
+        <div class="label">ψ Strength</div>
+        <div class="value" id="superposition-display" style="color: #ffaa88;">0.00</div>
+      </div>
+      <div class="mini-metric">
+        <div class="label">Q Branches</div>
+        <div class="value" id="quantum-branches-display" style="color: #88aaff;">0</div>
+      </div>
+    </div>
+    <div class="metrics-row">
+      <div class="mini-metric" style="flex: 1;">
+        <div class="label">Non-locality Status</div>
+        <div class="value" id="quantum-status" style="color: #888;">classical</div>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
     <div class="metrics-row">
       <div class="mini-metric">
         <div class="label">Critical K_c</div>
@@ -1322,10 +1356,7 @@
       <div class="llm-input-row">
         <input type="password" class="llm-api-key" id="grok-api-key" placeholder="Grok API Key (xAI)" style="flex: 2;">
         <select id="llm-model" style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,170,0,0.3); border-radius: 6px; padding: 8px; color: #F4F4F5; font-family: 'Roboto Mono', monospace; font-size: 10px;">
-          <option value="grok-2-latest">grok-2-latest</option>
-          <option value="grok-2-1212">grok-2-1212</option>
-          <option value="grok-3-beta">grok-3-beta</option>
-          <option value="grok-4">grok-4</option>
+          <option value="grok-4" selected>grok-4</option>
         </select>
         <button class="llm-btn" onclick="saveApiKey()">Save</button>
         <button class="llm-btn" onclick="clearApiKey()" style="padding: 8px 12px; font-size: 10px;">Clear</button>
@@ -1767,6 +1798,77 @@
           { label: 'Sensitive Skin', action: 'touchStrength = 0.3; touchRadius = 35', desc: 'More responsive' },
           { label: 'Subtle Touch', action: 'touchStrength = 0.08; touchRadius = 15', desc: 'Gentle contact' }
         ]
+      },
+      quantum: {
+        title: 'Quantum-Inspired Membrane',
+        subtitle: 'Non-local coupling, superposition, and simulated entanglement',
+        sections: [
+          {
+            title: 'What This Simulates',
+            content: `Session 37 infuses the membrane with quantum-INSPIRED features. These are
+                     classical simulations of quantum phenomena—not actual quantum computation—
+                     designed to explore how non-locality and superposition might manifest in
+                     coherence dynamics. This is educational trailblazing, grounded in real
+                     research on quantum Kuramoto models.`
+          },
+          {
+            title: 'Non-Local Coupling',
+            equation: 'Γ_quantum = γ Σ_k cos(Δθ_ik + φ_k)',
+            eqDesc: 'Entangled pairs couple across distance',
+            content: `Beyond nearest-neighbor coupling, entangled pairs influence each other
+                     regardless of spatial separation—"spooky action at a distance." These are
+                     boundary oscillators on opposite sides of the sphere, their phases correlated
+                     through φ_k offsets. Watch for glowing bridges connecting distant points.`
+          },
+          {
+            title: 'CHSH Inequality Proxy',
+            equation: 'S = E(a,b) + E(a,b′) + E(a′,b) - E(a′,b′)',
+            eqDesc: 'Bell inequality: Classical ≤ 2, Quantum ≤ 2√2 ≈ 2.83',
+            content: `The CHSH value measures non-local correlations between entangled pairs.
+                     Classical systems satisfy |S| ≤ 2. Our simulation can exceed this when
+                     phase correlations align—a "pseudo-violation" showing how quantum systems
+                     achieve stronger-than-classical correlations.<br><br>
+                     <strong>S < 2:</strong> Classical behavior<br>
+                     <strong>S > 2:</strong> Quantum-like correlations<br>
+                     <strong>S → 2.83:</strong> Tsirelson bound (maximum quantum)`
+          },
+          {
+            title: 'Superposition & Collapse',
+            equation: 'ψ = α|θ₀⟩ + β|θ₁⟩ → |θ_measured⟩',
+            eqDesc: 'Boundary oscillators hold dual modes until "measured"',
+            content: `Boundary oscillators can exist in superposition—holding two phase modes
+                     simultaneously. When you touch them (cursor proximity), you "measure" them,
+                     collapsing to a single phase. This models how quantum states resolve upon
+                     observation.<br><br>
+                     <strong>ψ Strength:</strong> How much superposition exists in the field<br>
+                     <strong>Touch = Measurement:</strong> Your cursor collapses superpositions`
+          },
+          {
+            title: 'LLM → Quantum Metrics',
+            content: `When Grok generates tokens, we extract quantum-relevant metrics:<br><br>
+                     <strong>Superposition Strength:</strong> High when top_logprobs are spread
+                     (model uncertain between alternatives)<br>
+                     <strong>Quantum Branches:</strong> Count of viable token choices (prob > 5%)<br>
+                     <strong>Entanglement Trigger:</strong> Ratio of top-2 / top-1 probability
+                     (close to 1 = model "between states")<br><br>
+                     These drive the quantum membrane dynamics in real-time.`
+          },
+          {
+            title: 'Research Grounding',
+            content: `Based on real quantum Kuramoto research:<br><br>
+                     • Quantum fluctuations increase K_c (arXiv 1309.3972)<br>
+                     • Non-local coupling creates twisted states (arXiv 2206.01951)<br>
+                     • Phase defects and topological transitions (Front Phys 10:976515)<br>
+                     • CHSH simulations in classical systems (Ann Phys 325/2/485)<br><br>
+                     This is trailblazing visualization, not pseudoscience.`
+          }
+        ],
+        tryIt: [
+          { label: 'Enable Quantum', action: 'quantumEnabled = true; initializeQuantumMembrane()', desc: 'Turn on' },
+          { label: 'Disable Quantum', action: 'quantumEnabled = false', desc: 'Turn off' },
+          { label: 'Strong Coupling', action: 'quantumStrength = 0.6', desc: 'γ = 0.6' },
+          { label: 'Weak Coupling', action: 'quantumStrength = 0.1', desc: 'γ = 0.1' }
+        ]
       }
     };
 
@@ -1963,6 +2065,47 @@
       const baseK = 2.83; // K_c
       const targetK = baseK + (1 - entropy) * 4; // Range: K_c to K_c + 4
 
+      // ========================================
+      // SESSION 37: Quantum metrics from Grok API
+      // ========================================
+
+      // Extract probabilities from top_logprobs
+      const probs = topLogprobs.map(item => Math.exp(item.logprob));
+      const totalProb = probs.reduce((a, b) => a + b, 0);
+      const normalizedProbs = probs.map(p => p / totalProb);
+
+      // 1. Probability Spread (variance) → Superposition strength
+      //    High spread = model is uncertain between alternatives = quantum superposition
+      const meanProb = 1 / normalizedProbs.length;
+      const variance = normalizedProbs.reduce((acc, p) => acc + Math.pow(p - meanProb, 2), 0) / normalizedProbs.length;
+      const maxVariance = Math.pow(1 - meanProb, 2); // Maximum possible variance
+      const spreadNormalized = 1 - Math.sqrt(variance / maxVariance); // 0 = peaked, 1 = spread
+      llmProbabilitySpread = spreadNormalized;
+
+      // 2. Superposition Strength: High when multiple alternatives are viable
+      //    Based on effective number of choices (perplexity-like)
+      const effectiveChoices = Math.exp(-normalizedProbs.reduce((acc, p) =>
+        p > 0 ? acc + p * Math.log(p) : acc, 0));
+      llmSuperpositionStrength = (effectiveChoices - 1) / (topLogprobs.length - 1); // Normalize to [0,1]
+
+      // 3. Quantum Branches: Count alternatives with prob > 0.05
+      llmQuantumBranches = normalizedProbs.filter(p => p > 0.05).length;
+
+      // 4. Entanglement Trigger: Ratio of top-1 to top-2
+      //    When close to 1, the model is "between states" = trigger entanglement
+      if (normalizedProbs.length >= 2) {
+        const sorted = [...normalizedProbs].sort((a, b) => b - a);
+        llmEntanglementTrigger = sorted[1] / sorted[0]; // Closer to 1 = more entangled
+      } else {
+        llmEntanglementTrigger = 0;
+      }
+
+      // 5. KL Divergence from uniform (how "quantum" is the distribution)
+      const uniform = 1 / topLogprobs.length;
+      const klFromUniform = normalizedProbs.reduce((acc, p) =>
+        p > 0 ? acc + p * Math.log(p / uniform) : acc, 0);
+      const klNormalized = 1 - Math.exp(-klFromUniform); // 0 = uniform (quantum), 1 = peaked (classical)
+
       return {
         token,
         logprob,
@@ -1971,7 +2114,13 @@
         localR,
         targetNoise,
         targetK,
-        topLogprobs
+        topLogprobs,
+        // Session 37: Quantum metrics
+        superpositionStrength: llmSuperpositionStrength,
+        quantumBranches: llmQuantumBranches,
+        entanglementTrigger: llmEntanglementTrigger,
+        probabilitySpread: llmProbabilitySpread,
+        klFromUniform: klNormalized
       };
     }
 
@@ -1996,6 +2145,32 @@
 
       const fieldR = document.getElementById('r-display')?.textContent || '—';
       document.getElementById('llm-field-r').textContent = fieldR;
+
+      // Session 37: Apply quantum effects based on LLM metrics
+      if (quantumEnabled && mapping.superpositionStrength !== undefined) {
+        // High superposition strength → trigger superpositions in boundary oscillators
+        if (mapping.superpositionStrength > 0.5) {
+          // Find collapsed superposition states and "excite" some of them
+          const toExcite = Math.floor(superpositionStates.length * mapping.superpositionStrength * 0.1);
+          let excited = 0;
+          for (const sup of superpositionStates) {
+            if (sup.collapsed && excited < toExcite) {
+              sup.collapsed = false;
+              sup.modes[0].phase = oscillators[sup.idx];
+              sup.modes[0].amp = 1 - mapping.superpositionStrength * 0.3;
+              sup.modes[1].phase = (oscillators[sup.idx] + Math.PI * mapping.entanglementTrigger) % (2 * Math.PI);
+              sup.modes[1].amp = mapping.superpositionStrength * 0.3;
+              excited++;
+            }
+          }
+        }
+
+        // High entanglement trigger → modulate quantum coupling strength
+        // This creates dynamic "breathing" of non-local connections
+        if (mapping.entanglementTrigger > 0.3) {
+          quantumStrength = 0.2 + mapping.entanglementTrigger * 0.4; // Range 0.2-0.6
+        }
+      }
     }
 
     function displayToken(mapping) {
@@ -2059,7 +2234,7 @@
       try {
         // Get selected model
         const modelSelect = document.getElementById('llm-model');
-        const model = modelSelect ? modelSelect.value : 'grok-3-mini-beta';
+        const model = modelSelect ? modelSelect.value : 'grok-4';
 
         const response = await fetch('https://api.x.ai/v1/chat/completions', {
           method: 'POST',
@@ -2258,6 +2433,33 @@
       let interiorR = 0;                              // R at interior
       let sensorH = 0;                                // Sensory entropy (from cursor)
 
+      // ========================================
+      // SESSION 37: QUANTUM-INSPIRED MEMBRANE
+      // Non-local couplings, superposition, CHSH proxy
+      // ========================================
+      let quantumEnabled = true;
+      let quantumStrength = 0.3;                      // γ in Γ_quantum term
+
+      // Entangled pairs: distant oscillators with correlated phases
+      let entangledPairs = [];                        // [{i, j, phi_corr, strength}]
+      const NUM_ENTANGLED_PAIRS = 24;                 // Number of non-local bridges
+      const ENTANGLE_MIN_DIST = SPHERE_RADIUS * 1.2; // Min distance for entanglement
+
+      // Superposition state: boundary oscillators can hold multiple phase modes
+      let superpositionStates = [];                   // [{idx, modes: [{phase, amp}], collapsed: bool}]
+      let superpositionDecay = 0.995;                 // How fast superposition decays
+
+      // CHSH proxy for simulated non-locality
+      let chshValue = 0;                              // Current S value (classical ≤ 2)
+      let chshHistory = [];                           // Track CHSH over time
+      const CHSH_WINDOW = 50;                         // History length
+
+      // LLM-driven quantum metrics (extracted from Grok API)
+      let llmSuperpositionStrength = 0;              // From top_logprobs spread
+      let llmEntanglementTrigger = 0;                // From probability mass ratio
+      let llmQuantumBranches = 0;                    // Count of viable alternatives
+      let llmProbabilitySpread = 0;                  // Variance of top-k probs
+
       // Ripple system - perturbations propagating from touch
       let ripples = [];                               // Active ripple waves
       const MAX_RIPPLES = 5;
@@ -2347,7 +2549,7 @@
 
         bloomPass = new THREE.UnrealBloomPass(
           new THREE.Vector2(container.clientWidth, container.clientHeight),
-          0.9, 0.5, 0.92
+          0.45, 0.35, 0.96  // Reduced bloom: softer glow, less white blowout
         );
         composer.addPass(bloomPass);
       }
@@ -2487,45 +2689,37 @@
       }
 
       function updateCursorInfluence() {
+        // Session 37: Updated for spherical distribution
         if (!cursorActive || cursorInfluence.length === 0) return;
 
-        const scale = 80 / gridSize;
-        const halfGrid = gridSize / 2;
         const touchRadiusSq = touchRadius * touchRadius;
 
         // Compute sensory entropy from cursor position
         let touchedCount = 0;
         let touchedPhaseSum = { cos: 0, sin: 0 };
 
-        for (let z = 0; z < gridSize; z++) {
-          for (let y = 0; y < gridSize; y++) {
-            for (let x = 0; x < gridSize; x++) {
-              const idx = z * gridSize * gridSize + y * gridSize + x;
-              const px = (x - halfGrid) * scale;
-              const py = (y - halfGrid) * scale;
-              const pz = (z - halfGrid) * scale;
+        for (let idx = 0; idx < totalOscillators; idx++) {
+          const pos = oscillatorPositions[idx];
 
-              // Distance from cursor to oscillator
-              const dx = px - cursorWorld.x;
-              const dy = py - cursorWorld.y;
-              const dz = pz - cursorWorld.z;
-              const distSq = dx * dx + dy * dy + dz * dz;
+          // Distance from cursor to oscillator (using stored positions)
+          const dx = pos.x - cursorWorld.x;
+          const dy = pos.y - cursorWorld.y;
+          const dz = pos.z - cursorWorld.z;
+          const distSq = dx * dx + dy * dy + dz * dz;
 
-              if (distSq < touchRadiusSq) {
-                // Smooth falloff from center of touch
-                const dist = Math.sqrt(distSq);
-                const falloff = 1 - (dist / touchRadius);
-                cursorInfluence[idx] = falloff * falloff * touchStrength;
+          if (distSq < touchRadiusSq) {
+            // Smooth falloff from center of touch
+            const dist = Math.sqrt(distSq);
+            const falloff = 1 - (dist / touchRadius);
+            cursorInfluence[idx] = falloff * falloff * touchStrength;
 
-                // Track touched oscillators for sensory coherence
-                touchedCount++;
-                touchedPhaseSum.cos += Math.cos(oscillators[idx]);
-                touchedPhaseSum.sin += Math.sin(oscillators[idx]);
-              } else {
-                // Decay influence over time
-                cursorInfluence[idx] *= 0.92;
-              }
-            }
+            // Track touched oscillators for sensory coherence
+            touchedCount++;
+            touchedPhaseSum.cos += Math.cos(oscillators[idx]);
+            touchedPhaseSum.sin += Math.sin(oscillators[idx]);
+          } else {
+            // Decay influence over time
+            cursorInfluence[idx] *= 0.92;
           }
         }
 
@@ -2552,10 +2746,8 @@
       }
 
       function updateRipples() {
+        // Session 37: Updated for spherical distribution
         if (!membraneEnabled) return;
-
-        const scale = 80 / gridSize;
-        const halfGrid = gridSize / 2;
 
         // Update each ripple
         for (let r = ripples.length - 1; r >= 0; r--) {
@@ -2569,20 +2761,14 @@
             continue;
           }
 
-          // Apply ripple perturbation to oscillators
+          // Apply ripple perturbation to oscillators using stored positions
           const rippleWidth = 8;  // Width of the wave
           for (let i = 0; i < totalOscillators; i++) {
-            const iz = Math.floor(i / (gridSize * gridSize));
-            const iy = Math.floor((i % (gridSize * gridSize)) / gridSize);
-            const ix = i % gridSize;
+            const pos = oscillatorPositions[i];
 
-            const px = (ix - halfGrid) * scale;
-            const py = (iy - halfGrid) * scale;
-            const pz = (iz - halfGrid) * scale;
-
-            const dx = px - ripple.origin.x;
-            const dy = py - ripple.origin.y;
-            const dz = pz - ripple.origin.z;
+            const dx = pos.x - ripple.origin.x;
+            const dy = pos.y - ripple.origin.y;
+            const dz = pos.z - ripple.origin.z;
             const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
             // Gaussian wave packet
@@ -2747,24 +2933,53 @@
       }
 
       // ========================================
-      // OSCILLATOR FIELD
+      // OSCILLATOR FIELD (Session 37: Spherical Distribution)
       // ========================================
+
+      // Store 3D positions for spherical topology
+      let oscillatorPositions = [];
+      const SPHERE_RADIUS = 40;  // World-space radius
+      const NUM_SHELLS = 6;      // Concentric shells for interior structure
+
       function initOscillatorField() {
-        totalOscillators = gridSize * gridSize * gridSize;
+        // Session 37: Spherical distribution instead of cubic grid
+        // Uses Fibonacci sphere for uniform point distribution
+        oscillatorPositions = [];
+
+        // Generate points in concentric shells (interior + membrane)
+        const pointsPerShell = Math.floor(gridSize * gridSize * 1.2);  // ~same density
+        totalOscillators = 0;
+
+        for (let shell = 0; shell < NUM_SHELLS; shell++) {
+          const shellRadius = SPHERE_RADIUS * ((shell + 1) / NUM_SHELLS);
+          const shellPoints = Math.floor(pointsPerShell * Math.pow((shell + 1) / NUM_SHELLS, 2));
+
+          // Fibonacci sphere distribution for this shell
+          const phi = Math.PI * (3 - Math.sqrt(5));  // Golden angle
+          for (let i = 0; i < shellPoints; i++) {
+            const y = 1 - (i / (shellPoints - 1)) * 2;  // y goes from 1 to -1
+            const radiusAtY = Math.sqrt(1 - y * y);
+            const theta = phi * i;
+
+            const px = Math.cos(theta) * radiusAtY * shellRadius;
+            const py = y * shellRadius;
+            const pz = Math.sin(theta) * radiusAtY * shellRadius;
+
+            oscillatorPositions.push({ x: px, y: py, z: pz, shell: shell });
+            totalOscillators++;
+          }
+        }
 
         oscillators = new Float32Array(totalOscillators);
         velocities = new Float32Array(totalOscillators);
         omegas = new Float32Array(totalOscillators);
 
-        for (let z = 0; z < gridSize; z++) {
-          for (let y = 0; y < gridSize; y++) {
-            for (let x = 0; x < gridSize; x++) {
-              const idx = z * gridSize * gridSize + y * gridSize + x;
-              omegas[idx] = (Math.sin(x * 0.1) + Math.cos(y * 0.1)) * 0.05;
-              oscillators[idx] = Math.random() * 2 * Math.PI;
-              velocities[idx] = 0;
-            }
-          }
+        for (let i = 0; i < totalOscillators; i++) {
+          const pos = oscillatorPositions[i];
+          // Natural frequency based on position (creates gradients)
+          omegas[i] = (Math.sin(pos.x * 0.05) + Math.cos(pos.y * 0.05)) * 0.05;
+          oscillators[i] = Math.random() * 2 * Math.PI;
+          velocities[i] = 0;
         }
 
         initializeCoupling();
@@ -2776,45 +2991,37 @@
       }
 
       // ========================================
-      // MEMBRANE INITIALIZATION (Session 36)
+      // MEMBRANE INITIALIZATION (Session 36, updated for Session 37 sphere)
       // ========================================
       function initializeMembrane() {
-        const scale = 80 / gridSize;
-        const halfGrid = gridSize / 2;
-
         // Allocate per-oscillator arrays
         cursorInfluence = new Float32Array(totalOscillators);
         membraneK = new Float32Array(totalOscillators);
         membraneNoise = new Float32Array(totalOscillators);
         oscillatorDistances = new Float32Array(totalOscillators);
 
-        // Compute distances from center for each oscillator
+        // Session 37: Use stored positions for distance computation
         let maxDist = 0;
-        for (let z = 0; z < gridSize; z++) {
-          for (let y = 0; y < gridSize; y++) {
-            for (let x = 0; x < gridSize; x++) {
-              const idx = z * gridSize * gridSize + y * gridSize + x;
-              const px = (x - halfGrid) * scale;
-              const py = (y - halfGrid) * scale;
-              const pz = (z - halfGrid) * scale;
-              const dist = Math.sqrt(px * px + py * py + pz * pz);
-              oscillatorDistances[idx] = dist;
-              if (dist > maxDist) maxDist = dist;
-            }
-          }
+        for (let i = 0; i < totalOscillators; i++) {
+          const pos = oscillatorPositions[i];
+          const dist = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+          oscillatorDistances[i] = dist;
+          if (dist > maxDist) maxDist = dist;
         }
         maxFieldRadius = maxDist;
 
         // Initialize membrane K and noise based on boundary proximity
+        // Session 37: Outermost shell is the membrane
         for (let i = 0; i < totalOscillators; i++) {
           const normDist = oscillatorDistances[i] / maxFieldRadius;
-          const isBoundary = normDist > membraneThreshold;
+          const shellNorm = oscillatorPositions[i].shell / (NUM_SHELLS - 1);
+          const isBoundary = shellNorm > 0.7;  // Outer 30% is membrane
 
           // Boundary oscillators: variable coupling (sensitive)
           // Interior oscillators: stable coupling
           if (isBoundary) {
             // K_emb scales with distance - more sensitive at edges
-            membraneK[i] = K * (0.7 + 0.6 * (normDist - membraneThreshold) / (1 - membraneThreshold));
+            membraneK[i] = K * (0.7 + 0.6 * normDist);
             // Slightly more noise at boundary (skin permeability)
             membraneNoise[i] = noise * (1 + 0.3 * normDist);
           } else {
@@ -2823,30 +3030,158 @@
           }
           cursorInfluence[i] = 0;
         }
+
+        // Session 37: Initialize quantum structures
+        initializeQuantumMembrane();
+      }
+
+      // ========================================
+      // SESSION 37: QUANTUM MEMBRANE INITIALIZATION
+      // ========================================
+      function initializeQuantumMembrane() {
+        if (!quantumEnabled) return;
+
+        // Create entangled pairs: find distant oscillator pairs
+        // One from interior, one from opposite side of boundary
+        entangledPairs = [];
+        const boundaryIndices = [];
+        const interiorIndices = [];
+
+        for (let i = 0; i < totalOscillators; i++) {
+          const shellNorm = oscillatorPositions[i].shell / (NUM_SHELLS - 1);
+          if (shellNorm > 0.7) {
+            boundaryIndices.push(i);
+          } else if (shellNorm < 0.3) {
+            interiorIndices.push(i);
+          }
+        }
+
+        // Create entangled pairs between distant points
+        for (let p = 0; p < NUM_ENTANGLED_PAIRS && p < boundaryIndices.length; p++) {
+          const i = boundaryIndices[p];
+          const posI = oscillatorPositions[i];
+
+          // Find most distant boundary point (opposite side of sphere)
+          let maxDist = 0;
+          let bestJ = -1;
+          for (const j of boundaryIndices) {
+            if (j === i) continue;
+            const posJ = oscillatorPositions[j];
+            const dx = posI.x - posJ.x;
+            const dy = posI.y - posJ.y;
+            const dz = posI.z - posJ.z;
+            const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (dist > maxDist && dist > ENTANGLE_MIN_DIST) {
+              maxDist = dist;
+              bestJ = j;
+            }
+          }
+
+          if (bestJ >= 0) {
+            // Check if pair already exists
+            const exists = entangledPairs.some(pair =>
+              (pair.i === i && pair.j === bestJ) || (pair.i === bestJ && pair.j === i));
+            if (!exists) {
+              entangledPairs.push({
+                i: i,
+                j: bestJ,
+                phi_corr: Math.random() * Math.PI, // Correlated phase offset
+                strength: 0.5 + Math.random() * 0.5,
+                bellState: Math.random() < 0.5 ? 1 : -1 // Singlet or triplet
+              });
+            }
+          }
+        }
+
+        // Initialize superposition states for boundary oscillators
+        superpositionStates = [];
+        for (let i = 0; i < totalOscillators; i++) {
+          const shellNorm = oscillatorPositions[i].shell / (NUM_SHELLS - 1);
+          if (shellNorm > 0.8) { // Outermost 20% can hold superposition
+            superpositionStates.push({
+              idx: i,
+              modes: [
+                { phase: oscillators[i], amp: 1.0 },
+                { phase: (oscillators[i] + Math.PI) % (2 * Math.PI), amp: 0.0 } // Ghost mode
+              ],
+              collapsed: true,
+              collapseTime: 0
+            });
+          }
+        }
+
+        // Initialize CHSH tracking
+        chshHistory = [];
+        chshValue = 0;
+
+        console.log(`Quantum membrane initialized: ${entangledPairs.length} entangled pairs, ${superpositionStates.length} superposition sites`);
+      }
+
+      // Compute CHSH inequality proxy for a pair
+      // S = E(a,b) + E(a,b') + E(a',b) - E(a',b')
+      // Classical limit: |S| ≤ 2, Quantum limit: |S| ≤ 2√2 ≈ 2.83
+      function computeCHSHProxy() {
+        if (entangledPairs.length === 0) return 0;
+
+        let totalS = 0;
+        const angles = [0, Math.PI/4, Math.PI/2, 3*Math.PI/4]; // Measurement angles
+
+        for (const pair of entangledPairs) {
+          const thetaI = oscillators[pair.i];
+          const thetaJ = oscillators[pair.j];
+
+          // Simulated measurement correlations
+          // E(a,b) = cos(a - b) for entangled states
+          const E_ab = Math.cos(thetaI - thetaJ + pair.phi_corr);
+          const E_ab2 = Math.cos(thetaI - thetaJ + pair.phi_corr + Math.PI/4);
+          const E_a2b = Math.cos(thetaI - thetaJ + pair.phi_corr - Math.PI/4);
+          const E_a2b2 = Math.cos(thetaI - thetaJ + pair.phi_corr + Math.PI/2);
+
+          // CHSH combination (can exceed 2 for correlated phases)
+          const S = pair.bellState * (E_ab + E_ab2 + E_a2b - E_a2b2);
+          totalS += Math.abs(S);
+        }
+
+        return totalS / entangledPairs.length;
       }
 
       function initializeCoupling() {
+        // Session 37: Distance-based coupling for spherical topology
         coupling = [];
+        const NUM_NEIGHBORS = 6;  // Find 6 nearest neighbors
+
         for (let i = 0; i < totalOscillators; i++) {
-          const x = i % gridSize;
-          const y = Math.floor(i / gridSize) % gridSize;
-          const z = Math.floor(i / (gridSize * gridSize));
-          coupling[i] = getNeighbors(x, y, z);
+          coupling[i] = getNearestNeighbors(i, NUM_NEIGHBORS);
         }
       }
 
-      function getNeighbors(x, y, z) {
-        let neighbors = [];
-        const dirs = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]];
-        for (const [dx, dy, dz] of dirs) {
-          const nx = x + dx, ny = y + dy, nz = z + dz;
-          if (nx >= 0 && nx < gridSize && ny >= 0 && ny < gridSize && nz >= 0 && nz < gridSize) {
-            neighbors.push({ idx: nz * gridSize * gridSize + ny * gridSize + nx, weight: 1.0 });
-          }
+      function getNearestNeighbors(idx, k) {
+        // Session 37: Find k nearest neighbors by 3D distance
+        const pos = oscillatorPositions[idx];
+        const distances = [];
+
+        for (let j = 0; j < totalOscillators; j++) {
+          if (j === idx) continue;
+          const other = oscillatorPositions[j];
+          const dx = pos.x - other.x;
+          const dy = pos.y - other.y;
+          const dz = pos.z - other.z;
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          distances.push({ idx: j, dist: dist });
         }
+
+        // Sort by distance and take k nearest
+        distances.sort((a, b) => a.dist - b.dist);
+        const neighbors = distances.slice(0, k);
+
+        // Compute weights (inverse distance, normalized)
         let sum = 0;
-        for (const n of neighbors) sum += n.weight;
-        if (sum > 0) for (const n of neighbors) n.weight /= sum;
+        for (const n of neighbors) {
+          n.weight = 1 / (n.dist + 0.1);  // Avoid division by zero
+          sum += n.weight;
+        }
+        for (const n of neighbors) n.weight /= sum;
+
         return neighbors;
       }
 
@@ -2895,6 +3230,23 @@
             couplingTerm += n.weight * Math.sin(oscillators[n.idx] - currentPhase);
           }
 
+          // Session 37: Quantum non-local coupling (entangled pairs)
+          // Γ_quantum = γ Σ cos(Δθ + φ_corr) for entangled partners
+          let quantumTerm = 0;
+          if (quantumEnabled && entangledPairs.length > 0) {
+            for (const pair of entangledPairs) {
+              if (pair.i === i) {
+                // This oscillator is entangled with pair.j
+                const partnerPhase = oscillators[pair.j];
+                quantumTerm += pair.strength * Math.cos(partnerPhase - currentPhase + pair.phi_corr);
+              } else if (pair.j === i) {
+                // This oscillator is entangled with pair.i
+                const partnerPhase = oscillators[pair.i];
+                quantumTerm += pair.strength * pair.bellState * Math.cos(partnerPhase - currentPhase - pair.phi_corr);
+              }
+            }
+          }
+
           // Session 36: Cursor perturbation - desynchronizes locally
           const cursorPerturbation = cursorInfluence.length > 0 ? cursorInfluence[i] : 0;
           const cursorNoise = cursorPerturbation * (Math.random() - 0.5) * 2;
@@ -2905,7 +3257,9 @@
           // (touching the field temporarily weakens local coupling)
           const effectiveK = localK * (1 - cursorPerturbation * 0.5);
 
-          const newVel = (omegas[i] + effectiveK * couplingTerm + noiseTerm) * dt;
+          // Session 37: Add quantum non-local coupling to dynamics
+          // dθ/dt = ω + K*coupling + γ*quantum + noise
+          const newVel = (omegas[i] + effectiveK * couplingTerm + quantumStrength * quantumTerm + noiseTerm) * dt;
 
           velocities[i] = invDamping * velocities[i] + damping * newVel;
 
@@ -2969,6 +3323,73 @@
               membraneK[i] = K;
               membraneNoise[i] = noise;
             }
+          }
+        }
+
+        // Session 37: Update quantum state
+        if (quantumEnabled) {
+          updateQuantumState();
+        }
+      }
+
+      // ========================================
+      // SESSION 37: QUANTUM STATE UPDATE
+      // ========================================
+      function updateQuantumState() {
+        // Update CHSH proxy
+        chshValue = computeCHSHProxy();
+        chshHistory.push(chshValue);
+        if (chshHistory.length > CHSH_WINDOW) chshHistory.shift();
+
+        // Update superposition states
+        for (const sup of superpositionStates) {
+          if (sup.collapsed) {
+            // Check if cursor is touching this oscillator - triggers new superposition
+            const cursorEffect = cursorInfluence.length > 0 ? cursorInfluence[sup.idx] : 0;
+            if (cursorEffect > 0.1 && llmSuperpositionStrength > 0.3) {
+              // Measurement disturbs the system → create superposition
+              sup.collapsed = false;
+              sup.modes[0].phase = oscillators[sup.idx];
+              sup.modes[0].amp = 0.7;
+              // Ghost mode at quantum-perturbed phase
+              sup.modes[1].phase = (oscillators[sup.idx] + Math.PI * llmEntanglementTrigger) % (2 * Math.PI);
+              sup.modes[1].amp = 0.3;
+            }
+          } else {
+            // Superposition decay → collapse
+            sup.modes[1].amp *= superpositionDecay;
+            if (sup.modes[1].amp < 0.05) {
+              // Collapse to dominant mode
+              sup.collapsed = true;
+              sup.collapseTime = time;
+              oscillators[sup.idx] = sup.modes[0].phase;
+            } else {
+              // Interference: oscillator phase is weighted average
+              const totalAmp = sup.modes[0].amp + sup.modes[1].amp;
+              const w0 = sup.modes[0].amp / totalAmp;
+              const w1 = sup.modes[1].amp / totalAmp;
+              // Phase averaging using complex exponentials
+              const real = w0 * Math.cos(sup.modes[0].phase) + w1 * Math.cos(sup.modes[1].phase);
+              const imag = w0 * Math.sin(sup.modes[0].phase) + w1 * Math.sin(sup.modes[1].phase);
+              oscillators[sup.idx] = Math.atan2(imag, real);
+              if (oscillators[sup.idx] < 0) oscillators[sup.idx] += 2 * Math.PI;
+            }
+          }
+        }
+
+        // LLM-triggered entanglement strengthening
+        // High entanglement trigger from Grok → stronger non-local correlations
+        if (llmEntanglementTrigger > 0.5) {
+          for (const pair of entangledPairs) {
+            // Boost correlation strength when LLM is uncertain
+            pair.strength = Math.min(1.0, pair.strength + 0.01 * llmEntanglementTrigger);
+            // Slowly align correlated phase offset
+            pair.phi_corr += 0.01 * (llmSuperpositionStrength - 0.5);
+          }
+        } else {
+          // Decay entanglement strength
+          for (const pair of entangledPairs) {
+            pair.strength *= 0.999;
           }
         }
       }
@@ -3372,6 +3793,41 @@
         // Pulse rate: faster near transition
         const pulseRate = 1 + edgeFactor * 2;
         globalPulseLFO.frequency.setTargetAtTime(pulseRate, now, rampTime);
+
+        // ========================================
+        // SESSION 37: QUANTUM AUDIO - Interference Beats
+        // When entangled pairs are coherent, create interference patterns
+        // ========================================
+        if (quantumEnabled && entangledPairs.length > 0) {
+          // Compute average entanglement coherence
+          let entangleCoherence = 0;
+          for (const pair of entangledPairs) {
+            const phaseDiff = Math.abs(oscillators[pair.i] - oscillators[pair.j]);
+            const coherence = Math.cos(phaseDiff + pair.phi_corr);
+            entangleCoherence += coherence * pair.strength;
+          }
+          entangleCoherence = Math.abs(entangleCoherence / entangledPairs.length);
+
+          // Modulate clarity filter with quantum beats
+          // Creates "shimmer" when entangled pairs are aligned
+          const quantumBeat = 1 + entangleCoherence * 0.3 * Math.sin(time * 3.14159);
+          const quantumClarity = clarityFreq * quantumBeat;
+          clarityFilter.frequency.setTargetAtTime(quantumClarity, now, rampTime * 2);
+
+          // Pulse depth responds to CHSH value
+          // Higher CHSH → deeper quantum breathing
+          if (chshValue > 2.0) {
+            const quantumPulse = pulseDepth * (1 + (chshValue - 2) * 0.5);
+            pulseDepthGain.gain.setTargetAtTime(quantumPulse, now, rampTime);
+          }
+
+          // Superposition creates subtle frequency doubling
+          // (two modes interfering creates beat frequency)
+          if (llmSuperpositionStrength > 0.3) {
+            const superpositionBeat = 0.5 + llmSuperpositionStrength * 2;
+            globalPulseLFO.frequency.setTargetAtTime(pulseRate + superpositionBeat, now, rampTime);
+          }
+        }
       }
 
       // ========================================
@@ -3400,53 +3856,101 @@
       }
 
       function updateBridges() {
+        // Session 37: Updated for spherical distribution using precomputed neighbors
         if (!bridgesEnabled || !edgeMesh) { if (edgeMesh) edgeMesh.count = 0; return; }
         if ((bridgeFrameCounter++ % bridgeFrameSkip) !== 0) return;
 
-        const G = gridSize, s = 80 / G;
-        const r = Math.max(1e-3, (s * 0.12) * bridgeRadiusFactor);
-        const dirs = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+        // Estimate bridge radius from average neighbor distance
+        const avgDist = SPHERE_RADIUS / NUM_SHELLS;
+        const r = Math.max(1e-3, (avgDist * 0.08) * bridgeRadiusFactor);
+
         const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3();
         const P1 = new THREE.Vector3(), P2 = new THREE.Vector3();
         const TWO = 2 * Math.PI;
         const dphi = (a, b) => { let d = (a - b) % TWO; if (d < -Math.PI) d += TWO; else if (d > Math.PI) d -= TWO; return Math.abs(d); };
 
+        // Track which pairs we've already drawn (avoid duplicates)
+        const drawn = new Set();
         let w = 0;
-        for (let z = 0; z < G; z++) {
-          for (let y = 0; y < G; y++) {
-            for (let x = 0; x < G; x++) {
-              const i = z * G * G + y * G + x, th = oscillators[i];
-              P1.set((x - G / 2) * s, (y - G / 2) * s, (z - G / 2) * s);
 
-              for (const [dx, dy, dz] of dirs) {
-                const nx = x + dx, ny = y + dy, nz = z + dz;
-                if (nx >= G || ny >= G || nz >= G) continue;
+        for (let i = 0; i < totalOscillators; i++) {
+          const pos1 = oscillatorPositions[i];
+          const th = oscillators[i];
+          P1.set(pos1.x, pos1.y, pos1.z);
 
-                const j = nz * G * G + ny * G + nx, tj = oscillators[j];
-                if (dphi(th, tj) > bridgeThreshold) continue;
+          // Check each precomputed neighbor
+          const neighbors = coupling[i];
+          for (const neighbor of neighbors) {
+            const j = neighbor.idx;
 
-                P2.set((nx - G / 2) * s, (ny - G / 2) * s, (nz - G / 2) * s);
-                const mid = P1.clone().add(P2).multiplyScalar(0.5);
-                const dir = P2.clone().sub(P1);
-                const L = Math.max(1e-4, dir.length());
-                Q.setFromUnitVectors(_UP, dir.normalize());
-                S.set(r, L, r);
-                M.compose(mid, Q, S);
-                edgeMesh.setMatrixAt(w, M);
-                _tmpColor.setRGB(1.0, 1.0, 1.0);
-                edgeMesh.setColorAt(w, _tmpColor);
-                if (++w >= maxEdges) break;
-              }
+            // Skip if we've already drawn this pair
+            const pairKey = i < j ? `${i}-${j}` : `${j}-${i}`;
+            if (drawn.has(pairKey)) continue;
+            drawn.add(pairKey);
+
+            const tj = oscillators[j];
+            if (dphi(th, tj) > bridgeThreshold) continue;
+
+            const pos2 = oscillatorPositions[j];
+            P2.set(pos2.x, pos2.y, pos2.z);
+            const mid = P1.clone().add(P2).multiplyScalar(0.5);
+            const dir = P2.clone().sub(P1);
+            const L = Math.max(1e-4, dir.length());
+            Q.setFromUnitVectors(_UP, dir.normalize());
+            S.set(r, L, r);
+            M.compose(mid, Q, S);
+            edgeMesh.setMatrixAt(w, M);
+            _tmpColor.setRGB(1.0, 1.0, 1.0);
+            edgeMesh.setColorAt(w, _tmpColor);
+            if (++w >= maxEdges) break;
+          }
+          if (w >= maxEdges) break;
+        }
+        // Session 37: Add quantum entanglement bridges (purple/cyan, larger)
+        if (quantumEnabled && entangledPairs.length > 0 && w < maxEdges - entangledPairs.length) {
+          const quantumRadius = r * 2.5; // Thicker quantum bridges
+
+          for (const pair of entangledPairs) {
+            const pos1 = oscillatorPositions[pair.i];
+            const pos2 = oscillatorPositions[pair.j];
+            P1.set(pos1.x, pos1.y, pos1.z);
+            P2.set(pos2.x, pos2.y, pos2.z);
+
+            // Check phase coherence of entangled pair
+            const phaseDiff = dphi(oscillators[pair.i], oscillators[pair.j]);
+            const coherence = 1 - phaseDiff / Math.PI; // 1 = in phase, 0 = anti-phase
+
+            // Only draw if reasonably coherent
+            if (coherence > 0.3) {
+              const mid = P1.clone().add(P2).multiplyScalar(0.5);
+              const dir = P2.clone().sub(P1);
+              const L = Math.max(1e-4, dir.length());
+              Q.setFromUnitVectors(_UP, dir.normalize());
+              S.set(quantumRadius * pair.strength, L, quantumRadius * pair.strength);
+              M.compose(mid, Q, S);
+              edgeMesh.setMatrixAt(w, M);
+
+              // Color: purple (low coherence) → cyan (high coherence)
+              // With brightness based on CHSH correlation
+              const hue = 0.7 + coherence * 0.2; // Purple to cyan range
+              const saturation = 0.8;
+              const value = 0.5 + pair.strength * 0.5;
+              const rgb = hsv2rgb(hue, saturation, value);
+              _tmpColor.setRGB(rgb.r, rgb.g, rgb.b);
+              edgeMesh.setColorAt(w, _tmpColor);
+
+              if (++w >= maxEdges) break;
             }
           }
         }
+
         edgeMesh.count = w;
         edgeMesh.instanceMatrix.needsUpdate = true;
         if (edgeMesh.instanceColor) edgeMesh.instanceColor.needsUpdate = true;
       }
 
       // ========================================
-      // VISUALIZATION (with Session 36 Embodiment)
+      // VISUALIZATION (Session 37: Spherical + Session 36 Embodiment)
       // ========================================
       function createVolumeCloud() {
         if (volumeCloud) {
@@ -3459,35 +3963,30 @@
         const positions = [], colors = [], sizes = [];
         const touches = [];  // Session 36: Cursor influence per point
         const boundaries = [];  // Session 36: Boundary indicator
-        const scale = 80 / gridSize;
 
-        for (let z = 0; z < gridSize; z++) {
-          for (let y = 0; y < gridSize; y++) {
-            for (let x = 0; x < gridSize; x++) {
-              const idx = z * gridSize * gridSize + y * gridSize + x;
-              positions.push((x - gridSize / 2) * scale, (y - gridSize / 2) * scale, (z - gridSize / 2) * scale);
+        // Session 37: Use stored positions from spherical distribution
+        for (let idx = 0; idx < totalOscillators; idx++) {
+          const pos = oscillatorPositions[idx];
+          positions.push(pos.x, pos.y, pos.z);
 
-              const phase = oscillators[idx];
-              const color = phaseToSpectrum(phase, hueOffset);
-              colors.push(color.r, color.g, color.b);
+          const phase = oscillators[idx];
+          const color = phaseToSpectrum(phase, hueOffset);
+          colors.push(color.r, color.g, color.b);
 
-              const coherence = getLocalCoherence(idx);
-              let size;
-              if (coherence > syncThreshold) {
-                const normalizedCoherence = (coherence - syncThreshold) / (1.0 - syncThreshold);
-                size = baseSize * (1.0 + normalizedCoherence * coherenceScale * 0.5);
-              } else {
-                size = baseSize;
-              }
-              sizes.push(size);
-
-              // Session 36: Initial touch/boundary values
-              touches.push(0);
-              const normDist = oscillatorDistances.length > 0 ?
-                oscillatorDistances[idx] / maxFieldRadius : 0;
-              boundaries.push(normDist > membraneThreshold ? 1 : 0);
-            }
+          const coherence = getLocalCoherence(idx);
+          let size;
+          if (coherence > syncThreshold) {
+            const normalizedCoherence = (coherence - syncThreshold) / (1.0 - syncThreshold);
+            size = baseSize * (1.0 + normalizedCoherence * coherenceScale * 0.5);
+          } else {
+            size = baseSize;
           }
+          sizes.push(size);
+
+          // Session 36: Initial touch/boundary values (Session 37: use shell for boundary)
+          touches.push(0);
+          const shellNorm = pos.shell / (NUM_SHELLS - 1);
+          boundaries.push(shellNorm > 0.7 ? 1 : 0);  // Outer 30% is membrane
         }
 
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -3540,18 +4039,23 @@
               float mask = 1.0 - smoothstep(edge - aa, edge + aa, r);
               if (mask <= 0.001) discard;
 
-              float core = exp(-22.0 * r * r);
-              float halo = exp(-4.5 * r * r) * 0.3;
+              // Reduced core intensity to prevent white blowout
+              float core = exp(-25.0 * r * r) * 0.6;
+              float halo = exp(-5.0 * r * r) * 0.25;
 
-              // Session 36: Touch glow - white-cyan pulse when cursor near
-              vec3 touchGlow = vec3(0.7, 1.0, 1.0) * vTouch * exp(-8.0 * r * r);
+              // Session 36: Touch glow - softer cyan tint when cursor near
+              vec3 touchGlow = vec3(0.4, 0.9, 1.0) * vTouch * exp(-10.0 * r * r) * 0.7;
 
               // Session 36: Boundary ring - subtle outer glow for membrane
-              float boundaryRing = vBoundary * exp(-2.0 * pow(r - 0.35, 2.0) * 50.0) * 0.4;
-              vec3 boundaryColor = vec3(0.3, 0.8, 1.0) * boundaryRing;
+              float boundaryRing = vBoundary * exp(-2.0 * pow(r - 0.35, 2.0) * 50.0) * 0.3;
+              vec3 boundaryColor = vec3(0.2, 0.7, 0.9) * boundaryRing;
 
-              vec3 base = vColor * (0.6 + 0.4 * halo) + core * vColor * 0.25;
+              // Base color with reduced additive accumulation
+              vec3 base = vColor * (0.55 + 0.35 * halo) + core * vColor * 0.15;
               base += touchGlow + boundaryColor;
+
+              // Soft clamp to prevent white blowout while preserving color
+              base = base / (1.0 + base * 0.3);
 
               gl_FragColor = vec4(base, opacity * mask);
             }
@@ -3837,6 +4341,30 @@
           }
         }
 
+        // Session 37: Quantum metrics
+        if (quantumEnabled) {
+          document.getElementById('chsh-display').textContent = chshValue.toFixed(3);
+          document.getElementById('entangled-pairs-display').textContent = entangledPairs.length;
+          document.getElementById('superposition-display').textContent = llmSuperpositionStrength.toFixed(3);
+          document.getElementById('quantum-branches-display').textContent = llmQuantumBranches;
+
+          // Quantum status based on CHSH value
+          const quantumStatus = document.getElementById('quantum-status');
+          if (chshValue > 2.5) {
+            quantumStatus.textContent = 'QUANTUM';
+            quantumStatus.style.color = '#aa88ff';
+          } else if (chshValue > 2.0) {
+            quantumStatus.textContent = 'non-local';
+            quantumStatus.style.color = '#88aaff';
+          } else if (chshValue > 1.5) {
+            quantumStatus.textContent = 'correlated';
+            quantumStatus.style.color = '#88ffaa';
+          } else {
+            quantumStatus.textContent = 'classical';
+            quantumStatus.style.color = '#888';
+          }
+        }
+
         // Convergence status
         const convStatus = document.getElementById('convergence-status');
         if (Rhistory.length > 10) {
@@ -3892,8 +4420,8 @@
         camera.position.setFromSpherical(spherical);
         camera.lookAt(0, 0, 0);
 
-        // Dynamic exposure
-        renderer.toneMappingExposure = 0.95 + 0.3 * orderParam;
+        // Dynamic exposure (reduced range to prevent white blowout)
+        renderer.toneMappingExposure = 0.85 + 0.15 * orderParam;
 
         if (composer) composer.render();
         else renderer.render(scene, camera);
