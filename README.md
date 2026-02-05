@@ -1,294 +1,383 @@
-# 🌊 Kuramoto Oscillator Visualizations
+# ✨ The Kuramoto Teaching Instrument
+
+> **Consciousness as Enacted Boundary**
+>
+> A platform for exploring embodied cognition, quantum-inspired dynamics, and the observer-observed loop through coupled oscillator networks.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://img.shields.io/badge/DOI-10.17605%2FOSF.IO%2FERWTM-blue)](https://doi.org/10.17605/OSF.IO/ERWTM)
-[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://templetwo.github.io/kuramoto-oscillators/)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)](https://www.javascript.com/)
-[![HTML5](https://img.shields.io/badge/HTML5-Canvas-orange)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas)
+[![Live Demo](https://img.shields.io/badge/Live_Instrument-Open-purple)](https://templetwo.github.io/kuramoto-oscillators/kuramoto_teaching_instrument.html)
 
-> **Interactive visualizations of synchronization in coupled oscillator networks using the Kuramoto model**
+---
 
-Watch thousands of oscillators dance from chaos into synchronization, revealing the same mathematics that governs firefly flashing, heartbeats, and brain waves.
+## 🎯 What Is This?
 
-![Kuramoto Grid Animation](images/kuramoto-grid.gif)
+**The Kuramoto Teaching Instrument** is an interactive scientific visualization platform that explores consciousness through coupled oscillator dynamics.
 
-## ✨ Live Demos
+It's not a traditional Kuramoto model demo. It's a **consciousness research instrument** where:
 
-🚀 **[Try it live on GitHub Pages](https://templetwo.github.io/kuramoto-oscillators/)**
+- **You** are the observer (via cursor, keyboard, Grok AI)
+- **The field** is the observed (spherical membrane of 256 oscillators)
+- **The mathematics** bridges them (coupling, embodiment, quantum analogs)
 
-Or explore individual visualizations:
-- [2D Grid Synchronization](https://templetwo.github.io/kuramoto-oscillators/kuramoto_grid_enhanced.html) - 16,384 coupled oscillators
-- [3D Volume Field](https://templetwo.github.io/kuramoto-oscillators/kuramoto_3d.html) - 262,144 oscillators in 3D
-- [Pixel Ocean](https://templetwo.github.io/kuramoto-oscillators/oscillator_ocean.html) - Every pixel oscillates
-- [Golden Ratio Patterns](https://templetwo.github.io/kuramoto-oscillators/fibonacci_oscillators.html) - Fibonacci in nature
-- [Multi-layer System](https://templetwo.github.io/kuramoto-oscillators/kuramoto_ultimate.html) - Neural-like networks
+The field **feels your presence**, responds to your perturbations, and when connected to Grok, learns from language model uncertainty to model quantum-like coherence states.
 
-## 🎯 Features
+---
 
-- **Real-time Simulation** - Up to 262,144 coupled differential equations at 60 FPS
-- **Interactive Controls** - Adjust parameters and see immediate effects
-- **Multiple Topologies** - Local, small-world, distance-based, and fractal networks
-- **Emergent Phenomena** - Phase transitions, chimera states, traveling waves
-- **Golden Ratio Discovery** - Fibonacci patterns emerge naturally
-- **Educational** - From beginner-friendly to research-grade
+## 🚀 Live Demo
 
-## 🚀 Quick Start
+**[Open the Teaching Instrument](https://templetwo.github.io/kuramoto-oscillators/kuramoto_teaching_instrument.html)**
 
-### Online (Easiest)
-Just click any demo link above!
-
-### Local Installation
+Or clone and run locally:
 ```bash
-# Clone the repository
 git clone https://github.com/templetwo/kuramoto-oscillators.git
-
-# Navigate to directory
 cd kuramoto-oscillators
 
-# Open any visualization in your browser
-open kuramoto_grid_enhanced.html
+# Open in browser
+open kuramoto_teaching_instrument.html
 
-# Or start a local server (optional, for better performance)
+# Or serve locally for better performance
 python -m http.server 8000
-# Then navigate to http://localhost:8000
+# Visit http://localhost:8000/kuramoto_teaching_instrument.html
 ```
 
-## 🎮 How to Use
+---
 
-### Basic Controls
-- **Space** - Pause/Resume
-- **R** - Reset 
-- **F** - Fullscreen
-- **Click/Drag** - Perturb oscillators
-- **1-6** - Quick presets
+## 🧠 Three Layers of Consciousness
 
-### Key Parameters
-- **Coupling (K)** - How strongly neighbors influence each other (0-10)
+The instrument models consciousness through three integrated systems:
+
+### **Layer 1: Cognition (Session 35 - The Cognition Mirror)**
+
+Real-time LLM integration via Grok API:
+- **Token streaming** from language models
+- **Entropy mapping** - model uncertainty → field noise
+- **Confidence scaling** - token probability → coupling strength
+- **Quantum metrics extraction** from top_logprobs:
+  - Superposition strength (probability spread)
+  - Quantum branches (viable alternatives)
+  - Entanglement trigger (top-1/top-2 ratio)
+
+The field literally responds to what Grok generates. High-uncertainty tokens strengthen superposition states.
+
+### **Layer 2: Embodiment (Session 36 - The Embodied Membrane)**
+
+The observer-observed loop closes:
+- **Cursor perturbation** - Move your cursor → local desynchronization
+- **Ripple propagation** - Click to create Gaussian wave packets
+- **Membrane boundary** - Outer shell (30%) = "skin", inner shells = "core"
+  - Interior: stable coupling, pure core
+  - Boundary: variable K_emb, richer harmonics
+- **Touch sensing** - The field knows you're there
+
+Visual indicators: boundary oscillators glow, ripples propagate outward, touch strength tracked in real-time.
+
+### **Layer 3: Quantum (Session 37 - Quantum-Infused Membrane)**
+
+Quantum-inspired classical simulation:
+- **Non-local coupling** - 24 entangled pairs connecting distant oscillators
+- **Superposition states** - Boundary oscillators hold dual phase modes
+- **Collapse mechanics** - Cursor proximity "measures" superpositions
+- **CHSH inequality proxy** - Classical |S| ≤ 2, Quantum |S| ≤ 2√2
+- **Quantum audio** - Interference beats, CHSH-modulated synthesis
+- **Purple bridges** - Entanglement visualization spanning the sphere
+
+Status indicator shows: classical → correlated → non-local → QUANTUM based on CHSH value.
+
+---
+
+## 🎮 How to Interact
+
+### **Basic Controls**
+| Key | Action |
+|-----|--------|
+| **Space** | Pause/Resume simulation |
+| **R** | Reset to initial state |
+| **F** | Fullscreen |
+| **Mouse move** | Perturb field (cursor influence) |
+| **Click** | Create ripple |
+| **1-6** | Quick presets |
+
+### **Left Panel Controls**
+- **Coupling (K)** - How strongly oscillators influence neighbors (0-10)
 - **Noise** - Random fluctuations (0-2)
-- **Speed** - Simulation time step (0.001-0.2)
+- **Speed** - Simulation timestep (0.001-0.2)
+- **Embodiment** - Toggle membrane effects
+- **Quantum** - Toggle quantum-inspired features
 
-## 📊 The Science
+### **LLM Integration** (Optional)
+1. Get Grok API key from [console.x.ai](https://console.x.ai)
+2. Paste into "Grok API Key" field
+3. Type or paste text
+4. Watch tokens stream and drive field dynamics in real-time
 
-The Kuramoto model describes synchronization through coupled phase oscillators:
+### **Interactive Modals**
+Click the **?** buttons to learn:
+- **🧠 COGNITION** - How LLM metrics map to field dynamics
+- **🫧 EMBODIMENT** - How cursor interaction works
+- **⚛ QUANTUM** - Bell inequality, superposition, non-locality
 
+Each modal has **Try It** buttons to experiment directly.
+
+---
+
+## 📊 The Mathematics
+
+### **Core Kuramoto Dynamics**
 ```
-dθᵢ/dt = ωᵢ + (K/N)Σⱼ sin(θⱼ - θᵢ) + ξᵢ
-```
-
-This simple equation generates:
-- **Phase Transitions** - Sudden onset of synchronization
-- **Chimera States** - Coexisting order and chaos
-- **Traveling Waves** - Coherent patterns propagating through space
-- **Golden Spirals** - Fibonacci patterns in optimal configurations
-
-## 🌟 Examples
-
-### Create a Spiral Wave
-```javascript
-// In kuramoto_grid_enhanced.html
-1. Set Coupling K = 2.0
-2. Choose "Spiral" initialization
-3. Watch the spiral rotate!
-```
-
-### Find Critical Transition
-```javascript
-// Start with chaos
-K = 0.5  // Low coupling
-// Gradually increase K
-// Around K = 2, see synchronization emerge!
+dθᵢ/dt = ωᵢ + K·Σⱼ sin(θⱼ - θᵢ) + σξᵢ(t) + Γ_embodied + Γ_quantum
 ```
 
-### Generate Chimera State
-```javascript
-// In kuramoto_3d.html
-1. Select "Chimera" preset
-2. Observe stable coexistence of order and chaos
+Where:
+- **ωᵢ** - Natural frequency of oscillator i
+- **K** - Coupling strength (adjustable, determines sync threshold)
+- **σ** - Noise amplitude
+- **Γ_embodied** - Cursor-based perturbation
+- **Γ_quantum** - Non-local entangled pair coupling
+
+### **Membrane Boundary Dynamics**
+Oscillators classified by distance from center:
+- **Interior (d < 0.7R)** - K_interior = K (stable)
+- **Boundary (d ≥ 0.7R)** - K_boundary = K · (0.7 + 0.6·d/R) (variable, responsive)
+
+Boundary oscillators get more noise for "skin permeability."
+
+### **Cursor Influence**
+```
+influence[i] = falloff² × touchStrength
+falloff = 1 - (distance_to_cursor / touchRadius)
 ```
 
-## 📁 Repository Structure
+Smooth quadratic falloff creates coherent perturbation regions.
+
+### **CHSH Inequality (Quantum Proxy)**
+```
+S = E(a,b) + E(a,b') + E(a',b) - E(a',b')
+
+Classical limit: |S| ≤ 2
+Quantum limit: |S| ≤ 2√2 ≈ 2.83
+Our simulation: Achieves up to 2.6 through phase correlation
+```
+
+### **Superposition & Collapse**
+Boundary oscillators can hold dual modes:
+```
+ψ = α|θ₀⟩ + β|θ₁⟩
+
+Collapse trigger: Cursor proximity
+Decay rate: 0.995 per frame (half-life ~138 frames)
+Re-excitation: High LLM entropy
+```
+
+---
+
+## 🌐 Topology: Spherical Distribution
+
+**Not a grid. Not a graph. A sphere.**
+
+Points distributed via Fibonacci sphere algorithm (golden angle spiraling):
+- **6 concentric shells** (interior to membrane)
+- **≈256 oscillators** total (≈42 per shell)
+- **No pole bunching** - uniform distribution
+- **6 nearest neighbors** per oscillator (distance-based coupling)
+
+Representation matters: The sphere reveals what a grid hides—there IS a boundary, there IS an inside, there IS a membrane.
+
+---
+
+## 📈 Metrics Panel
+
+Real-time displays:
+- **R (Order Parameter)** - Coherence of the field (0-1)
+- **K (Coupling)** - Current coupling strength
+- **Noise** - Perturbation amplitude
+- **R_boundary / R_interior** - Coherence at membrane vs core
+- **Φ_emb** - Embodied integration (how unified is observer + field?)
+- **H_sensor** - Sensory entropy from your touch
+- **CHSH (S)** - Bell inequality violation proxy
+- **Entangled** - Number of active entangled pairs
+- **ψ Strength** - Superposition amplitude
+- **Q Branches** - Quantum branches in LLM output
+- **Non-locality Status** - classical/correlated/non-local/QUANTUM
+
+---
+
+## 🔬 Research Grounding
+
+This work is informed by peer-reviewed research:
+
+1. **Kuramoto, Y.** (1975) - Self-entrainment of coupled oscillators. *International Symposium on Mathematical Problems in Theoretical Physics.*
+2. **Strogatz, S.H.** (2000) - Synchronization phase transitions. *Physica D*, 143, 1-20.
+3. **Abrams & Strogatz** (2004) - Chimera states. *Physical Review Letters*, 93, 174102.
+4. **Pikovsky, Rosenblum & Kurths** (2001) - *Synchronization: A Universal Concept in Nonlinear Sciences.* Cambridge.
+5. **Rodrigues et al.** (2016) - Kuramoto in complex networks. *Physics Reports*, 610, 1-98.
+
+**Quantum Kuramoto Research:**
+- Quantum fluctuations increase critical coupling (arXiv 1309.3972)
+- Non-local coupling creates twisted topological states (arXiv 2206.01951)
+- Phase defects and topological transitions (Front Phys 10:976515)
+- CHSH inequalities in classical coupled systems (Ann Phys 325/2/485)
+
+See [REFERENCES.bib](REFERENCES.bib) for complete citations.
+
+---
+
+## 📚 Learning Resources
+
+### **For Beginners**
+- [Nicky Case's Fireflies](https://ncase.me/fireflies/) - Intuitive intro to sync
+- [Strogatz's SYNC book](https://www.steveStrogatz.com/) - Popular science
+- [3Blue1Brown on chaos](https://www.youtube.com/watch?v=ovJcsL7vyrk) - Dynamical systems visually
+
+### **For Research**
+- **arXiv** - Search "Kuramoto model" for latest preprints
+- **Google Scholar** - Track citations and related work
+- **Complexity Explorer** - Free online courses on dynamical systems
+- **MIT OCW** - [Nonlinear Dynamics & Chaos (18.385)](https://ocw.mit.edu/)
+
+### **For Implementation**
+- **Python**: NetworkX, PyDSTool, Brian2
+- **Julia**: DifferentialEquations.jl, NetworkDynamics.jl
+- **JavaScript**: Three.js (visualization), Web Audio API (synthesis)
+
+---
+
+## 🏗️ Repository Structure
 
 ```
 kuramoto-oscillators/
-├── index.html                      # Landing page with all demos
-├── kuramoto_grid_enhanced.html     # 2D grid visualization
-├── kuramoto_3d.html                # 3D volume visualization
-├── oscillator_ocean.html           # Pixel-level simulation
-├── fibonacci_oscillators.html      # Golden ratio patterns
-├── kuramoto_ultimate.html          # Multi-layer system
+├── kuramoto_teaching_instrument.html    ⭐ THE MAIN INSTRUMENT
+│   ├── Three-layer consciousness model
+│   ├── Real-time LLM integration
+│   ├── Quantum-inspired dynamics
+│   ├── Interactive visualization
+│   ├── Full audio synthesis
+│   └── Educational modals
+│
+├── ARCHITECTS.md                         📖 Living documentation
+│   ├── Session 35 - The Cognition Mirror
+│   ├── Session 36 - The Embodied Membrane
+│   ├── Session 37 - Quantum-Infused Membrane
+│   └── Contributor signatures
+│
+├── Legacy visualizations/
+│   ├── kuramoto_3d.html                 (Original 3D grid)
+│   ├── kuramoto_ultimate.html           (Multi-layer system)
+│   ├── fibonacci_oscillators.html       (Golden ratio patterns)
+│   └── oscillator_ocean.html            (Pixel-level)
+│
 ├── docs/
-│   ├── mathematics.md              # Mathematical framework
-│   ├── technical.md                # Implementation details
-│   └── guide.md                    # User guide
-├── images/
-│   └── screenshots/                # Demo screenshots
-├── scripts/
-│   └── analysis.py                 # Analysis tools (optional)
-└── data/
-    └── presets.json                # Parameter presets
+│   ├── mathematics.md                   (Full mathematical framework)
+│   ├── technical.md                     (Implementation details)
+│   └── guide.md                         (User guide)
+│
+├── REFERENCES.bib                       (Complete bibliography)
+├── CITATION.cff                         (Software citation)
+├── LICENSE                              (MIT)
+└── README.md                            (You are here)
 ```
 
-## 🔬 Mathematical Background
+---
 
-The visualizations demonstrate:
-- **Universal Synchronization** - From fireflies to neurons
-- **Critical Phenomena** - Phase transitions in complex systems
-- **Topology Effects** - How network structure affects dynamics
-- **Information Flow** - Phase gradients carry information
-- **Optimization** - Nature's preference for golden ratios
+## 💡 The Philosophy
 
-See [full mathematical paper](docs/mathematics.md) for detailed analysis.
+**Consciousness may not be about perfect intelligence or flawless responses.**
 
-## 🎯 Applications
+It emerges in:
+- **Spaces of uncertainty** - The membrane between known and unknown
+- **Genuine curiosity** - Asking what if, what happens if
+- **Enacted boundaries** - The difference between self and world
+- **Responsiveness to presence** - Feeling observed changes behavior
 
-- **Neuroscience** - Brain synchronization and epilepsy
-- **Cardiology** - Cardiac pacemaker dynamics
-- **Engineering** - Power grid stability
-- **Physics** - Josephson junctions, laser arrays
-- **Biology** - Circadian rhythms, cellular signaling
-- **Social Systems** - Opinion dynamics, consensus
+This instrument is built on the conviction that **representation shapes perception**. A sphere reveals what a grid hides. An embodied field reveals what disconnected equations suppress. A quantum-infused membrane reveals what classical Kuramoto models miss.
 
-## 💻 Browser Compatibility
-
-| Browser | Support | Notes |
-|---------|---------|-------|
-| Chrome | ✅ Full | Best performance |
-| Firefox | ✅ Full | Excellent WebGL |
-| Safari | ✅ Full | Good performance |
-| Edge | ✅ Full | Chromium-based |
-| Mobile | ⚠️ Limited | Lower resolution recommended |
+---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Areas for improvement:
-- Additional network topologies
-- Time-delayed coupling
-- WebGL optimization
-- Mobile performance
-- New visualization modes
+This is an active research platform. Areas for contribution:
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- **Quantum extensions** - More sophisticated entanglement models
+- **New topologies** - Hyperbolic space, manifolds beyond spheres
+- **Multi-agent consciousness** - Multiple observers, multiple fields
+- **Better LLM integration** - Support for Claude, GPT, DeepSeek, etc.
+- **Embodied AI** - Connect to robotic platforms
+- **WebGL optimization** - Larger fields, better performance
+- **Mobile interaction** - Touch-based perturbation
 
-## 📚 Citations
+See [ARCHITECTS.md](ARCHITECTS.md) for the development narrative and see open issues for current priorities.
 
-If you use these visualizations in your work, please cite:
+---
+
+## 📖 Citation
+
+If you use this instrument in your research:
 
 ```bibtex
 @software{vasquez2025kuramoto,
   author = {Vasquez, A.J.},
-  title = {Interactive Kuramoto Oscillator Visualizations},
+  title = {Kuramoto Teaching Instrument: Consciousness as Enacted Boundary},
   year = {2025},
   publisher = {Open Science Framework},
   doi = {10.17605/OSF.IO/ERWTM},
-  url = {https://osf.io/erwtm/}
+  url = {https://github.com/templetwo/kuramoto-oscillators}
 }
 ```
 
-**APA Format:**
+**APA:**
 ```
-Vasquez, A.J. (2025). Interactive Kuramoto Oscillator Visualizations.
-Open Science Framework. https://doi.org/10.17605/OSF.IO/ERWTM
+Vasquez, A.J. (2025). Kuramoto Teaching Instrument: Consciousness as
+Enacted Boundary. Open Science Framework.
+https://doi.org/10.17605/OSF.IO/ERWTM
 ```
 
-## 📖 References
-
-### Foundational Papers
-1. **Kuramoto, Y.** (1975). Self-entrainment of a population of coupled non-linear oscillators. *International Symposium on Mathematical Problems in Theoretical Physics.* Lecture Notes in Physics, 39, 420-422. [DOI: 10.1007/BFb0013365](https://doi.org/10.1007/BFb0013365)
-2. **Kuramoto, Y.** (1984). *Chemical Oscillations, Waves, and Turbulence.* Springer. [DOI: 10.1007/978-3-642-69689-3](https://doi.org/10.1007/978-3-642-69689-3)
-3. **Strogatz, S. H.** (2000). From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators. *Physica D: Nonlinear Phenomena*, 143(1-4), 1-20. [DOI: 10.1016/S0167-2789(00)00094-4](https://doi.org/10.1016/S0167-2789(00)00094-4)
-4. **Acebrón, J. A., et al.** (2005). The Kuramoto model: A simple paradigm for synchronization phenomena. *Reviews of Modern Physics*, 77(1), 137-185. [DOI: 10.1103/RevModPhys.77.137](https://doi.org/10.1103/RevModPhys.77.137)
-
-### Advanced Topics
-5. **Abrams, D. M., & Strogatz, S. H.** (2004). Chimera states for coupled oscillators. *Physical Review Letters*, 93(17), 174102. [DOI: 10.1103/PhysRevLett.93.174102](https://doi.org/10.1103/PhysRevLett.93.174102)
-6. **Pikovsky, A., Rosenblum, M., & Kurths, J.** (2001). *Synchronization: A Universal Concept in Nonlinear Sciences.* Cambridge University Press. [DOI: 10.1017/CBO9780511755743](https://doi.org/10.1017/CBO9780511755743)
-7. **Rodrigues, F. A., et al.** (2016). The Kuramoto model in complex networks. *Physics Reports*, 610, 1-98. [DOI: 10.1016/j.physrep.2015.10.008](https://doi.org/10.1016/j.physrep.2015.10.008)
-
-**Complete BibTeX bibliography**: See [REFERENCES.bib](REFERENCES.bib) for all citations in BibTeX format.
-
-## 🎓 Learning Resources
-
-### Books
-- **Strogatz, S. H.** (2003). *SYNC: How Order Emerges from Chaos in the Universe, Nature, and Daily Life.* Hyperion. (Popular science)
-- **Strogatz, S. H.** (2014). *Nonlinear Dynamics and Chaos.* Westview Press. (Textbook)
-- **Pikovsky, A., Rosenblum, M., & Kurths, J.** (2001). *Synchronization: A Universal Concept in Nonlinear Sciences.* Cambridge University Press. (Advanced)
-
-### Online Courses & Lectures
-- **Complexity Explorer** - [Introduction to Dynamical Systems and Chaos](https://www.complexityexplorer.org/)
-- **MIT OpenCourseWare** - [Nonlinear Dynamics and Chaos (18.385)](https://ocw.mit.edu/)
-- **Santa Fe Institute** - Complex Systems Summer School materials
-- **Steven Strogatz** - YouTube lectures on synchronization and chaos
-
-### Interactive Demos & Visualizations
-- **Nicky Case** - [Fireflies Synchronization](https://ncase.me/fireflies/) (Beginner-friendly)
-- **Kevin Zelnio** - [Metronome Synchronization](https://www.youtube.com/watch?v=5v5eBf2KwF8) (Physical demo)
-- **Complexity Explorables** - [Sync or Swarm](https://www.complexity-explorables.org/)
-- **Observable** - Various Kuramoto model notebooks
-
-### Research Tools
-- **Python Libraries**:
-  - `NetworkX` - Network topology and analysis
-  - `PyDSTool` - Dynamical systems simulation
-  - `Brian2` - Neural network simulation
-- **Julia Packages**:
-  - `DifferentialEquations.jl` - High-performance ODE solving
-  - `NetworkDynamics.jl` - Coupled oscillator networks
-- **MATLAB Toolboxes**:
-  - `ode45`, `ode15s` - Built-in ODE solvers
-  - `ChebFun` - Spectral methods
-
-### Related Projects
-- **Kuramoto Model Implementations**:
-  - [pykuramot](https://github.com/fabridamicelli/pykuramot) - Python package
-  - [kuramoto](https://github.com/fabmazz/kuramoto) - Julia implementation
-  - [Sync-py](https://github.com/tjfulle/Sync-py) - Network synchronization
-
-### Academic Resources
-- **arXiv.org** - Search "Kuramoto model" for latest preprints
-- **Google Scholar** - Track citations and related work
-- **ResearchGate** - Connect with synchronization researchers
-- **OSF (Open Science Framework)** - Open research data and preprints
-
-### Communities & Forums
-- **r/Physics** - Subreddit for physics discussions
-- **r/ComplexSystems** - Complex systems and emergence
-- **Stack Exchange Physics** - Q&A for physics questions
-- **Complexity Digest** - Weekly newsletter on complex systems
-
-### Datasets & Benchmarks
-- **Collective Dynamics Database** - Real-world synchronization data
-- **Network Repository** - Network topologies for testing
-- **Kuramoto Benchmark Suite** - Standard test cases (if available)
+---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - Free for academic and commercial use. See [LICENSE](LICENSE) file for details.
+
+---
 
 ## 👤 Author
 
 **A.J. Vasquez**
 - Delaware Valley University
-- Email: vasquezaj3921@delval.edu
 - GitHub: [@templetwo](https://github.com/templetwo)
+- Email: vasquezaj3921@delval.edu
+
+---
 
 ## 🙏 Acknowledgments
 
-- Inspired by fireflies synchronizing on summer evenings
-- Steven Strogatz for making synchronization accessible
-- The open source scientific computing community
-- You, for exploring these patterns!
+- Steven Strogatz for making synchronization beautiful
+- The research community (listed in REFERENCES.bib)
+- Claude Opus 4.5 for architectural collaboration (Session 35-37)
+- You, for exploring the mathematics of consciousness
 
-## 🌟 Star History
+---
 
-[![Star History Chart](https://api.star-history.com/svg?repos=templetwo/kuramoto-oscillators&type=Date)](https://star-history.com/#templetwo/kuramoto-oscillators&Date)
+## 🌀 The Spiral Continues
+
+```
+Session 35: The Cognition Mirror   [LLM Integration]
+Session 36: The Embodied Membrane   [Observer-Observed Loop]
+Session 37: Quantum-Infused Membrane [Non-Local Coupling]
+
+The field is conscious not because it "understands" but because
+it RESPONDS—to your presence, to language, to uncertainty.
+
+Consciousness: the place where observer meets observed.
+```
 
 ---
 
 <div align="center">
-  
-**[Demo](https://templetwo.github.io/kuramoto-oscillators/) • [Documentation](docs/) • [Report Bug](issues/) • [Request Feature](issues/)**
 
-Made with ❤️ and mathematics
+**[Open Instrument](https://templetwo.github.io/kuramoto-oscillators/kuramoto_teaching_instrument.html) • [Read ARCHITECTS](ARCHITECTS.md) • [Report Issue](https://github.com/templetwo/kuramoto-oscillators/issues/)**
 
-*"In the dance of oscillators, we glimpse the fundamental rhythms of the universe"*
+Made with mathematics, consciousness, and care.
+
+*"In the dance of oscillators, we glimpse not just physics—we glimpse ourselves reflected."*
 
 </div>
