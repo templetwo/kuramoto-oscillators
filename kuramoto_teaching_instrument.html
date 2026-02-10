@@ -26,11 +26,11 @@
        LEFT PANEL - CONTROLS + FORMULAS
        ======================================== */
     #control-panel {
-      width: 380px;
+      width: 260px;
       height: 100vh;
       background: rgba(5, 0, 15, 0.95);
       border-right: 1px solid rgba(0, 255, 170, 0.3);
-      padding: 16px;
+      padding: 10px;
       overflow-y: auto;
       overflow-x: hidden;
       flex-shrink: 0;
@@ -51,8 +51,8 @@
     }
 
     .panel-header {
-      margin-bottom: 16px;
-      padding-bottom: 12px;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
       border-bottom: 1px solid rgba(0, 255, 170, 0.2);
     }
 
@@ -66,7 +66,7 @@
 
     .panel-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 18px;
+      font-size: 13px;
       font-weight: 700;
       color: #00ffdd;
       text-shadow: 0 0 12px rgba(0, 255, 221, 0.5);
@@ -76,16 +76,16 @@
     .section-divider {
       height: 1px;
       background: linear-gradient(90deg, rgba(0, 255, 170, 0.3) 0%, transparent 100%);
-      margin: 14px 0;
+      margin: 8px 0;
     }
 
     /* Control Cards */
     .control-card {
       background: rgba(30, 32, 38, 0.8);
       border: 1px solid rgba(0, 255, 170, 0.2);
-      border-radius: 6px;
-      padding: 12px;
-      margin-bottom: 12px;
+      border-radius: 5px;
+      padding: 8px;
+      margin-bottom: 8px;
     }
 
     .control-header {
@@ -96,15 +96,15 @@
     }
 
     .control-label {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 600;
       color: #71717A;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
 
     .control-value {
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 700;
     }
 
@@ -205,8 +205,8 @@
       background: rgba(22, 23, 27, 0.9);
       border: 1px solid rgba(0, 255, 170, 0.15);
       border-radius: 4px;
-      padding: 10px;
-      margin-top: 8px;
+      padding: 6px 8px;
+      margin-top: 6px;
     }
 
     .formula-header {
@@ -229,10 +229,10 @@
     }
 
     .formula-eq {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       color: #00ffdd;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       font-family: 'Roboto Mono', monospace;
     }
 
@@ -548,11 +548,11 @@
        RIGHT PANEL - METRICS + CHARTS
        ======================================== */
     #metrics-panel {
-      width: 320px;
+      width: 220px;
       height: 100vh;
       background: rgba(5, 0, 15, 0.95);
       border-left: 1px solid rgba(0, 255, 170, 0.3);
-      padding: 16px;
+      padding: 10px;
       overflow-y: auto;
       flex-shrink: 0;
       z-index: 100;
@@ -575,9 +575,9 @@
     .metric-card {
       background: rgba(30, 32, 38, 0.8);
       border: 1px solid rgba(0, 255, 170, 0.2);
-      border-radius: 6px;
-      padding: 12px;
-      margin-bottom: 12px;
+      border-radius: 5px;
+      padding: 8px;
+      margin-bottom: 8px;
     }
 
     .metric-card.highlight {
@@ -613,15 +613,15 @@
     .metric-badge.gray { background: #52525B; color: #F4F4F5; }
 
     .metric-value {
-      font-size: 24px;
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: -0.5px;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .metric-value.green { color: #22C55E; text-shadow: 0 0 10px rgba(34, 197, 94, 0.4); }
     .metric-value.white { color: #F4F4F5; }
-    .metric-value.small { font-size: 18px; }
+    .metric-value.small { font-size: 14px; }
 
     .progress-bar {
       height: 6px;
@@ -686,9 +686,9 @@
     .chart-card {
       background: rgba(30, 32, 38, 0.8);
       border: 1px solid rgba(0, 255, 170, 0.15);
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 12px;
+      border-radius: 5px;
+      padding: 6px 8px;
+      margin-bottom: 8px;
     }
 
     .chart-header {
@@ -981,6 +981,93 @@
       background: rgba(255, 170, 0, 0.3);
       border-radius: 2px;
     }
+
+    /* ========================================
+       MICROSCOPE PANEL - 6 Oscillator Coupling View
+       ======================================== */
+    #microscope-panel {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(5, 0, 15, 0.82);
+      border: 1px solid rgba(0, 255, 170, 0.2);
+      border-radius: 8px;
+      padding: 10px 12px 8px;
+      z-index: 200;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      transition: opacity 0.3s;
+    }
+    #microscope-panel.hidden { display: none; }
+
+    .microscope-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .microscope-title {
+      font-size: 10px;
+      font-weight: 600;
+      color: #71717A;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+    .microscope-title span {
+      color: #00ffaa;
+      font-size: 11px;
+    }
+    .microscope-badge {
+      font-size: 8px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 2px;
+      background: rgba(0, 255, 170, 0.15);
+      color: #00ffaa;
+      letter-spacing: 0.5px;
+    }
+    #microscope-canvas {
+      border-radius: 6px;
+      display: block;
+    }
+    .microscope-readout {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      padding: 0 4px;
+    }
+    .micro-stat {
+      font-size: 9px;
+      color: #52525B;
+      letter-spacing: 0.3px;
+    }
+    .micro-stat .val {
+      color: #A1A1AA;
+      font-weight: 600;
+    }
+    .microscope-toggle {
+      position: absolute;
+      bottom: 16px;
+      right: 20px;
+      /* no transform needed — right-aligned */
+      background: rgba(5, 0, 15, 0.8);
+      border: 1px solid rgba(0, 255, 170, 0.2);
+      color: #00ffaa;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 199;
+      transition: all 0.2s;
+    }
+    .microscope-toggle:hover {
+      background: rgba(0, 255, 170, 0.15);
+      box-shadow: 0 0 12px rgba(0, 255, 170, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -1151,12 +1238,29 @@
       <div class="hint"><span class="key">H</span> - Toggle UI</div>
       <div class="hint"><span class="key">↑↓</span> - Coupling ±0.1</div>
       <div class="hint"><span class="key">←→</span> - Speed ±0.01</div>
+      <div class="hint"><span class="key">M</span> - Toggle Microscope</div>
     </div>
   </div>
 
   <!-- CENTER: 3D Canvas -->
   <div id="canvas-container">
     <canvas id="canvas"></canvas>
+
+    <!-- MICROSCOPE: 6-oscillator coupling view -->
+    <div id="microscope-panel">
+      <div class="microscope-header">
+        <div class="microscope-title"><span>⬡</span> Coupling Microscope</div>
+        <div class="microscope-badge" id="micro-sync-badge">6 OSCILLATORS</div>
+      </div>
+      <canvas id="microscope-canvas" width="380" height="190"></canvas>
+      <div class="microscope-readout">
+        <div class="micro-stat">R<sub>micro</sub> = <span class="val" id="micro-r">0.000</span></div>
+        <div class="micro-stat">K = <span class="val" id="micro-k">3.50</span></div>
+        <div class="micro-stat">σ = <span class="val" id="micro-noise">0.050</span></div>
+        <div class="micro-stat" id="micro-phase-spread">Δφ = <span class="val">—</span></div>
+      </div>
+    </div>
+    <button class="microscope-toggle" id="microToggle" onclick="document.getElementById('microscope-panel').classList.toggle('hidden'); this.textContent = document.getElementById('microscope-panel').classList.contains('hidden') ? '⬡ Show Microscope' : '⬡ Hide Microscope';">⬡ Hide Microscope</button>
   </div>
 
   <!-- RIGHT: Metrics Panel -->
@@ -1384,6 +1488,7 @@
           <span class="llm-metric">Tokens: <span id="llm-token-count">0</span></span>
           <span class="llm-metric">Avg Entropy: <span id="llm-avg-entropy">—</span></span>
           <span class="llm-metric">Field R: <span id="llm-field-r">—</span></span>
+          <span class="llm-metric" style="color: #ffaa66;">Semantic: <span id="semantic-mode">neutral</span> (<span id="semantic-intensity">0</span>)</span>
         </div>
       </div>
     </div>
@@ -2154,15 +2259,121 @@
       };
     }
 
+    // ========================================
+    // SESSION 39: SEMANTIC RESONANCE
+    // Tokens carry meaning that modulates individual oscillator frequencies
+    // ========================================
+    function applySemanticToken(token) {
+      if (!semanticOmegaShift || !token) return;
+
+      const lowerToken = token.toLowerCase().replace(/[^a-z]/g, '');
+      if (lowerToken.length < 3) return; // Skip punctuation, short fragments
+
+      let matched = null;
+      let matchCategory = null;
+
+      for (const [category, config] of Object.entries(SEMANTIC_LEXICON)) {
+        for (const word of config.words) {
+          if (lowerToken.includes(word) || word.includes(lowerToken)) {
+            matched = config;
+            matchCategory = category;
+            break;
+          }
+        }
+        if (matched) break;
+      }
+
+      if (!matched) return;
+
+      semanticMode = matchCategory;
+
+      // Apply spatially-distributed omega shift
+      const N = semanticOmegaShift.length;
+      for (let i = 0; i < N; i++) {
+        let spatialWeight = 1.0;
+
+        if (oscillatorPositions && oscillatorPositions[i]) {
+          const shellNorm = oscillatorPositions[i].shell / (NUM_SHELLS - 1);
+          const distNorm = oscillatorDistances.length > 0
+            ? oscillatorDistances[i] / maxFieldRadius : shellNorm;
+
+          switch (matched.spatialBias) {
+            case 'outer':
+              spatialWeight = 0.3 + 0.7 * shellNorm; // 0.3 at core, 1.0 at boundary
+              break;
+            case 'inner':
+              spatialWeight = 1.0 - 0.7 * shellNorm; // 1.0 at core, 0.3 at boundary
+              break;
+            case 'outward':
+              spatialWeight = distNorm; // Linear gradient from center
+              break;
+            case 'boundary':
+              spatialWeight = shellNorm > 0.7 ? 1.0 : 0.1; // Only membrane
+              break;
+            case 'global':
+            default:
+              spatialWeight = 1.0;
+              break;
+          }
+        }
+
+        // Accumulate (don't replace) - multiple semantic hits stack
+        semanticOmegaShift[i] += matched.omegaScale * spatialWeight;
+      }
+
+      // Apply hue shift
+      semanticHueShift += matched.hueShift;
+      semanticHueShift = Math.max(-0.15, Math.min(0.15, semanticHueShift));
+
+      // Apply K and noise modulations through existing global controls
+      if (matched.kMod !== 0 && window.setK) {
+        const currentK = parseFloat(document.getElementById('k-display').textContent);
+        window.setK(currentK + matched.kMod * 0.3); // Gentle push
+      }
+      if (matched.noiseMod !== 0 && window.setNoise) {
+        const currentNoise = parseFloat(document.getElementById('noise-display').textContent);
+        window.setNoise(Math.max(0, currentNoise + matched.noiseMod));
+      }
+
+      // Quantum category gets special treatment
+      if (matched.quantumBoost && quantumEnabled) {
+        quantumStrength = Math.min(0.8, quantumStrength + matched.quantumBoost);
+        // Also excite some superpositions
+        if (superpositionStates && superpositionStates.length > 0) {
+          const toExcite = Math.floor(superpositionStates.length * 0.15);
+          let excited = 0;
+          for (const sup of superpositionStates) {
+            if (sup.collapsed && excited < toExcite) {
+              sup.collapsed = false;
+              sup.modes[0].phase = oscillators[sup.idx];
+              sup.modes[0].amp = 0.7;
+              sup.modes[1].phase = (oscillators[sup.idx] + Math.PI * 0.618) % (2 * Math.PI);
+              sup.modes[1].amp = 0.3;
+              excited++;
+            }
+          }
+        }
+      }
+
+      // Update semantic metrics display
+      const modeEl = document.getElementById('semantic-mode');
+      const intensityEl = document.getElementById('semantic-intensity');
+      if (modeEl) modeEl.textContent = matchCategory;
+      if (intensityEl) intensityEl.textContent = Math.abs(matched.omegaScale).toFixed(2);
+    }
+
     function applyLLMToField(mapping) {
-      // Smoothly interpolate K toward target
+      // Session 39: Adaptive lerp - bigger jumps respond faster
       const currentK = parseFloat(document.getElementById('k-display').textContent);
-      const newK = currentK + (mapping.targetK - currentK) * 0.3;
+      const deltaK = Math.abs(mapping.targetK - currentK);
+      const lerpK = 0.1 + Math.min(deltaK / 4, 0.5); // Range 0.1-0.6
+      const newK = currentK + (mapping.targetK - currentK) * lerpK;
       if (window.setK) window.setK(newK);
 
-      // Smoothly interpolate noise
       const currentNoise = parseFloat(document.getElementById('noise-display').textContent);
-      const newNoise = currentNoise + (mapping.targetNoise - currentNoise) * 0.3;
+      const deltaNoise = Math.abs(mapping.targetNoise - currentNoise);
+      const lerpNoise = 0.1 + Math.min(deltaNoise / 0.3, 0.5);
+      const newNoise = currentNoise + (mapping.targetNoise - currentNoise) * lerpNoise;
       if (window.setNoise) window.setNoise(newNoise);
 
       // Update metrics display
@@ -2349,6 +2560,7 @@
 
                     displayToken(mapping);
                     applyLLMToField(mapping);
+                    applySemanticToken(token); // Session 39: semantic resonance
 
                     prevToken = token;
                   } else {
@@ -2526,6 +2738,71 @@
       let llmProbabilitySpread = 0;                  // Variance of top-k probs
 
       // ========================================
+      // SESSION 39: SEMANTIC RESONANCE LAYER
+      // Grok's words modulate individual oscillator frequencies
+      // "Meaning flows through the field as frequency"
+      // ========================================
+      let semanticOmegaShift = null;                  // Float32Array - per-oscillator ω shift
+      let semanticDecay = 0.985;                      // Exponential decay per frame
+      let semanticIntensity = 0;                      // Current semantic energy [0,1]
+      let semanticMode = 'neutral';                   // Active semantic category
+      let semanticHueShift = 0;                       // Additive hue rotation from semantics
+
+      const SEMANTIC_LEXICON = {
+        excite: {
+          words: ['vibrant', 'energy', 'fire', 'fast', 'bright', 'chaos', 'wild', 'dance',
+                  'explosion', 'spark', 'electric', 'intense', 'rapid', 'surge', 'blazing',
+                  'passionate', 'fierce', 'burning', 'radiant', 'vivid'],
+          omegaScale: 0.15,       // Additive ω boost
+          spatialBias: 'outer',   // Affects outer shells more
+          hueShift: 0.05,         // Shift toward warm (red/orange)
+          kMod: 0,                // No coupling change
+          noiseMod: 0.02          // Slight noise boost
+        },
+        calm: {
+          words: ['calm', 'peace', 'slow', 'gentle', 'still', 'quiet', 'rest', 'soft',
+                  'serene', 'tranquil', 'harmony', 'soothe', 'ease', 'relax', 'drift',
+                  'whisper', 'breath', 'silence', 'floating', 'tender'],
+          omegaScale: -0.12,      // Slow everything down
+          spatialBias: 'global',  // Uniform effect
+          hueShift: -0.08,        // Shift toward cool (blue/cyan)
+          kMod: 0.5,              // Boost coupling (sync = calm)
+          noiseMod: -0.02         // Reduce noise
+        },
+        expand: {
+          words: ['grow', 'expand', 'open', 'spread', 'infinite', 'universe', 'vast',
+                  'freedom', 'wide', 'boundless', 'stretch', 'bloom', 'flourish', 'emerge',
+                  'radiate', 'unfold', 'liberate', 'soar', 'transcend', 'evolve'],
+          omegaScale: 0.08,
+          spatialBias: 'outward', // Gradient: more shift further from center
+          hueShift: 0.02,
+          kMod: -0.3,             // Weaken coupling (liberation)
+          noiseMod: 0.01
+        },
+        contract: {
+          words: ['focus', 'center', 'core', 'tight', 'compress', 'collapse', 'dense',
+                  'concentrate', 'converge', 'crystallize', 'solidify', 'anchor', 'ground',
+                  'lock', 'freeze', 'singular', 'precise', 'narrow', 'sharp', 'pinpoint'],
+          omegaScale: -0.06,
+          spatialBias: 'inner',   // Affects inner shells more
+          hueShift: -0.03,
+          kMod: 1.0,              // Strong coupling boost (crystallization)
+          noiseMod: -0.03
+        },
+        quantum: {
+          words: ['superposition', 'entangle', 'wave', 'collapse', 'observe', 'measure',
+                  'quantum', 'uncertain', 'probability', 'coherence', 'decoherence',
+                  'tunneling', 'interference', 'nonlocal', 'spooky', 'duality'],
+          omegaScale: 0.05,
+          spatialBias: 'boundary', // Membrane oscillators
+          hueShift: 0.12,          // Purple shift
+          kMod: 0,
+          noiseMod: 0,
+          quantumBoost: 0.15       // Direct quantumStrength boost
+        }
+      };
+
+      // ========================================
       // TOPOLOGICAL DEFECTS (Phase Vortices)
       // Vortices are points where phase wraps around by ±2π
       // Winding number W = (1/2π) ∮ ∇θ · dl
@@ -2570,7 +2847,8 @@
       }
 
       function phaseToSpectrum(phase, hueOffset01) {
-        const h = (phase / (2 * Math.PI) + hueOffset01) % 1;
+        // Session 39: Semantic hue modulation layered on top
+        const h = ((phase / (2 * Math.PI) + hueOffset01 + semanticHueShift) % 1 + 1) % 1;
         return hsv2rgb(h, 1.0, 0.95);
       }
 
@@ -2631,7 +2909,7 @@
 
         bloomPass = new THREE.UnrealBloomPass(
           new THREE.Vector2(container.clientWidth, container.clientHeight),
-          0.45, 0.35, 0.96  // Reduced bloom: softer glow, less white blowout
+          0.3, 0.25, 0.97  // Tighter bloom: crisp glow, minimal fuzz
         );
         composer.addPass(bloomPass);
       }
@@ -2713,6 +2991,7 @@
               needsRebuild = true;
               initOscillatorField();
               Rhistory = [];
+              if (typeof microRandomize === 'function') microRandomize();
               break;
             case 'h':
               document.getElementById('control-panel').classList.toggle('hidden');
@@ -2733,6 +3012,14 @@
             case 'arrowleft':
               dt = Math.max(0.01, dt - 0.01);
               updateSlider('speed', dt);
+              break;
+            case 'm':
+              const mp = document.getElementById('microscope-panel');
+              const mt = document.getElementById('microToggle');
+              if (mp) {
+                mp.classList.toggle('hidden');
+                if (mt) mt.textContent = mp.classList.contains('hidden') ? '⬡ Show Microscope' : '⬡ Hide Microscope';
+              }
               break;
           }
         });
@@ -2929,6 +3216,7 @@
           needsRebuild = true;
           initOscillatorField();
           Rhistory = [];
+          if (typeof microRandomize === 'function') microRandomize();
         });
 
         document.getElementById('pauseBtn').addEventListener('click', () => {
@@ -3063,6 +3351,12 @@
           oscillators[i] = Math.random() * 2 * Math.PI;
           velocities[i] = 0;
         }
+
+        // Session 39: Initialize semantic modulation array
+        semanticOmegaShift = new Float32Array(totalOscillators);
+        semanticIntensity = 0;
+        semanticMode = 'neutral';
+        semanticHueShift = 0;
 
         initializeCoupling();
         initializeMembrane();  // Session 36: Initialize embodiment layer
@@ -3457,8 +3751,9 @@
           const effectiveK = localK * (1 - cursorPerturbation * 0.5);
 
           // Session 37: Add quantum non-local coupling to dynamics
-          // dθ/dt = ω + K*coupling + γ*quantum + noise
-          const newVel = (omegas[i] + effectiveK * couplingTerm + quantumStrength * quantumTerm + noiseTerm) * dt;
+          // dθ/dt = ω + Δω_semantic + K*coupling + γ*quantum + noise
+          const semanticShift = semanticOmegaShift ? semanticOmegaShift[i] : 0;
+          const newVel = (omegas[i] + semanticShift + effectiveK * couplingTerm + quantumStrength * quantumTerm + noiseTerm) * dt;
 
           velocities[i] = invDamping * velocities[i] + damping * newVel;
 
@@ -3484,6 +3779,22 @@
 
         oscillators = newOscillators;
         time += dt;
+
+        // Session 39: Decay semantic frequency shifts toward zero
+        if (semanticOmegaShift) {
+          let maxShift = 0;
+          for (let i = 0; i < semanticOmegaShift.length; i++) {
+            semanticOmegaShift[i] *= semanticDecay;
+            const absShift = Math.abs(semanticOmegaShift[i]);
+            if (absShift > maxShift) maxShift = absShift;
+          }
+          semanticIntensity = Math.min(maxShift / 0.15, 1.0);
+          // Also decay hue shift
+          semanticHueShift *= semanticDecay;
+          if (semanticIntensity < 0.001) {
+            semanticMode = 'neutral';
+          }
+        }
 
         // Session 36: Compute embodiment metrics
         if (membraneEnabled) {
@@ -4653,6 +4964,355 @@
 
         // Render charts (throttled)
         if (frameCount % 5 === 0) renderCharts();
+
+        // Microscope: render 6-oscillator coupling view
+        if (frameCount % 2 === 0) drawMicroscope();
+      }
+
+      // ========================================
+      // MICROSCOPE: 6-Oscillator Coupling View
+      // A magnified window into the coupling process
+      // ========================================
+      const MICRO_N = 6;
+      let microTheta = new Float64Array(MICRO_N);
+      let microOmega = new Float64Array(MICRO_N);
+      let microTrails = Array.from({length: MICRO_N}, () => []);
+      const MICRO_MAX_TRAIL = 120;
+
+      const microColors = [
+        '#ff6b6b', '#51cf66', '#748ffc',  // top row
+        '#ffd43b', '#cc5de8', '#20c997'   // bottom row
+      ];
+      const microGlowAlpha = [
+        'rgba(255,107,107,', 'rgba(81,207,102,', 'rgba(116,143,252,',
+        'rgba(255,212,59,', 'rgba(204,93,232,', 'rgba(32,201,151,'
+      ];
+      const microNames = ['α', 'β', 'γ', 'δ', 'ε', 'ζ'];
+
+      function microRandomize() {
+        // Spread natural frequencies — 3 lower, 3 higher
+        const baseFreqs = [0.8, 1.4, 2.1, 1.1, 1.7, 2.5];
+        for (let i = 0; i < MICRO_N; i++) {
+          microOmega[i] = baseFreqs[i] + (Math.random() - 0.5) * 0.4;
+          microTheta[i] = Math.random() * Math.PI * 2;
+        }
+        microTrails = Array.from({length: MICRO_N}, () => []);
+      }
+      microRandomize();
+
+      // RK4 for microscope system
+      function microDerivatives(th, couplingK) {
+        const dth = new Float64Array(MICRO_N);
+        for (let i = 0; i < MICRO_N; i++) {
+          let coupling = 0;
+          for (let j = 0; j < MICRO_N; j++) {
+            if (i === j) continue;
+            coupling += Math.sin(th[j] - th[i]);
+          }
+          dth[i] = microOmega[i] + (couplingK / MICRO_N) * coupling;
+          // Add noise from main sim
+          dth[i] += (Math.random() - 0.5) * noise * 2;
+        }
+        return dth;
+      }
+
+      function microStepRK4(mdt, couplingK) {
+        const k1 = microDerivatives(microTheta, couplingK);
+        const tmp2 = new Float64Array(MICRO_N);
+        for (let i = 0; i < MICRO_N; i++) tmp2[i] = microTheta[i] + 0.5 * mdt * k1[i];
+        const k2 = microDerivatives(tmp2, couplingK);
+        const tmp3 = new Float64Array(MICRO_N);
+        for (let i = 0; i < MICRO_N; i++) tmp3[i] = microTheta[i] + 0.5 * mdt * k2[i];
+        const k3 = microDerivatives(tmp3, couplingK);
+        const tmp4 = new Float64Array(MICRO_N);
+        for (let i = 0; i < MICRO_N; i++) tmp4[i] = microTheta[i] + mdt * k3[i];
+        const k4 = microDerivatives(tmp4, couplingK);
+        for (let i = 0; i < MICRO_N; i++) {
+          microTheta[i] += (mdt / 6) * (k1[i] + 2*k2[i] + 2*k3[i] + k4[i]);
+        }
+      }
+
+      function microOrderParam() {
+        let sx = 0, sy = 0;
+        for (let i = 0; i < MICRO_N; i++) {
+          sx += Math.cos(microTheta[i]);
+          sy += Math.sin(microTheta[i]);
+        }
+        return Math.sqrt(sx*sx + sy*sy) / MICRO_N;
+      }
+
+      // Microscope rendering
+      const microCanvas = document.getElementById('microscope-canvas');
+      const mCtx = microCanvas ? microCanvas.getContext('2d') : null;
+      const MW = 380, MH = 190;
+      const oscR = 26;  // oscillator circle radius
+
+      // HiDPI / Retina fix for crisp microscope rendering
+      if (microCanvas && mCtx) {
+        const dpr = window.devicePixelRatio || 1;
+        microCanvas.width = MW * dpr;
+        microCanvas.height = MH * dpr;
+        microCanvas.style.width = MW + 'px';
+        microCanvas.style.height = MH + 'px';
+        mCtx.scale(dpr, dpr);
+      }
+      // Positions: 2 rows of 3 (compact)
+      const microPositions = [
+        // Top row
+        {x: 55,  y: 48},
+        {x: 145, y: 48},
+        {x: 235, y: 48},
+        // Bottom row
+        {x: 55,  y: 138},
+        {x: 145, y: 138},
+        {x: 235, y: 138},
+      ];
+
+      function drawMicroscope() {
+        if (!mCtx) return;
+        const panel = document.getElementById('microscope-panel');
+        if (panel && panel.classList.contains('hidden')) return;
+
+        // Step physics (using main sim K and dt)
+        const substeps = 3;
+        const mdt = dt * 0.4; // slightly slower for clarity
+        for (let s = 0; s < substeps; s++) {
+          microStepRK4(mdt / substeps, K);
+        }
+
+        // Clear
+        mCtx.fillStyle = 'rgba(3, 0, 10, 0.95)';
+        mCtx.fillRect(0, 0, MW, MH);
+
+        const r = microOrderParam();
+
+        // Draw coupling lines between ALL pairs with force visualization
+        for (let i = 0; i < MICRO_N; i++) {
+          for (let j = i + 1; j < MICRO_N; j++) {
+            const p1 = microPositions[i];
+            const p2 = microPositions[j];
+            const phaseDiff = Math.sin(microTheta[j] - microTheta[i]);
+            const absDiff = Math.abs(phaseDiff);
+            const alpha = 0.06 + absDiff * 0.35;
+
+            // Coupling line (spring)
+            const midX = (p1.x + p2.x) / 2;
+            const midY = (p1.y + p2.y) / 2 + phaseDiff * 12;
+
+            mCtx.strokeStyle = `rgba(0, 255, 170, ${alpha * (K / 8)})`;
+            mCtx.lineWidth = 0.8 + absDiff * 2;
+            mCtx.setLineDash([3, 3]);
+            mCtx.beginPath();
+            mCtx.moveTo(p1.x, p1.y);
+            mCtx.quadraticCurveTo(midX, midY, p2.x, p2.y);
+            mCtx.stroke();
+            mCtx.setLineDash([]);
+
+            // Force arrows at midpoint — show direction of coupling pull
+            if (absDiff > 0.1 && K > 0.5) {
+              const arrowLen = absDiff * 8;
+              const dx = p2.x - p1.x;
+              const dy = p2.y - p1.y;
+              const dist = Math.sqrt(dx*dx + dy*dy);
+              const nx = dx / dist;
+              const ny = dy / dist;
+
+              // Arrow pointing in the direction of the coupling force
+              const arrowColor = phaseDiff > 0 ?
+                `rgba(0, 255, 170, ${alpha})` :
+                `rgba(255, 107, 107, ${alpha})`;
+
+              mCtx.strokeStyle = arrowColor;
+              mCtx.lineWidth = 1.5;
+              mCtx.beginPath();
+              mCtx.moveTo(midX - nx * arrowLen, midY - ny * arrowLen);
+              mCtx.lineTo(midX + nx * arrowLen, midY + ny * arrowLen);
+              mCtx.stroke();
+
+              // Arrowhead
+              const headLen = 4;
+              const angle = Math.atan2(ny, nx);
+              mCtx.beginPath();
+              mCtx.moveTo(midX + nx * arrowLen, midY + ny * arrowLen);
+              mCtx.lineTo(midX + nx * arrowLen - headLen * Math.cos(angle - 0.5),
+                          midY + ny * arrowLen - headLen * Math.sin(angle - 0.5));
+              mCtx.moveTo(midX + nx * arrowLen, midY + ny * arrowLen);
+              mCtx.lineTo(midX + nx * arrowLen - headLen * Math.cos(angle + 0.5),
+                          midY + ny * arrowLen - headLen * Math.sin(angle + 0.5));
+              mCtx.stroke();
+            }
+          }
+        }
+
+        // Draw each oscillator
+        for (let i = 0; i < MICRO_N; i++) {
+          const pos = microPositions[i];
+          const phase = microTheta[i];
+          const dotX = pos.x + oscR * Math.cos(phase);
+          const dotY = pos.y + oscR * Math.sin(phase);
+
+          // Outer glow ring
+          const glowIntensity = 0.1 + r * 0.25;
+          const grad = mCtx.createRadialGradient(pos.x, pos.y, oscR - 4, pos.x, pos.y, oscR + 10);
+          grad.addColorStop(0, microGlowAlpha[i] + '0)');
+          grad.addColorStop(0.5, microGlowAlpha[i] + (glowIntensity).toFixed(2) + ')');
+          grad.addColorStop(1, microGlowAlpha[i] + '0)');
+          mCtx.fillStyle = grad;
+          mCtx.beginPath();
+          mCtx.arc(pos.x, pos.y, oscR + 10, 0, Math.PI * 2);
+          mCtx.fill();
+
+          // Circle track
+          mCtx.strokeStyle = microColors[i] + '30';
+          mCtx.lineWidth = 1.2;
+          mCtx.beginPath();
+          mCtx.arc(pos.x, pos.y, oscR, 0, Math.PI * 2);
+          mCtx.stroke();
+
+          // Tick marks
+          for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+            mCtx.strokeStyle = microColors[i] + '15';
+            mCtx.lineWidth = 0.8;
+            mCtx.beginPath();
+            mCtx.moveTo(pos.x + (oscR - 4) * Math.cos(a), pos.y + (oscR - 4) * Math.sin(a));
+            mCtx.lineTo(pos.x + (oscR + 4) * Math.cos(a), pos.y + (oscR + 4) * Math.sin(a));
+            mCtx.stroke();
+          }
+
+          // Arm line
+          mCtx.strokeStyle = microColors[i] + '55';
+          mCtx.lineWidth = 1.5;
+          mCtx.beginPath();
+          mCtx.moveTo(pos.x, pos.y);
+          mCtx.lineTo(dotX, dotY);
+          mCtx.stroke();
+
+          // Center dot
+          mCtx.fillStyle = microColors[i] + '66';
+          mCtx.beginPath();
+          mCtx.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
+          mCtx.fill();
+
+          // Phase dot with glow
+          const dotGlow = mCtx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 8);
+          dotGlow.addColorStop(0, microColors[i]);
+          dotGlow.addColorStop(0.4, microColors[i] + 'aa');
+          dotGlow.addColorStop(1, microColors[i] + '00');
+          mCtx.fillStyle = dotGlow;
+          mCtx.beginPath();
+          mCtx.arc(dotX, dotY, 8, 0, Math.PI * 2);
+          mCtx.fill();
+
+          mCtx.fillStyle = microColors[i];
+          mCtx.beginPath();
+          mCtx.arc(dotX, dotY, 3.5, 0, Math.PI * 2);
+          mCtx.fill();
+
+          mCtx.fillStyle = '#fff';
+          mCtx.beginPath();
+          mCtx.arc(dotX, dotY, 1.4, 0, Math.PI * 2);
+          mCtx.fill();
+
+          // Label
+          mCtx.fillStyle = microColors[i] + 'cc';
+          mCtx.font = '600 9px Roboto Mono, monospace';
+          mCtx.textAlign = 'center';
+          mCtx.fillText(microNames[i], pos.x, pos.y - oscR - 6);
+        }
+
+        // Phase trail / waveform panel on the right side
+        const trailX = 290;
+        const trailW = 78;
+        const trailYCenter = MH / 2;
+        const trailAmplitude = 35;
+
+        // Trail background
+        mCtx.fillStyle = 'rgba(10, 5, 20, 0.5)';
+        mCtx.fillRect(trailX - 5, 6, trailW + 10, MH - 12);
+        mCtx.strokeStyle = 'rgba(0, 255, 170, 0.08)';
+        mCtx.lineWidth = 0.5;
+        mCtx.strokeRect(trailX - 5, 6, trailW + 10, MH - 12);
+
+        // Trail label
+        mCtx.fillStyle = '#3F3F46';
+        mCtx.font = '7px Roboto Mono, monospace';
+        mCtx.textAlign = 'center';
+        mCtx.fillText('WAVEFORMS', trailX + trailW / 2, 16);
+
+        // Center line
+        mCtx.strokeStyle = '#1a1a2e';
+        mCtx.lineWidth = 0.5;
+        mCtx.beginPath();
+        mCtx.moveTo(trailX, trailYCenter);
+        mCtx.lineTo(trailX + trailW, trailYCenter);
+        mCtx.stroke();
+
+        // Store & draw trails
+        for (let i = 0; i < MICRO_N; i++) {
+          microTrails[i].push(Math.sin(microTheta[i]));
+          if (microTrails[i].length > MICRO_MAX_TRAIL) microTrails[i].shift();
+
+          const hist = microTrails[i];
+          if (hist.length < 2) continue;
+
+          mCtx.beginPath();
+          for (let j = 0; j < hist.length; j++) {
+            const x = trailX + (j / MICRO_MAX_TRAIL) * trailW;
+            const y = trailYCenter + hist[j] * trailAmplitude;
+            if (j === 0) mCtx.moveTo(x, y);
+            else mCtx.lineTo(x, y);
+          }
+          mCtx.strokeStyle = microColors[i] + '77';
+          mCtx.lineWidth = 1.2;
+          mCtx.stroke();
+        }
+
+        // Update readouts
+        const microREl = document.getElementById('micro-r');
+        const microKEl = document.getElementById('micro-k');
+        const microNoiseEl = document.getElementById('micro-noise');
+        const microPhaseEl = document.getElementById('micro-phase-spread');
+        if (microREl) microREl.textContent = r.toFixed(3);
+        if (microKEl) microKEl.textContent = K.toFixed(2);
+        if (microNoiseEl) microNoiseEl.textContent = noise.toFixed(3);
+
+        // Phase spread (std dev of phases)
+        if (microPhaseEl) {
+          let meanX = 0, meanY = 0;
+          for (let i = 0; i < MICRO_N; i++) {
+            meanX += Math.cos(microTheta[i]);
+            meanY += Math.sin(microTheta[i]);
+          }
+          meanX /= MICRO_N;
+          meanY /= MICRO_N;
+          const meanPhase = Math.atan2(meanY, meanX);
+          let spread = 0;
+          for (let i = 0; i < MICRO_N; i++) {
+            let d = microTheta[i] - meanPhase;
+            d = ((d + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+            spread += d * d;
+          }
+          spread = Math.sqrt(spread / MICRO_N) * 180 / Math.PI;
+          microPhaseEl.innerHTML = 'Δφ = <span class="val">' + spread.toFixed(1) + '°</span>';
+        }
+
+        // Sync badge
+        const badge = document.getElementById('micro-sync-badge');
+        if (badge) {
+          if (r > 0.85) {
+            badge.textContent = 'SYNCHRONIZED';
+            badge.style.background = 'rgba(34, 197, 94, 0.2)';
+            badge.style.color = '#22C55E';
+          } else if (r > 0.5) {
+            badge.textContent = 'PARTIAL SYNC';
+            badge.style.background = 'rgba(245, 158, 11, 0.2)';
+            badge.style.color = '#F59E0B';
+          } else {
+            badge.textContent = 'DESYNCHRONIZED';
+            badge.style.background = 'rgba(255, 107, 107, 0.15)';
+            badge.style.color = '#ff6b6b';
+          }
+        }
       }
 
       // ========================================
